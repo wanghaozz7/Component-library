@@ -1,9 +1,15 @@
 <template>
-  <div class="collapse-item" :style="{ height: getHeight }">
+  <div class="collapse-item" :style="{ height: getHeight + 'px' }">
     <div class="show-part" @click.self="handleClick">
-      <div class="left-part" @click="handleClick" :style="getLeftOffset">
+      <div
+        class="left-part"
+        @click="handleClick"
+        :style="{ 'margin-left': getLeftOffset + 'px' }"
+      >
         <arrow :isFold="isFold" v-if="!isLeaf()" />
-        <div class="text">{{ node.label }}</div>
+        <div class="text" :style="{ 'max-width': getMaxWidth + 'px' }">
+          {{ node.label }}
+        </div>
       </div>
       <checkBox @check="handleCheck" :checkedState="checkedState" />
     </div>
@@ -16,9 +22,9 @@
         @heightChange="handleHeightChange"
         @childCountChange="handleChildCountChange"
         @nodeChange="handleNodeChange"
-        :ref="`childrenNode${index}`"
         :fatherCheckedState="checkedState"
         :offset="offset + 5"
+        :rowHeight="rowHeight"
       />
     </div>
   </div>
@@ -70,26 +76,31 @@ let checkedState = ref("none");
 let isFold = ref(true);
 // 计算隐藏部分的总高度
 let hiddenPartHeight = ref(0);
-// 总叶子节点个数
-const total = props.totalNode.total;
 // 选中的叶子节点个数
 let count = ref(0);
+
 // 展示部分的高度(传参可以改变)
 const showPartHeight = props.rowHeight;
+// 总叶子节点个数
+const total = props.totalNode.total;
+// 上下文context
+const ctx = getCurrentInstance().ctx;
 
 // 计算总高度
-const getHeight = computed(
-  () =>
-    (isFold.value ? showPartHeight : hiddenPartHeight.value + showPartHeight) +
-    "px"
-);
+const getHeight = computed(() => {
+  return isFold.value
+    ? showPartHeight
+    : hiddenPartHeight.value + showPartHeight;
+});
 
 // 计算左侧的偏移量
 const getLeftOffset = computed(() => {
-  const left = props.offset + (isLeaf() ? 15 : 0);
-  return {
-    "margin-left": left + "px",
-  };
+  return props.offset + (isLeaf() ? 15 : 0);
+});
+
+// 获取文本最大宽度
+const getMaxWidth = computed(() => {
+  return 140;
 });
 
 // 当前节点被点击
@@ -155,7 +166,6 @@ const handleChildCountChange = (change) => {
 };
 
 onMounted(() => {
-  const ctx = getCurrentInstance().ctx;
   // 获取隐藏部分的高度
   hiddenPartHeight.value = ctx.$refs.hiddenPart.offsetHeight;
 });
@@ -219,9 +229,13 @@ export default { name: "collapseItem" };
     .left-part {
       display: flex;
       align-items: center;
+
       .text {
         font-size: 14px;
         margin-left: 5px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
     }
   }

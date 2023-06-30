@@ -11,16 +11,28 @@
 </template>
 
 <script setup name="HomeView">
+import { reactive } from "vue";
+
 import sideBar from "@/components/sideBar/index.vue";
 
+// 已选中的叶子节点一维数组
+let checkedNodeArray = reactive([]);
+// 侧边栏数据
 const sideBarData = [
   {
-    label: "一级节点1",
+    label: "一级节点10000000000000000000000",
     children: [
       {
-        label: "二级节点1",
+        label: "二级节点10000000000000000000000",
         children: [
-          { label: "三级节点11" },
+          {
+            label: "三级节点110000000000000000000000",
+            children: [
+              {
+                label: "四级节点111000000000000000000000000",
+              },
+            ],
+          },
           { label: "三级节点12" },
           { label: "三级节点13" },
         ],
@@ -65,7 +77,7 @@ const sideBarData = [
       {
         label: "二级节点3",
         children: [
-          { label: "三级节点31111111111111111111111" },
+          { label: "三级节点31" },
           { label: "三级节点32" },
           { label: "三级节点33" },
         ],
@@ -77,14 +89,13 @@ const sideBarData = [
 // description: 叶子节点选中变化的回调
 // params: array => 选中叶子节点的一维数组(保持追加顺序)
 const handleCheckedNodeArrayChange = (array) => {
-  console.log("handleCheckedNodeArrayChange", array);
+  checkedNodeArray = array;
+  console.log("handleCheckedNodeArrayChange", checkedNodeArray);
 };
 </script>
 
 <style scoped lang="less">
 .homeViewContainer {
-  width: 100%;
-  height: auto;
   display: flex;
   .sideBar {
     width: 240px;
