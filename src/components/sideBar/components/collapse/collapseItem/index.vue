@@ -19,12 +19,13 @@
         :node="children"
         :totalNode="totalNode.children[index]"
         :key="children.label"
-        @heightChange="handleHeightChange"
-        @childCountChange="handleChildCountChange"
-        @nodeChange="handleNodeChange"
         :fatherCheckedState="checkedState"
         :offset="offset + 5"
         :rowHeight="rowHeight"
+        :defaultUnfoldAll="defaultUnfoldAll"
+        @heightChange="handleHeightChange"
+        @childCountChange="handleChildCountChange"
+        @nodeChange="handleNodeChange"
       />
     </div>
   </div>
@@ -65,6 +66,11 @@ const props = defineProps({
   offset: {
     type: Number,
     default: 0,
+  },
+  // 默认展开全部节点
+  defaultUnfoldAll: {
+    type: Boolean,
+    default: true,
   },
 });
 
@@ -168,6 +174,8 @@ const handleChildCountChange = (change) => {
 onMounted(() => {
   // 获取隐藏部分的高度
   hiddenPartHeight.value = ctx.$refs.hiddenPart.offsetHeight;
+  // 节点是否展开
+  if (props.defaultUnfoldAll || props.node.defaultUnfold) isFold.value = false;
 });
 
 // 监听折叠状态(单次向上)

@@ -5,9 +5,10 @@
       :node="node"
       :totalNode="totalTree.children[idx]"
       :key="node.label"
+      :fatherCheckedState="checkedState"
+      :defaultUnfoldAll="defaultUnfoldAll"
       @childCountChange="handleChildCountChange"
       @nodeChange="handleNodeChange"
-      :fatherCheckedState="checkedState"
     />
   </div>
 </template>
@@ -33,6 +34,10 @@ const props = defineProps({
   checkedState: {
     type: String,
     default: "none",
+  },
+  defaultUnfoldAll: {
+    type: Boolean,
+    default: true,
   },
 });
 

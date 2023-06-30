@@ -8,10 +8,11 @@
     <collapse
       :collapseData="tree"
       :totalTree="totalTree"
+      :checkedState="checkedState"
+      :defaultUnfoldAll="defaultUnfoldAll"
       @collapseCountChange="handleCollapseCountChange"
       @collapseStateChange="handleCollapseStateChange"
       @nodeChange="handleNodeChange"
-      :checkedState="checkedState"
     />
   </div>
 </template>
@@ -29,6 +30,11 @@ const props = defineProps({
     default() {
       return [];
     },
+  },
+  // 默认展开全部节点
+  defaultUnfoldAll: {
+    type: Boolean,
+    default: true,
   },
 });
 

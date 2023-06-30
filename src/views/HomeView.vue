@@ -3,6 +3,7 @@
     <div class="sideBar">
       <side-bar
         :sideBarData="sideBarData"
+        :defaultUnfoldAll="false"
         @checkedNodeArrayChange="handleCheckedNodeArrayChange"
       />
     </div>
@@ -21,15 +22,19 @@ let checkedNodeArray = reactive([]);
 const sideBarData = [
   {
     label: "一级节点10000000000000000000000",
+    defaultUnfold: true,
     children: [
       {
         label: "二级节点10000000000000000000000",
+        defaultUnfold: true,
         children: [
           {
             label: "三级节点110000000000000000000000",
+            defaultUnfold: true,
             children: [
               {
                 label: "四级节点111000000000000000000000000",
+                defaultUnfold: true,
               },
             ],
           },
