@@ -58,12 +58,16 @@ const handleClick = () => {
 .checkBox {
   width: 16px;
   height: 16px;
+  box-sizing: border-box;
   border-radius: 2px;
+  overflow: hidden;
   border: 1px solid #bebebe;
-  cursor: pointer;
+  background-color: #fff !important;
+
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
   .icon {
     width: 14px;
     height: 14px;

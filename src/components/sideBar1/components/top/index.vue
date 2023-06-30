@@ -1,6 +1,9 @@
 <template>
   <div class="top">
-    <div class="selected-count">已选中{{ checkedCount }}条</div>
+    <div class="selected-count">
+      已选中<span class="number">{{ checkedCount }}</span
+      >条
+    </div>
     <div class="selected-all-root">
       <checkBox @check="handleCheck" :checkedState="checkedState" />
     </div>
@@ -31,14 +34,17 @@ const handleCheck = (state) => {
 <style scoped lang="less">
 .top {
   height: 40px;
-  background-color: lightblue;
+  padding: 0 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   .selected-count {
     line-height: 40px;
-    font-size: 14px;
-    color: azure;
+    font-size: 12px;
+    color: #696d7a;
+    .number {
+      color: #2258f4;
+    }
   }
   .selected-all-root {
   }

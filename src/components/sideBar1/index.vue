@@ -32,8 +32,6 @@ const props = defineProps({
 
 const tree = reactive(props.sideBarData);
 
-// 所有节点的个数
-
 let checkedState = ref("none");
 
 let count = ref(0);
@@ -53,11 +51,6 @@ const getNodeCount = (node) => {
   return count;
 };
 
-let total = 0;
-for (let node of tree) {
-  total += getNodeCount(node);
-}
-
 const handleCollapseCountChange = (newCount) => {
   console.log("rootCount", newCount);
   count.value = newCount;
@@ -72,11 +65,17 @@ const handleRootStateChange = (state) => {
   if (state === "all") count.value = total;
   else count.value = 0;
 };
+
+// 所有节点的个数
+let total = 0;
+for (let node of tree) {
+  total += getNodeCount(node);
+}
 </script>
 
 <style scoped lang="less">
 .sideBar-container {
-  padding: 10px;
+  padding: 15px;
   border-right: 1px solid #e6e7eb;
 }
 </style>

@@ -1,13 +1,9 @@
 <template>
   <div class="collapse-item" :style="{ height: getHeight }">
     <div class="show-part">
-      <div class="left-part">
-        <arrow
-          @fold="handleFold"
-          :isFold="isFold"
-          v-if="node.children !== undefined && node.children.length !== 0"
-        />
-        <div>{{ node.label }}</div>
+      <div class="left-part" :style="getLeftOffset">
+        <arrow @fold="handleFold" :isFold="isFold" v-if="!isLeaf()" />
+        <div class="text">{{ node.label }}</div>
       </div>
       <checkBox @check="handleCheck" :checkedState="checkedState" />
     </div>
@@ -20,6 +16,7 @@
         @childCountChange="handleChildCountChange"
         :ref="`childrenNode${index}`"
         :fatherCheckedState="checkedState"
+        :offset="offset + 5"
       />
     </div>
   </div>
@@ -41,19 +38,27 @@ import arrow from "./components/arrow/index.vue";
 import { ref, computed, getCurrentInstance, onMounted, watch } from "vue";
 
 const props = defineProps({
+  // 节点本身({label:'',children:[]})
   node: {
     type: Object,
     default() {
       return {};
     },
   },
+  // 父节点的选中状态
   fatherCheckedState: {
     type: String,
     default: "none",
   },
+  // 行高(每一行不同的话放到node中)
   rowHeight: {
     type: Number,
     default: 32,
+  },
+  // left-part偏移量
+  offset: {
+    type: Number,
+    default: 0,
   },
 });
 
@@ -105,6 +110,19 @@ const getHeight = computed(
     "px"
 );
 
+// 是否叶子节点
+const isLeaf = () => {
+  return props.node.children === undefined || props.node.children.length === 0;
+};
+
+// 计算左侧的偏移量
+const getLeftOffset = computed(() => {
+  const left = props.offset + (isLeaf() ? 10 : 0);
+  return {
+    "margin-left": left + "px",
+  };
+});
+
 const handleHeightChange = (height) => {
   hiddenPartHeight.value += height;
 };
@@ -127,7 +145,7 @@ const handleChildCountChange = (change) => {
 
 onMounted(() => {
   const ctx = getCurrentInstance().ctx;
-  // 获取隐藏部分的值
+  // 获取隐藏部分的高度
   hiddenPartHeight.value = ctx.$refs.hiddenPart.offsetHeight;
 });
 
@@ -166,17 +184,25 @@ watch(
   transition: all 0.3s;
   .show-part {
     line-height: 32px;
-    background-color: lightcoral;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-radius: 4px;
+    padding: 0 10px;
+    &:hover {
+      background-color: #eee;
+    }
     .left-part {
       display: flex;
       align-items: center;
+      .text {
+        cursor: default;
+        font-size: 14px;
+        margin-left: 5px;
+      }
     }
   }
   .hidden-part {
-    background-color: #9bc3ac;
   }
 }
 </style>
