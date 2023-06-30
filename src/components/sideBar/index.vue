@@ -10,6 +10,7 @@
       :totalTree="totalTree"
       :checkedState="checkedState"
       :defaultUnfoldAll="defaultUnfoldAll"
+      :rowHeight="rowHeight"
       @collapseCountChange="handleCollapseCountChange"
       @collapseStateChange="handleCollapseStateChange"
       @nodeChange="handleNodeChange"
@@ -35,6 +36,11 @@ const props = defineProps({
   defaultUnfoldAll: {
     type: Boolean,
     default: true,
+  },
+  // 每一行的高度
+  rowHeight: {
+    tpye: Number,
+    default: 32,
   },
 });
 
@@ -82,9 +88,6 @@ const totalTree = {
   total,
   children,
 };
-
-console.log("totalTree", totalTree);
-console.log("tree", tree);
 
 // 根节点选中个数变化
 const handleCollapseCountChange = (newCount) => {

@@ -1,6 +1,10 @@
 <template>
   <div class="collapse-item" :style="{ height: getHeight + 'px' }">
-    <div class="show-part" @click.self="handleClick">
+    <div
+      class="show-part"
+      @click.self="handleClick"
+      :style="{ 'line-height': rowHeight + 'px' }"
+    >
       <div
         class="left-part"
         @click="handleClick"
@@ -13,12 +17,12 @@
       </div>
       <checkBox @check="handleCheck" :checkedState="checkedState" />
     </div>
-    <div class="hidden-part" ref="hiddenPart">
+    <div ref="hiddenPart">
       <collapseItem
         v-for="(children, index) in node.children"
+        :key="children.label"
         :node="children"
         :totalNode="totalNode.children[index]"
-        :key="children.label"
         :fatherCheckedState="checkedState"
         :offset="offset + 5"
         :rowHeight="rowHeight"
@@ -228,7 +232,6 @@ export default { name: "collapseItem" };
   overflow: hidden;
   transition: all 0.3s;
   .show-part {
-    line-height: 32px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -250,8 +253,6 @@ export default { name: "collapseItem" };
         text-overflow: ellipsis;
       }
     }
-  }
-  .hidden-part {
   }
 }
 </style>

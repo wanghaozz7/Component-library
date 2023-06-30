@@ -4,6 +4,7 @@
       <side-bar
         :sideBarData="sideBarData"
         :defaultUnfoldAll="false"
+        :rowHeight="40"
         @checkedNodeArrayChange="handleCheckedNodeArrayChange"
       />
     </div>
@@ -93,10 +94,7 @@ const sideBarData = [
 
 // description: 叶子节点选中变化的回调
 // params: array => 选中叶子节点的一维数组(保持追加顺序)
-const handleCheckedNodeArrayChange = (array) => {
-  checkedNodeArray = array;
-  console.log("handleCheckedNodeArrayChange", checkedNodeArray);
-};
+const handleCheckedNodeArrayChange = (array) => (checkedNodeArray = array);
 </script>
 
 <style scoped lang="less">

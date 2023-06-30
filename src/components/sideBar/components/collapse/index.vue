@@ -2,11 +2,12 @@
   <div class="collapse">
     <collapseItem
       v-for="(node, idx) in collapseData"
+      :key="node.label"
       :node="node"
       :totalNode="totalTree.children[idx]"
-      :key="node.label"
       :fatherCheckedState="checkedState"
       :defaultUnfoldAll="defaultUnfoldAll"
+      :rowHeight="rowHeight"
       @childCountChange="handleChildCountChange"
       @nodeChange="handleNodeChange"
     />
@@ -38,6 +39,10 @@ const props = defineProps({
   defaultUnfoldAll: {
     type: Boolean,
     default: true,
+  },
+  rowHeight: {
+    tpye: Number,
+    default: 32,
   },
 });
 
