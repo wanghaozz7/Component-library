@@ -1,10 +1,15 @@
 <template>
-  <div class="sideBar"><side-bar :sideBarData="sideBarData" /></div>
+  <div class="sideBar">
+    <side-bar
+      :sideBarData="sideBarData"
+      @checkedNodeArrayChange="handleCheckedNodeArrayChange"
+    />
+  </div>
   <div class="main-content"></div>
 </template>
 
 <script setup name="HomeView">
-import sideBar from "@/components/sideBar1/index.vue";
+import sideBar from "@/components/sideBar/index.vue";
 
 const sideBarData = [
   {
@@ -66,6 +71,12 @@ const sideBarData = [
     ],
   },
 ];
+
+// description: 叶子节点选中变化的回调
+// params: array => 选中叶子节点的一维数组(保持追加顺序)
+const handleCheckedNodeArrayChange = (array) => {
+  console.log("handleCheckedNodeArrayChange", array);
+};
 </script>
 
 <style scoped lang="less">

@@ -1,8 +1,8 @@
 <template>
   <div class="collapse-item" :style="{ height: getHeight }">
-    <div class="show-part">
-      <div class="left-part" :style="getLeftOffset">
-        <arrow @fold="handleFold" :isFold="isFold" v-if="!isLeaf()" />
+    <div class="show-part" @click.self="handleClick">
+      <div class="left-part" @click="handleClick" :style="getLeftOffset">
+        <arrow :isFold="isFold" v-if="!isLeaf()" />
         <div class="text">{{ node.label }}</div>
       </div>
       <checkBox @check="handleCheck" :checkedState="checkedState" />
@@ -11,9 +11,11 @@
       <collapseItem
         v-for="(children, index) in node.children"
         :node="children"
+        :totalNode="totalNode.children[index]"
         :key="children.label"
         @heightChange="handleHeightChange"
         @childCountChange="handleChildCountChange"
+        @nodeChange="handleNodeChange"
         :ref="`childrenNode${index}`"
         :fatherCheckedState="checkedState"
         :offset="offset + 5"
@@ -23,23 +25,27 @@
 </template>
 
 <script>
-// 控制组件的关键变量
-// isFold(当前节点是否折叠 递归调用直接通知父组件进行高度的变化)
-// checkedState(当前节点是否被选中 与父子节点的关系复杂 不直接判断 再每次count变化后判断和total的值进行赋值)
-// count(节点及子节点被选中的个数 受控当前节点的点击 由于点击后只能是全选和全不选 将当前状态直接覆盖给子节点 并将变化后的个数通知父节点重新计算个数和状态)
 export default {
   name: "collapseItem",
 };
 </script>
 
 <script setup name="collapseItem">
+import { ref, computed, getCurrentInstance, onMounted, watch } from "vue";
+
 import checkBox from "./components/checkBox/index.vue";
 import arrow from "./components/arrow/index.vue";
-import { ref, computed, getCurrentInstance, onMounted, watch } from "vue";
 
 const props = defineProps({
   // 节点本身({label:'',children:[]})
   node: {
+    type: Object,
+    default() {
+      return {};
+    },
+  },
+  // 节点包含的叶子节点个数(树形)
+  totalNode: {
     type: Object,
     default() {
       return {};
@@ -55,14 +61,14 @@ const props = defineProps({
     type: Number,
     default: 32,
   },
-  // left-part偏移量
+  // 父节点偏移量
   offset: {
     type: Number,
     default: 0,
   },
 });
 
-const emit = defineEmits(["heightChange", "childCountChange"]);
+const emit = defineEmits(["heightChange", "childCountChange", "nodeChange"]);
 
 // 是否被选中
 let checkedState = ref("none");
@@ -70,10 +76,10 @@ let checkedState = ref("none");
 let isFold = ref(true);
 // 计算隐藏部分的总高度
 let hiddenPartHeight = ref(0);
-// 总节点个数
-const total = props.node.count;
+// 总叶子节点个数
+const total = props.totalNode.total;
 
-// 当前节点包括子节点所选中的个数
+// 选中的叶子节点个数
 let count = ref(0);
 
 // 展示部分的高度(传参可以改变)
@@ -98,9 +104,34 @@ const handleCheck = (state) => {
   }
 };
 
-// 当折叠/展开
-const handleFold = (state) => {
-  isFold.value = state;
+// 行被点击(选中或展开)
+const handleClick = () => {
+  // 如果是叶子节点则选中
+  if (isLeaf()) {
+    let newState;
+    switch (checkedState.value) {
+      case "all":
+        newState = "none";
+        break;
+      case "part":
+        newState = "all";
+        break;
+      case "none":
+        newState = "all";
+        break;
+      default:
+        newState = "none";
+    }
+    handleCheck(newState);
+  }
+  // 如果不是则展开/折叠
+  else {
+    isFold.value = !isFold.value;
+  }
+};
+
+const handleNodeChange = (node, type) => {
+  emit("nodeChange", node, type);
 };
 
 // 计算总高度
@@ -117,7 +148,7 @@ const isLeaf = () => {
 
 // 计算左侧的偏移量
 const getLeftOffset = computed(() => {
-  const left = props.offset + (isLeaf() ? 10 : 0);
+  const left = props.offset + (isLeaf() ? 15 : 0);
   return {
     "margin-left": left + "px",
   };
@@ -131,16 +162,19 @@ const handleHeightChange = (height) => {
 const handleChildCountChange = (change) => {
   count.value += change;
   // 当count变化后重新计算state
-  if (count.value == total - 1) {
+
+  if (change > 0) {
+  }
+
+  if (count.value == total) {
     checkedState.value = "all";
     // 当所有子节点被选中时当前节点也被选中
-    count.value++;
-    change++;
+    // count.value++;
+    // change++;
   } else if (count.value == 0) checkedState.value = "none";
   else checkedState.value = "part";
   // 向上传递
   emit("childCountChange", change);
-  console.log("collapseItem", props.node.label, count.value);
 };
 
 onMounted(() => {
@@ -175,6 +209,17 @@ watch(
     }
   }
 );
+
+// 监听选中状态不是为了改变其他节点的选中状态 而是在叶子节点被选中时将选中情况返回
+watch(
+  () => checkedState.value,
+  (newValue, oldValue) => {
+    if (!isLeaf()) return;
+    if (newValue === "all") emit("nodeChange", props.node, "add");
+    // 理论上叶子节点不会又part状态
+    else if (newValue === "none") emit("nodeChange", props.node, "delete");
+  }
+);
 </script>
 
 <style scoped lang="less">
@@ -189,6 +234,7 @@ watch(
     align-items: center;
     border-radius: 4px;
     padding: 0 10px;
+    cursor: pointer;
     &:hover {
       background-color: #eee;
     }
@@ -196,7 +242,6 @@ watch(
       display: flex;
       align-items: center;
       .text {
-        cursor: default;
         font-size: 14px;
         margin-left: 5px;
       }
