@@ -1,8 +1,9 @@
 <template>
   <div class="top">
     <div class="selected-count">
-      已选中<span class="number">{{ checkedCount }}</span
-      >条
+      已选中
+      <span class="number"> {{ checkedCount }} </span>
+      条
     </div>
     <div class="selected-all-root">
       <checkBox @check="handleCheck" :checkedState="checkedState" />

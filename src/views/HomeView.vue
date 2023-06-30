@@ -1,11 +1,13 @@
 <template>
-  <div class="sideBar">
-    <side-bar
-      :sideBarData="sideBarData"
-      @checkedNodeArrayChange="handleCheckedNodeArrayChange"
-    />
+  <div class="homeViewContainer">
+    <div class="sideBar">
+      <side-bar
+        :sideBarData="sideBarData"
+        @checkedNodeArrayChange="handleCheckedNodeArrayChange"
+      />
+    </div>
+    <div class="mainContent"></div>
   </div>
-  <div class="main-content"></div>
 </template>
 
 <script setup name="HomeView">
@@ -80,17 +82,18 @@ const handleCheckedNodeArrayChange = (array) => {
 </script>
 
 <style scoped lang="less">
-.sideBar {
-  width: 240px;
-  // background: #e9bdbd;
-
-  min-height: 100vh;
-  overflow-y: auto;
-}
-.main-content {
-  flex: 1;
-  overflow-y: auto;
-
-  background-color: lightgreen;
+.homeViewContainer {
+  width: 100%;
+  height: auto;
+  display: flex;
+  .sideBar {
+    width: 240px;
+    min-height: 100vh;
+  }
+  .mainContent {
+    flex: 1;
+    min-height: 100vh;
+    background-color: rgb(187, 234, 187);
+  }
 }
 </style>

@@ -4,39 +4,27 @@
     @click="handleClick"
     :class="{ active: checkedState === 'all' || checkedState === 'part' }"
   >
-    <img
-      src="./icon/checked.svg"
-      class="icon"
-      v-show="checkedState === 'all'"
-    />
-    <img
-      src="./icon/checked.svg"
-      class="icon"
-      v-show="checkedState === 'none'"
-    />
-    <img
-      src="./icon/partial_checked.svg"
-      class="icon"
-      v-show="checkedState === 'part'"
-    />
+    <img src="./icon/checked.svg" v-show="checkedState === 'all'" />
+    <img src="./icon/checked.svg" v-show="checkedState === 'none'" />
+    <img src="./icon/partial_checked.svg" v-show="checkedState === 'part'" />
   </div>
 </template>
 
 <script setup name="checkBox">
-const emit = defineEmits(["check"]);
 const props = defineProps({
   checkedState: {
     type: String,
     default: "none",
   },
 });
+const emit = defineEmits(["check"]);
 
 const handleClick = () => {
   let newState;
   // 点击后变化
-  // 全选 —— 全都不选
-  // 全都不选 —— 全选
-  // 部分选择 —— 全选
+  // 全选 => 全都不选
+  // 全都不选 => 全选
+  // 部分选择 => 全选
   switch (props.checkedState) {
     case "all":
       newState = "none";
@@ -68,7 +56,8 @@ const handleClick = () => {
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  .icon {
+
+  img {
     width: 14px;
     height: 14px;
   }

@@ -17,9 +17,10 @@
 </template>
 
 <script setup name="sideBar">
+import { reactive, ref } from "vue";
+
 import top from "./components/top/index.vue";
 import collapse from "./components/collapse/index.vue";
-import { reactive, ref } from "vue";
 
 const props = defineProps({
   // 树形结构
@@ -33,16 +34,19 @@ const props = defineProps({
 
 const emit = defineEmits(["checkedNodeArrayChange"]);
 
+// 侧边栏数据的树形结构
 const tree = reactive(props.sideBarData);
-
-let checkedState = ref("none");
-
-let count = ref(0);
-
+// 选中的叶子节点的一维数组
 const checkedNodeArray = reactive([]);
+// 根节点的选中状态
+let checkedState = ref("none");
+// 选中个数
+let count = ref(0);
+// 所有节点的个数
+let total = 0;
 
-// 获取一个节点的所有叶子节点个数()
-const getNodeTotal1 = (node) => {
+// 获取一个节点的所有叶子节点个数
+const getNodeTotal = (node) => {
   let total = 0;
   const children = [];
   // 叶子节点
@@ -52,7 +56,7 @@ const getNodeTotal1 = (node) => {
     };
   }
   for (let child of node.children) {
-    const obj = getNodeTotal1(child);
+    const obj = getNodeTotal(child);
     total += obj.total;
     children.push(obj);
   }
@@ -61,6 +65,20 @@ const getNodeTotal1 = (node) => {
     children,
   };
 };
+
+const children = [];
+for (let node of tree) {
+  const tmp = getNodeTotal(node);
+  total += tmp.total;
+  children.push(tmp);
+}
+const totalTree = {
+  total,
+  children,
+};
+
+console.log("totalTree", totalTree);
+console.log("tree", tree);
 
 // 根节点选中个数变化
 const handleCollapseCountChange = (newCount) => {
@@ -79,6 +97,7 @@ const handleRootStateChange = (state) => {
   else count.value = 0;
 };
 
+// 叶子节点选中变化
 const handleNodeChange = (node, type) => {
   switch (type) {
     // 追加
@@ -94,21 +113,6 @@ const handleNodeChange = (node, type) => {
   }
   emit("checkedNodeArrayChange", checkedNodeArray);
 };
-
-// 所有节点的个数
-const children = [];
-let total = 0;
-for (let node of tree) {
-  const tmp = getNodeTotal1(node);
-  total += tmp.total;
-  children.push(tmp);
-}
-const totalTree = {
-  total,
-  children,
-};
-
-console.log("totalTree", totalTree);
 </script>
 
 <style scoped lang="less">

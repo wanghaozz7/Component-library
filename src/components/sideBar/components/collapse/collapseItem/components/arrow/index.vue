@@ -2,8 +2,6 @@
   <div class="arrow-container">
     <img
       src="./icon/arrow_down.svg"
-      alt=""
-      class="thumb"
       @click="handleClick"
       :style="{ rotate: rotateAngle }"
     />
@@ -26,9 +24,7 @@ const emit = defineEmits(["fold"]);
 // 箭头旋转的角度
 const rotateAngle = computed(() => (props.isFold ? 0 : 180) + "deg");
 
-const handleClick = () => {
-  emit("fold", !props.isFold);
-};
+const handleClick = () => emit("fold", !props.isFold);
 </script>
 
 <style scoped lang="less">
@@ -39,7 +35,7 @@ const handleClick = () => {
   align-items: center;
   justify-content: center;
 
-  .thumb {
+  img {
     width: 100%;
     height: 100%;
     cursor: pointer;

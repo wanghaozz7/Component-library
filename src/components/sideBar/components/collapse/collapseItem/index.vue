@@ -24,12 +24,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "collapseItem",
-};
-</script>
-
 <script setup name="collapseItem">
 import { ref, computed, getCurrentInstance, onMounted, watch } from "vue";
 
@@ -78,28 +72,38 @@ let isFold = ref(true);
 let hiddenPartHeight = ref(0);
 // 总叶子节点个数
 const total = props.totalNode.total;
-
 // 选中的叶子节点个数
 let count = ref(0);
-
 // 展示部分的高度(传参可以改变)
 const showPartHeight = props.rowHeight;
 
+// 计算总高度
+const getHeight = computed(
+  () =>
+    (isFold.value ? showPartHeight : hiddenPartHeight.value + showPartHeight) +
+    "px"
+);
+
+// 计算左侧的偏移量
+const getLeftOffset = computed(() => {
+  const left = props.offset + (isLeaf() ? 15 : 0);
+  return {
+    "margin-left": left + "px",
+  };
+});
+
 // 当前节点被点击
 const handleCheck = (state) => {
+  // 更新状态
   checkedState.value = state;
   // 点击后的状态只能是全选或者全不选 (通过props直接改变所有子节点的状态(不断向下),通过事件将变化的个数发送父节点修改并重新计算状态(不断向上))
   if (state == "all") {
-    const oldCount = count.value;
+    const change = total - count.value;
     count.value = total;
-    const newCount = total;
-    const change = newCount - oldCount;
     emit("childCountChange", change);
   } else {
-    const oldCount = count.value;
+    const change = 0 - count.value;
     count.value = 0;
-    const newCount = 0;
-    const change = newCount - oldCount;
     emit("childCountChange", change);
   }
 };
@@ -125,53 +129,26 @@ const handleClick = () => {
     handleCheck(newState);
   }
   // 如果不是则展开/折叠
-  else {
-    isFold.value = !isFold.value;
-  }
+  else isFold.value = !isFold.value;
 };
-
-const handleNodeChange = (node, type) => {
-  emit("nodeChange", node, type);
-};
-
-// 计算总高度
-const getHeight = computed(
-  () =>
-    (isFold.value ? showPartHeight : hiddenPartHeight.value + showPartHeight) +
-    "px"
-);
 
 // 是否叶子节点
 const isLeaf = () => {
   return props.node.children === undefined || props.node.children.length === 0;
 };
 
-// 计算左侧的偏移量
-const getLeftOffset = computed(() => {
-  const left = props.offset + (isLeaf() ? 15 : 0);
-  return {
-    "margin-left": left + "px",
-  };
-});
+// 叶子节点选中变化
+const handleNodeChange = (node, type) => emit("nodeChange", node, type);
 
-const handleHeightChange = (height) => {
-  hiddenPartHeight.value += height;
-};
+// 更新隐藏部分高度
+const handleHeightChange = (height) => (hiddenPartHeight.value += height);
 
 // 子节点count改变(单向向上)
 const handleChildCountChange = (change) => {
   count.value += change;
   // 当count变化后重新计算state
-
-  if (change > 0) {
-  }
-
-  if (count.value == total) {
-    checkedState.value = "all";
-    // 当所有子节点被选中时当前节点也被选中
-    // count.value++;
-    // change++;
-  } else if (count.value == 0) checkedState.value = "none";
+  if (count.value == total) checkedState.value = "all";
+  else if (count.value == 0) checkedState.value = "none";
   else checkedState.value = "part";
   // 向上传递
   emit("childCountChange", change);
@@ -188,11 +165,8 @@ watch(
   // 当子节点高度变化 通知父节点高度变化(值相同)
   () => isFold.value,
   (newValue, oldValue) => {
-    if (newValue) {
-      emit("heightChange", -hiddenPartHeight.value);
-    } else {
-      emit("heightChange", hiddenPartHeight.value);
-    }
+    if (newValue) emit("heightChange", -hiddenPartHeight.value);
+    else emit("heightChange", hiddenPartHeight.value);
   }
 );
 
@@ -216,10 +190,14 @@ watch(
   (newValue, oldValue) => {
     if (!isLeaf()) return;
     if (newValue === "all") emit("nodeChange", props.node, "add");
-    // 理论上叶子节点不会又part状态
+    // 理论上叶子节点不会有part状态
     else if (newValue === "none") emit("nodeChange", props.node, "delete");
   }
 );
+</script>
+
+<script>
+export default { name: "collapseItem" };
 </script>
 
 <style scoped lang="less">

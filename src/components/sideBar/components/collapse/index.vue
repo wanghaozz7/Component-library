@@ -13,8 +13,9 @@
 </template>
 
 <script setup name="collapse">
-import collapseItem from "./collapseItem/index.vue";
 import { ref, watch } from "vue";
+
+import collapseItem from "./collapseItem/index.vue";
 
 const props = defineProps({
   collapseData: {
@@ -41,10 +42,11 @@ const emit = defineEmits([
   "nodeChange",
 ]);
 
+// 根节点的选中状态
 let checkedState = ref("none");
-
+// 选中个数
 let count = ref(0);
-
+// 叶子节点总数
 const total = props.totalTree.total;
 
 // 收集每个子节点的变化并更新
@@ -58,6 +60,7 @@ const handleChildCountChange = (change) => {
   emit("collapseStateChange", checkedState.value);
 };
 
+// 叶子节点选中变化
 const handleNodeChange = (node, type) => {
   emit("nodeChange", node, type);
 };
