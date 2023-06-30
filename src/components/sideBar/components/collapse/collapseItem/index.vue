@@ -84,6 +84,8 @@ let isFold = ref(true);
 let hiddenPartHeight = ref(0);
 // 选中的叶子节点个数
 let count = ref(0);
+// 行宽
+let rowWidth = ref(209);
 
 // 展示部分的高度(传参可以改变)
 const showPartHeight = props.rowHeight;
@@ -106,7 +108,7 @@ const getLeftOffset = computed(() => {
 
 // 获取文本最大宽度
 const getMaxWidth = computed(() => {
-  return 140;
+  return rowWidth.value - 69 - getLeftOffset.value + (isLeaf() ? 15 : 0);
 });
 
 // 当前节点被点击
@@ -174,6 +176,8 @@ const handleChildCountChange = (change) => {
 onMounted(() => {
   // 获取隐藏部分的高度
   hiddenPartHeight.value = ctx.$refs.hiddenPart.offsetHeight;
+  // 获取行宽
+  rowWidth.value = ctx.$refs.hiddenPart.offsetWidth;
   // 节点是否展开
   if (props.defaultUnfoldAll || props.node.defaultUnfold) isFold.value = false;
 });
