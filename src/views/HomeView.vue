@@ -8,7 +8,11 @@
         @checkedNodeArrayChange="handleCheckedNodeArrayChange"
       />
     </div>
-    <div class="mainContent"></div>
+    <div class="mainContent">
+      <div class="carousel-container">
+        <carousel />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -16,6 +20,7 @@
 import { reactive } from "vue";
 
 import sideBar from "@/components/sideBar/index.vue";
+import carousel from "@/components/carousel/index.vue";
 
 // 已选中的叶子节点一维数组
 let checkedNodeArray = reactive([]);
@@ -107,7 +112,15 @@ const handleCheckedNodeArrayChange = (array) => (checkedNodeArray = array);
   .mainContent {
     flex: 1;
     min-height: 100vh;
-    background-color: rgb(187, 234, 187);
+    background-color: rgb(214, 253, 214);
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    .carousel-container {
+      width: 600px;
+      height: 350px;
+      margin: auto;
+    }
   }
 }
 </style>
