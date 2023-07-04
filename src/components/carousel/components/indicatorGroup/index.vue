@@ -1,13 +1,25 @@
 <template>
   <div class="indicator-group">
-    <div v-for="idx in indicatorCount" :key="idx" @click="handleClick(idx)">
-      <dot :isActive="idx === activeIdx" />
+    <div v-for="idx in indicatorCount" :key="idx">
+      <dot
+        :isActive="idx === activeIdx"
+        @click="handleClick(idx)"
+        @mouseenter="handleMouseenter(idx)"
+        v-if="indicatorType === 'dot'"
+      />
+      <rectangle
+        :isActive="idx === activeIdx"
+        @click="handleClick(idx)"
+        @mouseenter="handleMouseenter(idx)"
+        v-if="indicatorType === 'rectangle'"
+      />
     </div>
   </div>
 </template>
 
 <script setup name="indicatorGroup">
 import dot from "./components/dot/index.vue";
+import rectangle from "./components/rectangle/index.vue";
 
 const props = defineProps({
   // 个数
@@ -20,12 +32,26 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  // 触发方式 (hover,click)
+  trigger: {
+    type: String,
+    default: "hover",
+  },
+  // 指示器类型 (dot,rectangle)
+  indicatorType: {
+    type: String,
+    default: "dot",
+  },
 });
 
 const emit = defineEmits(["change"]);
 
 const handleClick = (idx) => {
-  emit("change", idx);
+  if (props.trigger === "click") emit("change", idx);
+};
+
+const handleMouseenter = (idx) => {
+  if (props.trigger === "hover") emit("change", idx);
 };
 </script>
 

@@ -18,7 +18,7 @@
       <checkBox @check="handleCheck" :checkedState="checkedState" />
     </div>
     <div ref="hiddenPart">
-      <collapseItem
+      <collapse-item
         v-for="(children, index) in node.children"
         :key="children.label"
         :node="children"
@@ -163,8 +163,11 @@ const isLeaf = () => {
 // 叶子节点选中变化
 const handleNodeChange = (node, type) => emit("nodeChange", node, type);
 
-// 更新隐藏部分高度
-const handleHeightChange = (height) => (hiddenPartHeight.value += height);
+// 更新隐藏部分高度(单向向上)
+const handleHeightChange = (height) => {
+  hiddenPartHeight.value += height;
+  emit("heightChange", height);
+};
 
 // 子节点count改变(单向向上)
 const handleChildCountChange = (change) => {
@@ -186,7 +189,7 @@ onMounted(() => {
   if (props.defaultUnfoldAll || props.node.defaultUnfold) isFold.value = false;
 });
 
-// 监听折叠状态(单次向上)
+// 监听折叠状态
 watch(
   // 当子节点高度变化 通知父节点高度变化(值相同)
   () => isFold.value,

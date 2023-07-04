@@ -10,7 +10,29 @@
     </div>
     <div class="mainContent">
       <div class="carousel-container">
-        <carousel />
+        <carousel
+          :circular="true"
+          :autoRolling="false"
+          :interval="2500"
+          indicatorType="rectangle"
+          trigger="click"
+        >
+          <carousel-item v-for="item in 5" :key="item">
+            <div
+              style="
+                width: 100%;
+                height: 100%;
+                font-size: 36px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background: #fff;
+              "
+            >
+              +++++{{ item }}+++++
+            </div>
+          </carousel-item>
+        </carousel>
       </div>
     </div>
   </div>
@@ -21,6 +43,7 @@ import { reactive } from "vue";
 
 import sideBar from "@/components/sideBar/index.vue";
 import carousel from "@/components/carousel/index.vue";
+import carouselItem from "@/components/carousel/components/carouselItem/index.vue";
 
 // 已选中的叶子节点一维数组
 let checkedNodeArray = reactive([]);
@@ -40,6 +63,10 @@ const sideBarData = [
             children: [
               {
                 label: "四级节点111000000000000000000000000",
+                defaultUnfold: true,
+              },
+              {
+                label: "四级节点112000000000000000000000000",
                 defaultUnfold: true,
               },
             ],

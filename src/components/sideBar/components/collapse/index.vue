@@ -1,6 +1,6 @@
 <template>
   <div class="collapse">
-    <collapseItem
+    <collapse-item
       v-for="(node, idx) in collapseData"
       :key="node.label"
       :node="node"

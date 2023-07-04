@@ -1,7 +1,11 @@
 <template>
-  <div id="carousel">
+  <div
+    id="carousel"
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave"
+  >
     <div class="carousel-body" :style="{ left: offset + 'px' }">
-      <div class="carousel-item" v-for="item in 5" :key="item">
+      <!-- <div class="carousel-item" v-for="item in 5" :key="item">
         <div
           style="
             display: flex;
@@ -13,19 +17,22 @@
         >
           {{ item }} +++++++++++++
         </div>
-      </div>
+      </div> -->
+      <slot> </slot>
     </div>
     <arrowGroup @goForward="handleGoForward" @goBack="handleGoBack" />
     <indicatorGroup
       :indicatorCount="itemCount"
       :activeIdx="curIdx"
+      :trigger="trigger"
+      :indicatorType="indicatorType"
       @change="handleChange"
     />
   </div>
 </template>
 
 <script setup name="carousel">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 
 import arrowGroup from "./components/arrowGroup/index.vue";
 import indicatorGroup from "./components/indicatorGroup/index.vue";
@@ -36,7 +43,17 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-  // 滚动一次的延迟
+  // 是否自动滚动
+  autoRolling: {
+    type: Boolean,
+    default: true,
+  },
+  // 自动滚动间隔
+  interval: {
+    type: Number,
+    default: 3000,
+  },
+  // 滚动一次的延迟 (ms)
   delay: {
     type: Number,
     default: 250,
@@ -45,6 +62,26 @@ const props = defineProps({
   frame: {
     type: Number,
     default: 50,
+  },
+  // 触发方式 (hover,click)
+  trigger: {
+    type: String,
+    default: "hover",
+  },
+  // 箭头显示方式 (hover,none,always)
+  showArrow: {
+    type: String,
+    default: "hover",
+  },
+  // 指示器显示方式 (inside,outside,none)
+  showIndicator: {
+    type: String,
+    default: "inside",
+  },
+  // 指示器类型 (dot,rectangle)
+  indicatorType: {
+    type: String,
+    default: "dot",
   },
 });
 
@@ -60,10 +97,10 @@ let itemCount;
 let carouselWidth;
 // 定时器的间隔
 const interval = props.delay / props.frame;
-
-const shouldMove = () => {
-  return !isMoving.value;
-};
+// 自动滚动定时器
+let autoRollingInterval = null;
+// 存储定时器的沙漏实现定时器的开始和暂停
+let hourglass = 0;
 
 const getOffsetByIdx = (idx) => {
   return Math.abs(idx * carouselWidth) * -1;
@@ -90,22 +127,12 @@ const preCirculation = () => {
   carousel_body.innerHTML = el;
 
   // 重置下标范围   curIdx:1 ~ itemCount+1    偏移量范围 offset:carouselWidth*-1 ~ itemCount*carouselWidth*-1
-  // 默认偏移量更改
-  offset.value = carouselWidth * -1;
-  // 默认下标更改
-  curIdx.value = 1;
-};
-
-const handleGoForward = () => {
-  renderMove(curIdx.value + 1);
-};
-
-const handleGoBack = () => {
-  renderMove(curIdx.value - 1);
+  offset.value = carouselWidth * -1; // 默认偏移量更改
+  curIdx.value = 1; // 默认下标更改
 };
 
 const renderMove = (targetIdx) => {
-  if (!shouldMove()) return;
+  if (isMoving.value) return;
   isMoving.value = true;
   const dif = Math.abs(curIdx.value - targetIdx);
   if (dif === 1) {
@@ -113,7 +140,22 @@ const renderMove = (targetIdx) => {
     const targetOffset = getOffsetByIdx(targetIdx);
     const offsetDif = targetOffset - offset.value;
     const step = Math.ceil(offsetDif / props.frame);
-    moveAnimate(step, targetOffset, targetIdx);
+    const callBack = function () {
+      offset.value = targetOffset;
+      curIdx.value = targetIdx;
+      if (props.circular) {
+        if (targetIdx === itemCount + 1) {
+          // 循环滚动超出范围
+          curIdx.value = 1;
+          offset.value = getOffsetByIdx(curIdx.value);
+        } else if (targetIdx === 0) {
+          curIdx.value = itemCount;
+          offset.value = getOffsetByIdx(curIdx.value);
+        }
+      }
+      isMoving.value = false;
+    };
+    moveAnimate(step, targetOffset, targetIdx, callBack);
   } else {
     // 跳跃滚动
     // 两个idx的差值大于等于1 代表至少中间有一块 滚动时将两个idx之间的块全部隐藏(与循环同理,使我们的闪现不被看出来)
@@ -132,10 +174,7 @@ const renderMove = (targetIdx) => {
       lastIdx = l + 1;
     }
     // 将之间的内容隐藏
-    for (let i = l + 1; i < r; i++) {
-      console.log("i,item", i, carousel_item[i].style);
-      carousel_item[i].style.opacity = 0;
-    }
+    for (let i = l + 1; i < r; i++) carousel_item[i].style.opacity = 0;
     // 执行第一次滚动 到达第一个隐藏块
     const firstOffset = getOffsetByIdx(firstIdx);
     const fitstOffsetDif = firstOffset - offset.value;
@@ -143,9 +182,7 @@ const renderMove = (targetIdx) => {
     const callBack = function () {
       // 执行完毕后闪现到最后一个隐藏块
       const lastOffset = getOffsetByIdx(lastIdx);
-      // 闪现
       offset.value = lastOffset;
-      curIdx.value = lastIdx;
 
       // 从最后一个隐藏块到目标块
       const targetOffset = getOffsetByIdx(targetIdx);
@@ -154,10 +191,20 @@ const renderMove = (targetIdx) => {
       const innerCallBack = function () {
         // 到达目标块后将隐藏的内容显示
         const carousel_item = document.querySelectorAll(".carousel-item");
-        for (let i = l + 1; i < r; i++) {
-          console.log("i,item", i, carousel_item[i].style);
-          carousel_item[i].style.opacity = 1;
+        for (let i = l + 1; i < r; i++) carousel_item[i].style.opacity = 1;
+        offset.value = targetOffset;
+        curIdx.value = targetIdx;
+        if (props.circular) {
+          if (targetIdx === itemCount + 1) {
+            // 循环滚动超出范围
+            curIdx.value = 1;
+            offset.value = getOffsetByIdx(curIdx.value);
+          } else if (targetIdx === 0) {
+            curIdx.value = itemCount;
+            offset.value = getOffsetByIdx(curIdx.value);
+          }
         }
+        isMoving.value = false;
       };
       moveAnimate(step, targetOffset, targetIdx, innerCallBack);
     };
@@ -167,38 +214,87 @@ const renderMove = (targetIdx) => {
 
 const moveAnimate = (step, targetOffset, targetIdx, callBack = () => {}) => {
   offset.value += step;
-  // 到达终点
+  // 到达终点 => 处理状态
   if (
     (step > 0 && offset.value >= targetOffset) ||
     (step < 0 && offset.value <= targetOffset)
   ) {
-    // 滚动后的固定操作 对齐offset、更新下标、更新移动状态、将值重置在合理范围内  之后执行回调
-    offset.value = targetOffset;
-    curIdx.value = targetIdx;
-    isMoving.value = false;
-    if (props.circular) {
-      if (targetIdx === itemCount + 1) {
-        // 循环滚动超出范围
-        curIdx.value = 1;
-        offset.value = getOffsetByIdx(curIdx.value);
-      } else if (targetIdx === 0) {
-        curIdx.value = itemCount;
-        offset.value = getOffsetByIdx(curIdx.value);
-      }
-    }
+    // 执行回调
     callBack();
     return;
   }
-  // 未到达终点 => 相同间隔执行动画
+  // 未到达终点 => 继续滚动
   setTimeout(() => {
     moveAnimate(step, targetOffset, targetIdx, callBack);
   }, interval);
 };
 
-const handleChange = (idx) => {
-  console.log("handleChange", idx);
-  renderMove(idx);
+const intervalGoForward = () => {
+  // 判断元素是否在可视范围内和浏览器是否休眠
+  if (webIsActive() || isInViePortOfOne(carousel)) {
+    // 将时间间隔分为10份,当第十次时触发滚动并清除沙子 通过沙漏中的沙子实现计时器的暂停和继续
+    hourglass += props.interval / 10;
+    if (hourglass === props.interval) {
+      handleGoForward();
+      hourglass = 0;
+    }
+  }
 };
+
+const setAutoRollingInterval = () => {
+  if (props.autoRolling && autoRollingInterval === null) {
+    autoRollingInterval = setInterval(() => {
+      intervalGoForward();
+    }, props.interval / 10);
+  }
+};
+
+const clearAutoRollingInterval = () => {
+  if (props.autoRolling && autoRollingInterval !== null) {
+    window.clearInterval(autoRollingInterval);
+    autoRollingInterval = null;
+  }
+};
+
+// 浏览器是否休眠
+const webIsActive = () => {
+  let bowhidden =
+    "hidden" in document
+      ? "hidden"
+      : "webkithidden" in document
+      ? "webkithidden"
+      : "mozhidden" in document
+      ? "mozhidden"
+      : null;
+  let vibchage =
+    "visibilitychange" || "webkitvisibilitychange" || "mozvisibilitychange";
+  document.addEventListener(vibchage, function () {
+    if (!document[bowhidden]) return true;
+    else return false;
+  });
+};
+
+// 元素是否处于可视区域内
+const isInViePortOfOne = (el) => {
+  const viewPortHeight =
+    window.innerHeight ||
+    document.documentElement.clientHeight ||
+    document.body.clientHeight;
+  const offsetTop = el.offsetTop;
+  const scollTop = document.documentElement.scrollTop;
+  const top = offsetTop - scollTop;
+  return top <= viewPortHeight && top >= 0;
+};
+
+const handleGoForward = () => renderMove(curIdx.value + 1);
+
+const handleGoBack = () => renderMove(curIdx.value - 1);
+
+const handleChange = (idx) => renderMove(idx);
+
+const handleMouseEnter = () => clearAutoRollingInterval();
+
+const handleMouseLeave = () => setAutoRollingInterval();
 
 onMounted(() => {
   const carousel = document.getElementById("carousel");
@@ -209,6 +305,12 @@ onMounted(() => {
   itemCount = carousel_item.length;
   // 循环滚动结构
   if (props.circular) preCirculation();
+  // 设置自动滚动定时器
+  setAutoRollingInterval();
+});
+
+onUnmounted(() => {
+  clearAutoRollingInterval();
 });
 </script>
 
@@ -224,14 +326,5 @@ onMounted(() => {
     position: absolute;
     display: flex;
   }
-}
-</style>
-
-<style>
-.carousel-item {
-  width: 100%;
-  height: 100%;
-  background-color: rgb(255, 255, 255);
-  flex-shrink: 0;
 }
 </style>
