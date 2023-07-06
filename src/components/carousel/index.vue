@@ -1,23 +1,11 @@
 <template>
   <div
     id="carousel"
+    ref="carousel"
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
   >
     <div class="carousel-body" :style="{ left: offset + 'px' }">
-      <!-- <div class="carousel-item" v-for="item in 5" :key="item">
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            font-size: 36px;
-          "
-        >
-          {{ item }} +++++++++++++
-        </div>
-      </div> -->
       <slot> </slot>
     </div>
     <arrowGroup @goForward="handleGoForward" @goBack="handleGoBack" />
@@ -32,7 +20,7 @@
 </template>
 
 <script setup name="carousel">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, getCurrentInstance } from "vue";
 
 import arrowGroup from "./components/arrowGroup/index.vue";
 import indicatorGroup from "./components/indicatorGroup/index.vue";
@@ -101,15 +89,20 @@ const interval = props.delay / props.frame;
 let autoRollingInterval = null;
 // 存储定时器的沙漏实现定时器的开始和暂停
 let hourglass = 0;
+// 上下文content
+const ctx = getCurrentInstance().ctx;
 
 const getOffsetByIdx = (idx) => {
   return Math.abs(idx * carouselWidth) * -1;
 };
 
 const preCirculation = () => {
+  const carousel = ctx.$refs.carousel;
   // 在首位添加一个末位元素 在末位添加一个首位元素
-  const carousel_item = document.querySelectorAll(".carousel-item");
-  const carousel_body = document.querySelector(".carousel-body");
+  const carousel_body = carousel.children[0];
+  const carousel_item = carousel.children[0].children;
+  console.log("carouselBody", carousel_body, "carouselItem", carousel_item);
+
   itemCount = carousel_item.length;
   let el = ``,
     t = ``;
@@ -297,8 +290,8 @@ const handleMouseEnter = () => clearAutoRollingInterval();
 const handleMouseLeave = () => setAutoRollingInterval();
 
 onMounted(() => {
-  const carousel = document.getElementById("carousel");
-  const carousel_item = document.querySelectorAll(".carousel-item");
+  const carousel = ctx.$refs.carousel;
+  const carousel_item = carousel.children[0].children;
   // 获取轮播图宽度
   carouselWidth = carousel.offsetWidth;
   // 获取轮播对象个数

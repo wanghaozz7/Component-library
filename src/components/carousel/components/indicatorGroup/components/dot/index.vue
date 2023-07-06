@@ -17,7 +17,6 @@ const props = defineProps({
   height: 12px;
   background-color: #efe7e7;
   border-radius: 50%;
-  transition: inherit;
   margin: 0 5px;
   &:hover {
     cursor: pointer;

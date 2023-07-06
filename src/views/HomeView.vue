@@ -9,6 +9,80 @@
       />
     </div>
     <div class="mainContent">
+      <div style="display: flex; padding: 100px">
+        <tooltip :delay="300" placement="top" content="我是tooltip1239a111">
+          <div
+            style="
+              width: 80px;
+              height: 45px;
+              margin-right: 200px;
+              cursor: pointer;
+              line-height: 45px;
+              border: 1px solid #eee;
+              text-align: center;
+              background-color: #fff;
+              border-radius: 4px;
+              white-space: nowrap;
+            "
+          >
+            文字提示
+          </div>
+        </tooltip>
+        <tooltip :delay="300" placement="right" content="我是tooltip1239a3312"
+          ><div
+            style="
+              width: 150px;
+              height: 45px;
+              margin-right: 200px;
+              cursor: pointer;
+              line-height: 45px;
+              border: 1px solid #eee;
+              text-align: center;
+              background-color: #fff;
+              border-radius: 4px;
+              white-space: nowrap;
+            "
+          >
+            文字提示
+          </div></tooltip
+        >
+        <tooltip :delay="300" placement="bottom" content="我是tooltip1239acae"
+          ><div
+            style="
+              width: 150px;
+              height: 45px;
+              cursor: pointer;
+              margin-right: 200px;
+              line-height: 45px;
+              border: 1px solid #eee;
+              text-align: center;
+              background-color: #fff;
+              border-radius: 4px;
+              white-space: nowrap;
+            "
+          >
+            文字提示
+          </div></tooltip
+        >
+        <tooltip :delay="300" placement="left" content="我是tooltip1239a#**-/"
+          ><div
+            style="
+              width: 150px;
+              height: 45px;
+              cursor: pointer;
+              margin-right: 200px;
+              line-height: 45px;
+              border: 1px solid #eee;
+              text-align: center;
+              background-color: #fff;
+              border-radius: 4px;
+              white-space: nowrap;
+            "
+          >
+            文字提示
+          </div></tooltip
+        >
+      </div>
       <div class="carousel-container">
         <carousel
           :circular="true"
@@ -34,6 +108,31 @@
           </carousel-item>
         </carousel>
       </div>
+      <div style="width: 300px; height: 300px; margin: auto">
+        <carousel
+          :circular="true"
+          :autoRolling="false"
+          :interval="2500"
+          indicatorType="rectangle"
+          trigger="click"
+        >
+          <carousel-item v-for="item in 5" :key="item">
+            <div
+              style="
+                width: 100%;
+                height: 100%;
+                font-size: 36px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background: #fff;
+              "
+            >
+              ++{{ item }}++
+            </div>
+          </carousel-item>
+        </carousel>
+      </div>
     </div>
   </div>
 </template>
@@ -42,6 +141,7 @@
 import { reactive } from "vue";
 
 import sideBar from "@/components/sideBar/index.vue";
+import tooltip from "@/components/tooltip/index.vue";
 import carousel from "@/components/carousel/index.vue";
 import carouselItem from "@/components/carousel/components/carouselItem/index.vue";
 
@@ -140,13 +240,10 @@ const handleCheckedNodeArrayChange = (array) => (checkedNodeArray = array);
     flex: 1;
     min-height: 100vh;
     background-color: rgb(214, 253, 214);
-    display: flex;
-    align-items: center;
-    justify-items: center;
     .carousel-container {
       width: 600px;
       height: 350px;
-      margin: auto;
+      margin: 100px auto;
     }
   }
 }
