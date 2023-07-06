@@ -10,12 +10,16 @@
     </div>
     <div class="mainContent">
       <div style="display: flex; padding: 100px">
-        <tooltip :delay="300" placement="top" content="我是tooltip1239a111">
+        <tooltip
+          :delay="300"
+          placement="top"
+          content="文字提示111111111111111111111111"
+        >
           <div
             style="
               width: 80px;
               height: 45px;
-              margin-right: 200px;
+              margin-right: 100px;
               cursor: pointer;
               line-height: 45px;
               border: 1px solid #eee;
@@ -28,12 +32,15 @@
             文字提示
           </div>
         </tooltip>
-        <tooltip :delay="300" placement="right" content="我是tooltip1239a3312"
+        <tooltip
+          :delay="300"
+          placement="right"
+          content="文字提示2222222222222222222222222222222222"
           ><div
             style="
-              width: 150px;
+              width: 250px;
               height: 45px;
-              margin-right: 200px;
+              margin: 0 100px;
               cursor: pointer;
               line-height: 45px;
               border: 1px solid #eee;
@@ -46,10 +53,10 @@
             文字提示
           </div></tooltip
         >
-        <tooltip :delay="300" placement="bottom" content="我是tooltip1239acae"
+        <tooltip :delay="300" placement="bottom" content="文字提示333"
           ><div
             style="
-              width: 150px;
+              width: 250px;
               height: 45px;
               cursor: pointer;
               margin-right: 200px;
@@ -64,7 +71,7 @@
             文字提示
           </div></tooltip
         >
-        <tooltip :delay="300" placement="left" content="我是tooltip1239a#**-/"
+        <tooltip :delay="300" placement="left" content="文字提示444444444"
           ><div
             style="
               width: 150px;

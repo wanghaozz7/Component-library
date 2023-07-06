@@ -1,18 +1,16 @@
 <template>
-  <div id="tooltip">
-    <div
-      class="show-part"
-      @mouseenter="handleMouseEnter"
-      @mouseleave="handleMouseLeave"
-      ref="showPart"
-    >
-      <slot />
-    </div>
-    <div id="hidden-part" :style="hiddenPartStyle">
+  <div
+    class="tooltip"
+    ref="tooltip"
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave"
+  >
+    <slot />
+    <div class="tooltip-body" :style="hiddenPartStyle">
       <div class="triangle" :style="triangleStyle">
         <div class="innerTriangle" />
       </div>
-      <div id="content" :style="contentStyle" ref="content">
+      <div class="content" :style="contentStyle" ref="content">
         {{ content }}
       </div>
     </div>
@@ -39,18 +37,12 @@ const props = defineProps({
   },
 });
 
-// show-part的高度
 let showPartHeight = ref(0);
-// show-part的宽度(hiddent-part居中)
 let showPartWidth = ref(0);
-// content的宽度(三角形居中)
 let contentWidth = ref(0);
 let contentHeight = ref(0);
-// tooltip是否激活
 let showTooltip = ref(false);
-// 控制tooltip的透明度
 let opacity = ref(0);
-// 清除tooltip
 let display = ref("");
 
 const hiddenPartStyle = computed(() => {
@@ -156,64 +148,70 @@ const contentStyle = computed(() => {
   };
 });
 
-const handleMouseEnter = () => {
-  showTooltip.value = true;
+const handleMouseEnter = () => (showTooltip.value = true);
+
+const handleMouseLeave = () => (showTooltip.value = false);
+
+const openTooltip = () => {
+  setTimeout(() => {
+    display.value = "block";
+    opacity.value = 1;
+  }, 0);
 };
 
-const handleMouseLeave = () => {
-  showTooltip.value = false;
+const closeTooltip = () => {
+  setTimeout(() => {
+    if (!showTooltip.value) {
+      opacity.value = 0;
+      setTimeout(() => {
+        if (!showTooltip.value) display.value = "none";
+      }, 100);
+    }
+  }, props.delay);
 };
 
 onMounted(() => {
   const ctx = getCurrentInstance().ctx;
-  const showPart = ctx.$refs.showPart.children[0];
+  const tooltip = ctx.$refs.tooltip;
+  const showPart = tooltip.children[0];
   const content = ctx.$refs.content;
+
+  // 使用div包裹slot从而监听鼠标悬浮事件 此时slot的margin撑大了外层div的宽度 导致监听事件的误判 所以将slot的margin转化到外层div块中
+  tooltip.style.marginRight = showPart.style.marginRight;
+  tooltip.style.marginLeft = showPart.style.marginLeft;
+  tooltip.style.marginTop = showPart.style.marginTop;
+  tooltip.style.marginBottom = showPart.style.marginBottom;
+
+  showPart.style.marginLeft = 0;
+  showPart.style.marginRight = 0;
+  showPart.style.marginTop = 0;
+  showPart.style.marginBottom = 0;
+
   showPartHeight.value = showPart.clientHeight;
   showPartWidth.value = showPart.clientWidth;
   contentWidth.value = content.clientWidth;
   contentHeight.value = content.clientHeight;
-  console.log(
-    "sw",
-    showPartWidth.value,
-    "sh",
-    showPartHeight.value,
-    "cw",
-    contentWidth.value,
-    "ch",
-    contentHeight.value
-  );
 });
 
 watch(
   () => showTooltip.value,
   (newVal) => {
     if (newVal) {
-      setTimeout(() => {
-        display.value = "block";
-        opacity.value = 1;
-      }, 0);
+      openTooltip();
     } else {
-      // setTimeout(() => {
-      //   if (!showTooltip.value) {
-      //     opacity.value = 0;
-      //     setTimeout(() => {
-      //       if (!showTooltip.value) display.value = "none";
-      //     }, 100);
-      //   }
-      // }, props.delay);
+      closeTooltip();
     }
   }
 );
 </script>
 
 <style scoped lang="less">
-#tooltip {
+.tooltip {
   position: relative;
-  .show-part {
-  }
-  #hidden-part {
+  .tooltip-body {
     position: absolute;
     transition: all 0.3s;
+    z-index: 999 !important;
     .triangle {
       position: absolute;
       top: 0;
@@ -230,10 +228,9 @@ watch(
         height: 0;
         border: 8px solid transparent;
         border-bottom-color: white;
-        z-index: 999 !important;
       }
     }
-    #content {
+    .content {
       position: absolute;
       white-space: nowrap;
       padding: 5px;
@@ -242,6 +239,7 @@ watch(
       text-align: center;
       background-color: #fff;
       border-radius: 4px;
+      z-index: 98 !important;
     }
   }
 }

@@ -1,12 +1,12 @@
 <template>
   <div
-    id="carousel"
+    class="carousel"
     ref="carousel"
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
   >
     <div class="carousel-body" :style="{ left: offset + 'px' }">
-      <slot> </slot>
+      <slot />
     </div>
     <arrowGroup @goForward="handleGoForward" @goBack="handleGoBack" />
     <indicatorGroup
@@ -91,19 +91,14 @@ let autoRollingInterval = null;
 let hourglass = 0;
 // 上下文content
 const ctx = getCurrentInstance().ctx;
+let carousel, carousel_body, carousel_item;
 
 const getOffsetByIdx = (idx) => {
   return Math.abs(idx * carouselWidth) * -1;
 };
 
 const preCirculation = () => {
-  const carousel = ctx.$refs.carousel;
   // 在首位添加一个末位元素 在末位添加一个首位元素
-  const carousel_body = carousel.children[0];
-  const carousel_item = carousel.children[0].children;
-  console.log("carouselBody", carousel_body, "carouselItem", carousel_item);
-
-  itemCount = carousel_item.length;
   let el = ``,
     t = ``;
   //在首部添加尾元素
@@ -153,7 +148,6 @@ const renderMove = (targetIdx) => {
     // 跳跃滚动
     // 两个idx的差值大于等于1 代表至少中间有一块 滚动时将两个idx之间的块全部隐藏(与循环同理,使我们的闪现不被看出来)
     // 用一半的时间滚动到第一个隐藏块 然后闪现到最后一个隐藏块 用另一半时间滚动到目标块
-    const carousel_item = document.querySelectorAll(".carousel-item");
     let l, r, firstIdx, lastIdx;
     if (targetIdx > curIdx.value) {
       l = curIdx.value;
@@ -183,7 +177,6 @@ const renderMove = (targetIdx) => {
       const step = Math.ceil(offsetDif / props.frame) * 2; // 步长翻倍时间减半
       const innerCallBack = function () {
         // 到达目标块后将隐藏的内容显示
-        const carousel_item = document.querySelectorAll(".carousel-item");
         for (let i = l + 1; i < r; i++) carousel_item[i].style.opacity = 1;
         offset.value = targetOffset;
         curIdx.value = targetIdx;
@@ -290,11 +283,11 @@ const handleMouseEnter = () => clearAutoRollingInterval();
 const handleMouseLeave = () => setAutoRollingInterval();
 
 onMounted(() => {
-  const carousel = ctx.$refs.carousel;
-  const carousel_item = carousel.children[0].children;
-  // 获取轮播图宽度
+  // 获取属性
+  carousel = ctx.$refs.carousel;
+  carousel_body = carousel.children[0];
+  carousel_item = carousel_body.children;
   carouselWidth = carousel.offsetWidth;
-  // 获取轮播对象个数
   itemCount = carousel_item.length;
   // 循环滚动结构
   if (props.circular) preCirculation();
@@ -308,7 +301,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="less">
-#carousel {
+.carousel {
   position: relative;
   width: 100%;
   height: 100%;
