@@ -1,6 +1,6 @@
 <template>
   <div class="homeViewContainer">
-    <scroll-bar>
+    <scroll-bar showScrollBar="hover" :wheelSensitivity="50" direction="normal">
       <div class="sideBar">
         <side-bar
           :sideBarData="sideBarData"
@@ -10,41 +10,72 @@
         />
       </div>
     </scroll-bar>
-    <!-- <div class="mainContent">
-      <tooltip
-        :delay="300"
-        placement="top"
-        content="文字提示111111111111111111111111"
-        theme="light"
-      >
-        <div class="tmp">文字提示</div>
-      </tooltip>
-      <div class="carousel-container">
-        <carousel
-          :circular="true"
-          :autoRolling="false"
-          :interval="2500"
-          indicatorType="rectangle"
-          trigger="click"
+    <scroll-bar
+      showScrollBar="hover"
+      :wheelSensitivity="100"
+      direction="normal"
+    >
+      <div class="mainContent">
+        <tooltip
+          :delay="300"
+          placement="top"
+          content="文字提示111111111111111111111111"
+          theme="light"
         >
-          <carousel-item v-for="item in 5" :key="item">
-            <div
-              style="
-                width: 100%;
-                height: 100%;
-                font-size: 36px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                background: #fff;
-              "
-            >
-              +++++{{ item }}+++++
-            </div>
-          </carousel-item>
-        </carousel>
+          <div class="tmp">文字提示</div>
+        </tooltip>
+        <div class="carousel-container">
+          <carousel
+            :circular="true"
+            :autoRolling="false"
+            :interval="2500"
+            indicatorType="rectangle"
+            trigger="click"
+          >
+            <carousel-item v-for="item in 5" :key="item">
+              <div
+                style="
+                  width: 100%;
+                  height: 100%;
+                  font-size: 36px;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  background-color: lightgreen;
+                "
+              >
+                +++++{{ item }}+++++
+              </div>
+            </carousel-item>
+          </carousel>
+        </div>
+        <div class="carousel-container">
+          <carousel
+            :circular="true"
+            :autoRolling="false"
+            :interval="2500"
+            indicatorType="rectangle"
+            trigger="click"
+          >
+            <carousel-item v-for="item in 5" :key="item">
+              <div
+                style="
+                  width: 100%;
+                  height: 100%;
+                  font-size: 36px;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  background-color: lightgreen;
+                "
+              >
+                +++++{{ item }}+++++
+              </div>
+            </carousel-item>
+          </carousel>
+        </div>
       </div>
-    </div> -->
+    </scroll-bar>
   </div>
 </template>
 
@@ -150,7 +181,6 @@ const handleCheckedNodeArrayChange = (array) => (checkedNodeArray = array);
   }
   .mainContent {
     flex: 1;
-    background-color: rgb(214, 253, 214);
     align-items: center;
     justify-content: center;
     .carousel-container {

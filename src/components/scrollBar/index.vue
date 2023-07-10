@@ -1,5 +1,12 @@
 <template>
-  <div class="container" ref="container" :style="containerStyle">
+  <div
+    class="container"
+    ref="container"
+    :style="containerStyle"
+    @wheel="handleWheel"
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave"
+  >
     <div
       class="content"
       v-resize:20="onResize"
@@ -11,33 +18,82 @@
   </div>
 </template>
 
-<script setup name="">
+<script setup name="scroll-bar">
 import { getCurrentInstance, onMounted, ref, computed } from "vue";
 
-const ctx = getCurrentInstance().ctx;
-let slot;
-let scrollBar;
-let y;
-let maxOffset;
+const props = defineProps({
+  // 显示滚动条的时机 ('always','hover','none')
+  showScrollBar: {
+    type: String,
+    default: "hover",
+  },
+  // 滚轮灵敏度 (取数字的绝对值代表滚动一次的距离)
+  wheelSensitivity: {
+    type: Number,
+    default: 100,
+  },
+  // 滚动方向 ('normal','opposite')
+  direction: {
+    type: String,
+    default: "normal",
+  },
+});
 
 let containerMaxHeight = ref(0);
 let scrollBarLen = ref(0);
 let contentHeight = ref(0);
 let contentWidth = ref(0);
 let offset = ref(0);
+let isHover = ref(false);
+let isDrag = ref(false);
+let isMove = ref(false);
+
+const ctx = getCurrentInstance().ctx;
+let scrollBar;
+let y;
+let maxOffset;
 
 const containerStyle = computed(() => {
+  const maxHeight = containerMaxHeight.value + "px";
+  const height = contentHeight.value + "px";
+  const width = contentWidth.value + "px";
+  // 拖动时不高亮选中文本
+  const userSelect = isDrag.value ? "none" : "";
   return {
-    maxHeight: containerMaxHeight.value + "px",
-    height: contentHeight.value + "px",
-    width: contentWidth.value + "px",
+    maxHeight,
+    height,
+    width,
+    userSelect,
   };
 });
 
 const scrollBarStyle = computed(() => {
+  let opacity;
+  const height = scrollBarLen.value + "px";
+  const top = offset.value + "px";
+  const backgroundColor = isDrag.value ? "#d1d1d1" : "";
+  const transition = isDrag.value ? "" : "all 0.2s";
+
+  switch (props.showScrollBar) {
+    case "always":
+      opacity = "1";
+      break;
+    case "none":
+      opacity = "0";
+      break;
+    case "hover":
+      opacity = isHover.value || isDrag.value ? "1" : "0";
+      break;
+    default:
+      opacity = isHover.value || isDrag.value ? "1" : "0";
+  }
+
   return {
-    height: scrollBarLen.value + "px",
-    top: offset.value + "px",
+    height,
+    top,
+    opacity,
+    backgroundColor,
+    transition,
   };
 });
 
@@ -71,13 +127,12 @@ const vResize = {
 
 // slot高度变化回调
 const onResize = (arg) => {
-  console.log("onResize", arg[0].contentRect.height);
   contentHeight.value = arg[0].contentRect.height;
   contentWidth.value = arg[0].contentRect.width;
   calScrollBarLen();
 };
 
-// 计算滚动条的长度
+// 计算滚动条的长度和滚动范围
 const calScrollBarLen = () => {
   const t = scrollBarLen.value;
   scrollBarLen.value = Math.floor(
@@ -86,58 +141,124 @@ const calScrollBarLen = () => {
   scrollBarLen.value =
     scrollBarLen.value < containerMaxHeight.value ? scrollBarLen.value : 0;
   maxOffset = containerMaxHeight.value - scrollBarLen.value;
-
-  // console.log("newMaxOffset", scrollBarLen.value, maxOffset);
-  // const change = scrollBarLen.value - t;
-  // if (offset.value !== 0) offset.value += change;
-  // console.log("change", change);
+  // 之后更新滚动位置
+  offsetChange(offset.value, "mouse");
 };
 
 // 滚动条拖动事件
 const mouseDownAndMove = (el, callback) => {
   // 添加鼠标按下监听
-  el.addEventListener("mousedown", function (even) {
+  el.addEventListener("mousedown", function (e) {
     // 当鼠标按下时, 添加鼠标移动监听
     y = 0;
+    isDrag.value = true;
     document.addEventListener("mousemove", callback);
   });
-
   // 添加鼠标弹起监听 , 即鼠标不在按下
   document.addEventListener("mouseup", function () {
     // 此时移除 鼠标移动监听,移除指定 事件函数
+    isDrag.value = false;
     document.removeEventListener("mousemove", callback);
   });
 };
 
-const offsetChange = (change) => {
-  if (change + offset.value >= maxOffset) offset.value = maxOffset;
-  else if (change + offset.value <= 0) offset.value = 0;
-  else offset.value += change;
-  console.log("offset", offset.value);
+const offsetChange = (change, type) => {
+  // 如果没有出现滚动条则不能滚动
+  if (scrollBarLen.value === 0) return;
+  if (change + offset.value >= maxOffset) handleMove(maxOffset, type);
+  else if (change + offset.value <= 0) handleMove(0, type);
+  else handleMove(offset.value + change, type);
+};
+
+const handleMove = (target, type) => {
+  if (type === "mouse") offset.value = target;
+  else {
+    if (isMove.value) return;
+    const sub = target - offset.value;
+    if (sub == 0) return;
+    const step = sub / 10;
+    const delay = 20;
+    isMove.value = true;
+    moveAnimate(step, target, delay);
+  }
+};
+
+const moveAnimate = (step, target, delay) => {
+  if (
+    (step > 0 && offset.value >= target) ||
+    (step < 0 && offset.value <= target)
+  ) {
+    offset.value = target;
+    isMove.value = false;
+    return;
+  }
+  offset.value += step;
+  setTimeout(() => {
+    moveAnimate(step, target, delay);
+  }, delay);
+};
+
+const handleWheel = (e) => {
+  let k;
+  switch (props.direction) {
+    case "normal":
+      k = 1;
+      break;
+    case "opposite":
+      k = -1;
+      break;
+    default:
+      k = 1;
+  }
+
+  if (e.wheelDelta < 0) {
+    // 向下
+    offsetChange(k * Math.abs(props.wheelSensitivity), "wheel");
+  } else {
+    // 向上
+    offsetChange(k * -1 * Math.abs(props.wheelSensitivity), "wheel");
+  }
+};
+
+const handleMouseEnter = (e) => {
+  isHover.value = true;
+};
+
+const handleMouseLeave = (e) => {
+  isHover.value = false;
 };
 
 onMounted(() => {
   containerMaxHeight.value = document.documentElement.clientHeight;
 
   const container = ctx.$refs.container;
-  slot = container.children[0].children[0];
+  const content = container.children[0];
+  const slot = content.children[0];
   scrollBar = container.children[1];
 
   mouseDownAndMove(scrollBar, function (e) {
     if (y === 0) y = e.y;
     else {
       const change = e.y - y;
-      offsetChange(change);
+      offsetChange(change, "mouse");
       y = e.y;
     }
   });
+
+  container.style = slot.style;
+  slot.style = {};
+  container.classList.add(slot.classList);
+  slot.classList.remove(slot.classList);
+
+  const style = window.getComputedStyle(container);
+  content.style.width = style.width;
 });
 </script>
 
 <style scoped lang="less">
 .container {
   position: relative;
-  max-height: 100vh;
+  max-height: 100vh !important;
   overflow: hidden;
 
   .content {
@@ -148,8 +269,12 @@ onMounted(() => {
     right: 0;
     width: 8px;
     border-radius: 8px;
-    background-color: rgb(172, 172, 172);
+    background-color: #ebebeb;
     cursor: pointer;
+    z-index: 99;
+    &:hover {
+      background-color: #d1d1d1;
+    }
   }
 }
 </style>

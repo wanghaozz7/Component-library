@@ -218,13 +218,13 @@ onMounted(() => {
 
   // 将内层的样式转移到外层
 
-  showPart.style = {};
   tooltip.style = showPart.style;
+  showPart.style = {};
   tooltip.classList.add(showPart.classList);
   showPart.classList.remove(showPart.classList);
 
-  showPartHeight.value = showPart.clientHeight;
   showPartWidth.value = showPart.clientWidth;
+  showPartHeight.value = showPart.clientHeight;
   contentWidth.value = content.clientWidth;
   contentHeight.value = content.clientHeight;
 });
