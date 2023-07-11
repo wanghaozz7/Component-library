@@ -142,7 +142,7 @@ const calScrollBarLen = () => {
     scrollBarLen.value < containerMaxHeight.value ? scrollBarLen.value : 0;
   maxOffset = containerMaxHeight.value - scrollBarLen.value;
   // 之后更新滚动位置
-  offsetChange(offset.value, "mouse");
+  // offsetChange(offset.value, "mouse");
 };
 
 // 滚动条拖动事件

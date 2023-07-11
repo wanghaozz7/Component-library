@@ -12,7 +12,10 @@
       <div class="extention" @click="handleClick">
         <div class="button">
           <div class="icon" :style="iconStyle"></div>
-          <div class="text"><span v-show="!showCode">显示</span><span v-show="showCode">收起</span>代码</div>
+          <div class="text">
+            <span v-show="!showCode">显示</span
+            ><span v-show="showCode">收起</span>代码
+          </div>
         </div>
       </div>
     </div>
@@ -20,29 +23,29 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, getCurrentInstance } from 'vue'
+import { ref, computed, onMounted, getCurrentInstance } from "vue";
 
-import card from '@/components/card/index.vue'
+import card from "@/components/card/index.vue";
 
 const props = defineProps({
   code: {
     type: String,
-    default: ``
+    default: ``,
   },
   title: {
     type: Object,
     default() {
       return {
-        text: 'Dropdown 下拉菜单',
-        desc: '将动作或菜单折叠到下拉菜单中。'
-      }
-    }
+        text: "Dropdown 下拉菜单",
+        desc: "将动作或菜单折叠到下拉菜单中。",
+      };
+    },
   },
   defaultShowCode: {
     type: Boolean,
-    default: false
-  }
-})
+    default: false,
+  },
+});
 
 let showCode = ref(false);
 
@@ -53,31 +56,30 @@ const codeStyle = computed(() => {
   const height = showCode.value ? maxHeight : minHeight;
   return {
     height,
-  }
-})
+  };
+});
 
 const iconStyle = computed(() => {
-  const rotate = showCode.value ? '180deg' : '';
-  const marginTop = showCode.value ? '-2px' : '8px';
+  const rotate = showCode.value ? "180deg" : "";
+  const marginTop = showCode.value ? "-2px" : "8px";
   return {
     rotate,
-    marginTop
-  }
-})
+    marginTop,
+  };
+});
 
 const handleClick = () => {
   showCode.value = !showCode.value;
-}
+};
 
 onMounted(() => {
   const codeRef = ctx.$refs.code;
   const style = window.getComputedStyle(codeRef);
   maxHeight = style.height;
-  minHeight = 0
+  minHeight = 0;
   if (!props.defaultShowCode) codeRef.style.height = 0;
-  else showCode.value = true
-})
-
+  else showCode.value = true;
+});
 </script>
 
 <style lang="less" scoped>
@@ -92,7 +94,6 @@ onMounted(() => {
   margin: 15px 0;
 }
 
-
 .card-container {
   width: 300px;
 
@@ -103,8 +104,8 @@ onMounted(() => {
       overflow: hidden;
       font-size: 14px;
       white-space: pre-wrap;
-      transition: all .2s;
-      background-color: #FAFAFA;
+      transition: all 0.2s;
+      background-color: #fafafa;
     }
 
     .extention {
@@ -135,7 +136,7 @@ onMounted(() => {
         align-items: center;
 
         .icon {
-          transition: all .3s;
+          transition: all 0.3s;
           width: 0;
           height: 0;
           margin: 8px 8px 0 auto;
@@ -144,16 +145,14 @@ onMounted(() => {
         }
 
         .text {
-          transition: all .3s;
+          transition: all 0.3s;
           overflow: hidden;
           color: #ebebeb;
           font-size: 12px;
+          user-select: none;
         }
-
       }
     }
-
-
   }
 }
 </style>
