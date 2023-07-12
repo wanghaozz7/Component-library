@@ -24,11 +24,11 @@
       :data="table_data"
       :border="true"
       :cell-style="getCellStyle"
-      :height="200"
+      :height="300"
     >
-      <table-column :width="60" label="#" prop="index" align="center" />
-      <table-column :width="120" label="姓名" prop="name" align="center" />
-      <table-column :width="80" label="年龄" prop="age" align="center" />
+      <table-column :width="160" label="#" prop="index" align="center" />
+      <table-column label="姓名" prop="name" align="center" />
+      <table-column label="年龄" prop="age" align="center" />
     </rtable>
   </div>
 </template>

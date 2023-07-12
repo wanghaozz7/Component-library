@@ -11,7 +11,7 @@
   </th>
 </template>
 <script setup>
-import { computed, onMounted, getCurrentInstance, ref } from "vue";
+import { computed, onMounted, getCurrentInstance, ref, nextTick } from "vue";
 
 const props = defineProps({
   label: {
@@ -20,7 +20,7 @@ const props = defineProps({
   },
   width: {
     type: Number,
-    default: 120,
+    default: -1,
   },
   prop: {
     type: String,
@@ -34,12 +34,17 @@ const props = defineProps({
 
 let border = ref(false);
 
+let headerWidth = ref(0);
+
+let averageWidth;
+
 const ctx = getCurrentInstance().ctx;
 
 const headerCellStyle = computed(() => {
-  const width = props.width;
+  const width = headerWidth.value + "px";
   const borderColor = border.value ? "#ebeef5" : "";
   const textAlign = props.align;
+  // console.log("width", width);
   return {
     width,
     borderColor,
@@ -53,6 +58,12 @@ onMounted(() => {
   const rawValue = attr.border.nodeValue;
   if (rawValue === "false") border.value = false;
   else if (rawValue === "true") border.value = true;
+  setTimeout(() => {
+    averageWidth = attr.averageWidth.nodeValue;
+    if (props.width !== -1) headerWidth.value = props.width;
+    else headerWidth.value = Number.parseInt(averageWidth);
+    console.log("headerWidth", headerWidth.value);
+  }, 0);
 });
 </script>
 
