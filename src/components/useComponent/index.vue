@@ -20,12 +20,7 @@
       </div>
     </show-component> -->
 
-    <rtable
-      :data="table_data"
-      :border="true"
-      :cell-style="getCellStyle"
-      :height="300"
-    >
+    <rtable :data="table_data" :border="true" :cell-style="getCellStyle">
       <table-column :width="160" label="#" prop="index" align="center" />
       <table-column label="姓名" prop="name" align="center" />
       <table-column label="年龄" prop="age" align="center" />
@@ -35,9 +30,7 @@
 
 <script setup>
 // 使用组件由以下组成 ： 1.组件名（一级标题）+ 描述  2.使用方法 (二级标题) + 描述 + showComponent (样式展示 + 代码) 3.接口列表  4.前进后退
-
 import showComponent from "./components/showComponent/index";
-
 import rtable from "@/components/table/index.vue";
 import tableColumn from "@/components/table/components/tableColumn/index.vue";
 
@@ -202,17 +195,10 @@ const objs = [
   },
 ];
 
-const getCellStyle = (row, column, rowIndex) => {
+const getCellStyle = (row, column, rowIndex, colIndex) => {
   let textAlign = "center",
     lineHeight = "25px",
     padding = "5px";
-  // if (rowIndex % 2 === 0) {
-  //   textAlign = "left";
-  //   backgroundColor = "white";
-  // } else {
-  //   textAlign = "right";
-  //   backgroundColor = "gray";
-  // }
   return {
     textAlign,
     lineHeight,

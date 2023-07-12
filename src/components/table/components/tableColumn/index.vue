@@ -11,7 +11,7 @@
   </th>
 </template>
 <script setup>
-import { computed, onMounted, getCurrentInstance, ref, nextTick } from "vue";
+import { computed, onMounted, getCurrentInstance, ref } from "vue";
 
 const props = defineProps({
   label: {
@@ -33,18 +33,15 @@ const props = defineProps({
 });
 
 let border = ref(false);
-
 let headerWidth = ref(0);
 
 let averageWidth;
-
 const ctx = getCurrentInstance().ctx;
 
 const headerCellStyle = computed(() => {
   const width = headerWidth.value + "px";
   const borderColor = border.value ? "#ebeef5" : "";
   const textAlign = props.align;
-  // console.log("width", width);
   return {
     width,
     borderColor,

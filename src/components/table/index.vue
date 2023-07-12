@@ -1,10 +1,5 @@
 <template>
-  <div
-    class="table-container"
-    :border="border"
-    :averageWidth="averageWidth"
-    :style="tableStyle"
-  >
+  <div class="table-container" :border="border" :averageWidth="averageWidth">
     <div
       class="table-wrapper"
       :style="tableWrapperStyle('header')"
@@ -21,14 +16,14 @@
         <colgroup>
           <col
             v-for="(arr, idx) in attrArray"
-            :key="arr"
+            :key="idx"
             :width="widthArr[idx]"
           />
         </colgroup>
         <tr v-for="(obj, rowIndex) in data" :key="obj" class="table-row">
           <td
             v-for="(attr, colIndex) in attrArray"
-            :key="attr"
+            :key="colIndex"
             class="table-cell"
             :style="tableCellStyle(obj, attr, rowIndex, colIndex)"
           >
@@ -40,7 +35,14 @@
   </div>
 </template>
 <script setup>
-import { getCurrentInstance, onMounted, reactive, ref, computed } from "vue";
+import {
+  getCurrentInstance,
+  onMounted,
+  reactive,
+  ref,
+  computed,
+  nextTick,
+} from "vue";
 
 const props = defineProps({
   // 表格数据
@@ -84,26 +86,11 @@ let averageWidth = ref(0);
 
 const ctx = getCurrentInstance().ctx;
 
-const tableStyle = computed(() => {
-  // const width = tableWidth.value === 0 ? "auto" : tableWidth.value + 17 + "px";
-  return {
-    // width,
-  };
-});
-
 const tableWrapperStyle = computed(() => {
   return (type) => {
-    // const width =
-    //   tableWidth.value === 0
-    //     ? "auto"
-    //     : (type === "header" ? tableWidth.value : tableWidth.value + 17) + "px";
     const height = type === "header" ? "" : props.height + "px";
-    // const paddingRight =
-    //   type === "header" ? (hasScrollBar.value ? "15px" : "") : "";
     return {
-      // width,
       height,
-      // paddingRight,
     };
   };
 });
@@ -120,7 +107,7 @@ const tableCellStyle = computed(() => {
     const defaultStyle = { borderColor, borderTop };
     if (typeof props.cellStyle === "function") {
       // 如果是函数则执行回调并将对象合并
-      const obj = props.cellStyle(row, column, rowIndex);
+      const obj = props.cellStyle(row, column, rowIndex, colIndex);
       return Object.assign(defaultStyle, obj);
     } else if (typeof props.cellStyle === "object" && props.cellStyle !== {}) {
       // 如果所有cell都是固定样式对象
@@ -130,50 +117,60 @@ const tableCellStyle = computed(() => {
   };
 });
 
+const filterPx = (str) => {
+  return Number.parseInt(str.replaceAll("px"));
+};
+
 onMounted(() => {
   // 由于height打上行内样式已经无法通过table-wrapper的offsetheight等判断是否出现滚动条
   // 所以获取行数加行高手动计算出实际高度判断是否出现滚动条
   const header = ctx.$refs.header;
   const table = ctx.$refs.table;
   const arr = header.children;
+  const tableWrapper = table.parentNode;
+  const tableWrapperStyle = window.getComputedStyle(tableWrapper);
+
   for (let th of arr)
     attrArray.push({
       prop: th.attributes.prop.nodeValue,
       width: th.attributes.width.nodeValue,
     });
 
-  const tableWrapper = table.parentNode;
-  const tableWrapperStyle = window.getComputedStyle(tableWrapper);
-  // 计算table的真实的width并根据表头传来的width字段计算出每一列的宽度赋值给colgroup和header
-  const tableWidth =
-    Number.parseInt(tableWrapperStyle.width.replaceAll("px")) - 17;
-  let count = 0;
-  // 首先减去所有固定宽度
-  const constWidthSum = attrArray.reduce((pre, next) => {
-    const width = Number.parseInt(next.width);
-    if (width !== -1) {
-      return (pre += width);
-    } else {
-      count++;
-      return pre;
-    }
-  }, 0);
-  const fixedWidth = tableWidth - constWidthSum;
-  averageWidth.value = fixedWidth / count;
-  widthArr = attrArray.map((x) => {
-    const width = Number.parseInt(x.width);
-    return width === -1 ? averageWidth.value : width;
+  nextTick(() => {
+    const cell = table.children[1];
+    const cellStyle = window.getComputedStyle(cell);
+    const cellHeight = cellStyle["height"];
+    const len = props.data.length;
+    const tableHeight = filterPx(cellHeight) * len;
+    const currentHeight = filterPx(tableWrapperStyle.height);
+
+    hasScrollBar.value = tableHeight > currentHeight;
+
+    // 计算table的真实的width并根据表头传来的width字段计算出每一列的宽度赋值给colgroup和header
+    const tableWidth =
+      Number.parseInt(tableWrapperStyle.width.replaceAll("px")) -
+      (hasScrollBar.value ? 17 : 0);
+    let count = 0;
+    // 首先减去所有固定宽度
+    const constWidthSum = attrArray.reduce((pre, next) => {
+      const width = Number.parseInt(next.width);
+      if (width !== -1) {
+        return (pre += width);
+      } else {
+        count++;
+        return pre;
+      }
+    }, 0);
+    const fixedWidth = tableWidth - constWidthSum;
+    averageWidth.value = fixedWidth / count;
+    widthArr = attrArray.map((x) => {
+      const width = Number.parseInt(x.width);
+      return width === -1 ? averageWidth.value : width;
+    });
+
+    console.log("widthArr", widthArr);
+    console.log("averageWidth", averageWidth.value);
   });
-
-  console.log("widthArr", widthArr);
-  console.log("averageWidth", averageWidth.value);
-
-  // nextTick(() => {
-  //   const cell = table.children[1];
-  //   const cellStyle = window.getComputedStyle(cell);
-  //   const cellHeight = cellStyle["height"];
-  //   const len = props.data.length;
-  // });
 });
 </script>
 
