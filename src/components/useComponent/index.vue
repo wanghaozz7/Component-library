@@ -22,16 +22,11 @@
 
     <!-- <attributeList></attributeList> -->
 
-    <table-list
-      :data="tableData"
-      :border="true"
-      :max-height="350"
-      :cell-style="getcellStyle"
-      :header-cell-style="getHeaderCellStyle"
-    >
+    <table-list :data="tableData" :border="true" :max-height="350" :cell-style="getcellStyle" :stripe="true"
+      :header-cell-style="getHeaderCellStyle" :show-header="true" size="normal">
       <table-column :width="80" label="#" prop="index"></table-column>
       <table-column :min-width="80" label="姓名" prop="name"></table-column>
-      <table-column label="年龄" prop="age"></table-column>
+      <table-column :min-width="80" label="年龄" prop="age"></table-column>
     </table-list>
   </div>
 </template>

@@ -1,43 +1,29 @@
 <template>
   <div class="table-container" :style="tableStyle" ref="table">
-    <div class="header-wrapper" ref="tableHeader">
+    <div v-if="showHeader" ref="tableHeader">
       <table cellspacing="0">
-        <colgroup ref="colgroup">
+        <colgroup>
           <slot />
         </colgroup>
         <tr>
-          <th
-            v-for="(prop, idx) in columnsProps"
-            :key="prop.label"
-            class="header-cell"
-            :style="headerCellStyle(prop.prop, idx)"
-          >
+          <th v-for="(prop, idx) in columnsProps" :key="prop.label" :style="headerCellStyle(prop.prop, idx)">
             {{ prop.label }}
           </th>
         </tr>
       </table>
     </div>
-    <div class="body-wrapper" :style="tableBodyStyle">
+    <div class="body-wrapper" :style="tableBodyStyle" ref="tableBody">
       <table cellspacing="0">
-        <colgroup>
+        <colgroup ref="colgroup">
           <slot />
         </colgroup>
-        <tr
-          v-for="(row, rowIndex) in data"
-          :key="rowIndex"
-          class="table-row"
-          :class="tableRowClass"
-        >
-          <td
-            v-for="(colValue, colKey, colIndex) in row"
-            :key="colIndex"
-            class="table-cell"
-            :style="tableCellStyle(row, colValue, rowIndex, colIndex)"
-          >
+        <tr v-for="(row, rowIndex) in data" :key="rowIndex" :class="tableRowClass">
+          <td v-for="(colValue, colKey, colIndex) in row" :key="colIndex"
+            :style="tableCellStyle(row, colValue, rowIndex, colIndex)">
             {{
               row[columnsProps[colIndex]?.prop]
-                ? row[columnsProps[colIndex]?.prop]
-                : ""
+              ? row[columnsProps[colIndex]?.prop]
+              : ""
             }}
           </td>
         </tr>
@@ -74,6 +60,7 @@ const props = defineProps({
     type: Number,
     default: -1,
   },
+  // ok
   stripe: {
     type: Boolean,
     default: false,
@@ -83,14 +70,12 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  // big / normal / small
   size: {
     type: String,
-    default: "normal",
+    default: "medium",
   },
-  fit: {
-    type: Boolean,
-    default: false,
-  },
+  // ok
   showHeader: {
     type: Boolean,
     default: true,
@@ -107,6 +92,7 @@ const props = defineProps({
       return {};
     },
   },
+  // ok
   headerCellStyle: {
     type: [Function, Object],
     default() {
@@ -134,33 +120,73 @@ const tableStyle = computed(() => {
 
 const tableBodyStyle = computed(() => {
   const height = bodyHeight.value + "px";
+  // 如果有border且表头被隐藏
+  const borderTop = !props.showHeader ? props.border ? normalBorder : '' : '';
   return {
     height,
+    borderTop
   };
 });
-
 const tableRowClass = computed(() => {
   return props.highlightCurrentRow ? "highlightCurrentRow" : "";
 });
 
 const headerCellStyle = computed(() => {
   return (prop, idx) => {
-    const defaultStyle = {
-      borderLeft: props.border ? normalBorder : "",
-      borderTop: props.border ? normalBorder : "",
-      borderRight: props.border
-        ? idx === columnsProps.length - 1
-          ? normalBorder
-          : ""
-        : "",
+    // 默认样式
+    const getDaultStyle = () => {
+      const borderLeft = props.border ? normalBorder : "", borderTop = props.border ? normalBorder : "";
+      const borderRight = props.border ? idx === columnsProps.length - 1 ? normalBorder : "" : "";
+
+      const borderBottom = normalBorder;
+      const textAlign = 'center';
+
+      let lineHeight, padding, fontSize;
+
+      switch (props.size) {
+        case 'big':
+          lineHeight = '35px';
+          padding = '8px';
+          fontSize = '20px'
+          break;
+        case 'normal':
+          lineHeight = '30px';
+          padding = '5px';
+          fontSize = '18px'
+          break;
+        case 'small':
+          lineHeight = '25px';
+          padding = '5px';
+          fontSize = '16px'
+          break;
+        default:
+          lineHeight = '25px';
+          padding = '5px';
+          fontSize = '16px'
+      }
+
+      return {
+        borderLeft,
+        borderTop,
+        borderRight,
+        borderBottom,
+        padding,
+        textAlign,
+        lineHeight,
+        fontSize
+      }
     };
-    const callBackStyle =
-      typeof props.headerCellStyle === "function"
+    // 通过回调返回的样式
+    const getCallBackStyle = () => {
+      return typeof props.headerCellStyle === "function"
         ? props.headerCellStyle(prop, idx)
         : props.headerCellStyle;
-    const importStyle = {};
-    const finalStyle = Object.assign(defaultStyle, callBackStyle, importStyle);
-    return finalStyle;
+    };
+    // 优先级最高的样式(合并顺序最晚覆盖之前的样式)
+    const getImportantStyle = () => {
+      return {}
+    };
+    return Object.assign(getDaultStyle(), getCallBackStyle(), getImportantStyle());
   };
 });
 
@@ -168,29 +194,70 @@ const tableCellStyle = computed(() => {
   // 回调参数分别是 行数据 列数据(值) 行索引 列索引
   return (row, col, rowIndex, colIndex) => {
     // 默认样式
-    const defaultStyle = {
-      borderLeft: props.border ? normalBorder : "",
-      borderRight: props.border
-        ? colIndex === columnsProps.length - 1
-          ? normalBorder
-          : ""
-        : "",
+    const getDefaultStyle = () => {
+      const borderLeft = props.border ? normalBorder : "";
+      const borderRight = props.border ? colIndex === columnsProps.length - 1 ? normalBorder : "" : "";
+      const borderBottom = normalBorder;
+      const textAlign = 'center';
+
+      let height, padding, fontSize;
+      switch (props.size) {
+        case 'big':
+          height = '30px';
+          padding = '8px';
+          fontSize = '18px'
+          break;
+        case 'normal':
+          height = '25px';
+          padding = '5px';
+          fontSize = '16px'
+          break;
+        case 'small':
+          height = '15px';
+          padding = '5px';
+          fontSize = '14px'
+          break;
+        default:
+          height = '25px';
+          padding = '5px';
+          fontSize = '16px'
+      }
+      return {
+        borderLeft,
+        borderRight,
+        borderBottom,
+        padding,
+        textAlign,
+        height,
+        fontSize
+      };
     };
     // 通过回调返回的样式
-    const callBacktyle =
-      typeof props.cellStyle === "function"
+    const getCallBackStyle = () => {
+      return typeof props.cellStyle === "function"
         ? props.cellStyle(row, col, rowIndex, colIndex)
         : props.cellStyle;
+    };
     // 优先级最高的样式(合并顺序最晚覆盖之前的样式)
-    const importStyle = {
+    const getImportantStyle = () => {
       // 最后一行取消底部border由bodywrapper的border代替(防止滚动下的重合)
-      borderBottom:
+      const borderBottom =
         rowIndex === props.data.length - 1
           ? "0px solid transparent"
-          : normalBorder,
+          : normalBorder;
+
+      // 斑马纹
+      let backgroundColor;
+      if (props.stripe) {
+        if (rowIndex % 2 === 0) backgroundColor = '#fff';
+        else backgroundColor = '#fafafa'
+      }
+      return {
+        borderBottom,
+        backgroundColor
+      }
     };
-    const finalStyle = Object.assign(defaultStyle, callBacktyle, importStyle);
-    return finalStyle;
+    return Object.assign(getDefaultStyle(), getCallBackStyle(), getImportantStyle());
   };
 });
 
@@ -207,10 +274,11 @@ onMounted(() => {
   const table = ctx.$refs.table;
   showScrollBar.value = table.scrollHeight > table.clientHeight;
 
-  const header = ctx.$refs.tableHeader;
-  const style = window.getComputedStyle(header);
   // 获得table的实际宽度根据每列的width计算并分配宽度
-  const tableWidth = style.width;
+  const tableWidth = window.getComputedStyle(ctx.$refs.tableBody).width;
+
+
+
   let availableWidth = filterPx(tableWidth);
   if (showScrollBar.value) availableWidth -= 17;
   let count = 0;
@@ -222,7 +290,6 @@ onMounted(() => {
     widthArr[idx] = {
       prop: prop.prop,
     };
-    console.log("width", width, typeof width, "minWidth", minWidth);
     // 对于固定宽度的列 直接赋值
     // 同时 可分配availableWidth = tableWidth - 固定宽度之和
     // 对于minWidth
@@ -270,10 +337,13 @@ onMounted(() => {
   nextTick(() => {
     // 溢出则计算高度显示滚动条
     if (showScrollBar.value) {
-      const headerHeight = style.height;
+      let headerHeight;
+      if (props.showHeader) headerHeight = window.getComputedStyle(ctx.$refs.tableHeader).height;
+      else headerHeight = '0'
       const height = props.height !== -1 ? props.height : props.maxHeight;
       bodyHeight.value = height - 40 - filterPx(headerHeight);
     }
+
   });
 });
 </script>
@@ -284,28 +354,19 @@ onMounted(() => {
   border: 1px solid #ebebeb;
   overflow: hidden;
   box-sizing: border-box;
-  .header-wrapper {
-    .header-cell {
-      border-bottom: 1px solid #ebebeb;
-      padding: 5px;
-      text-align: center;
-      line-height: 25px;
-    }
-  }
+
+
+
   .body-wrapper {
     overflow: auto;
     box-sizing: border-box;
     border-bottom: 1px solid #ebebeb;
-    .table-row {
-      .table-cell {
-        border-bottom: 1px solid #ebebeb;
-        padding: 5px;
-        text-align: center;
-        height: 25px;
-      }
-    }
+
+
+
     .highlightCurrentRow {
       transition: background-color 0.25s ease;
+
       &:hover {
         background-color: rgb(236, 242, 244) !important;
       }
