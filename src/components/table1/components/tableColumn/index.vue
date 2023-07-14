@@ -1,7 +1,7 @@
 <template>
   <th
     :style="headerCellStyle"
-    class="header-cell"
+    class="header-cell-class"
     :prop="prop"
     :width="width"
     ref="th"
@@ -53,19 +53,18 @@ onMounted(() => {
   const table = ctx.$refs.th.parentNode.parentNode.parentNode.parentNode;
   const attr = table.attributes;
   const rawValue = attr.border.nodeValue;
-  if (rawValue === "false") border.value = false;
-  else if (rawValue === "true") border.value = true;
+  border.value = rawValue === "false" ? false : true;
+  // averagerWidth在父组件onMounted后计算 子组件的onMounted在父组件之前 设置定时器加入宏任务队列
   setTimeout(() => {
     averageWidth = attr.averageWidth.nodeValue;
-    if (props.width !== -1) headerWidth.value = props.width;
-    else headerWidth.value = Number.parseInt(averageWidth);
-    console.log("headerWidth", headerWidth.value);
+    headerWidth.value =
+      props.width !== -1 ? props.width : Number.parseInt(averageWidth);
   }, 0);
 });
 </script>
 
 <style lang="less" scoped>
-.header-cell {
+.header-cell-class {
   // text-align: left;
   border-bottom: 1px solid #ebeef5;
   border-top: 1px solid transparent;

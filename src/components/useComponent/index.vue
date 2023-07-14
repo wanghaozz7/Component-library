@@ -20,19 +20,29 @@
       </div>
     </show-component> -->
 
-    <rtable :data="table_data" :border="true" :cell-style="getCellStyle">
-      <table-column :width="160" label="#" prop="index" align="center" />
-      <table-column label="姓名" prop="name" align="center" />
-      <table-column label="年龄" prop="age" align="center" />
-    </rtable>
+    <!-- <attributeList></attributeList> -->
+
+    <table-list
+      :data="tableData"
+      :border="true"
+      :max-height="350"
+      :cell-style="getcellStyle"
+      :header-cell-style="getHeaderCellStyle"
+    >
+      <table-column :width="80" label="#" prop="index"></table-column>
+      <table-column :min-width="80" label="姓名" prop="name"></table-column>
+      <table-column label="年龄" prop="age"></table-column>
+    </table-list>
   </div>
 </template>
 
 <script setup>
 // 使用组件由以下组成 ： 1.组件名（一级标题）+ 描述  2.使用方法 (二级标题) + 描述 + showComponent (样式展示 + 代码) 3.接口列表  4.前进后退
-import showComponent from "./components/showComponent/index";
-import rtable from "@/components/table/index.vue";
-import tableColumn from "@/components/table/components/tableColumn/index.vue";
+import showComponent from "./components/showComponent/index.vue";
+import attributeList from "./components/attributeList/index.vue";
+
+import tableList from "@/components/table/index.vue";
+import tableColumn from "@/components/table/tableColumn.vue";
 
 const props = defineProps({
   title: {
@@ -46,63 +56,88 @@ const props = defineProps({
   },
 });
 
-const table_data = [
+const tableData = [
   {
     index: 1,
     name: "小明",
-    age: 20,
+    age: 18,
   },
   {
+    name: "小明",
+    age: 18,
     index: 2,
-    name: "小红",
-    age: 21,
   },
   {
-    index: 3,
-    name: "小张",
-    age: 22,
+    index: undefined,
+    age: 18,
+    name: "小明",
   },
   {
     index: 4,
-    name: "小南",
-    age: 23,
+    name: "小明",
+    age: 18,
   },
   {
     index: 5,
-    name: "小虫",
-    age: 24,
+    name: "小明",
+    age: 18,
   },
-
   {
-    index: 5,
-    name: "小虫",
-    age: 24,
+    index: 6,
+    name: "小明",
+    age: 18,
   },
-
   {
-    index: 5,
-    name: "小虫",
-    age: 24,
+    index: 7,
+    name: "小明",
+    age: 18,
   },
-
   {
-    index: 5,
-    name: "小虫",
-    age: 24,
+    index: 8,
+    name: "小明",
+    age: 18,
   },
-
   {
-    index: 5,
-    name: "小虫",
-    age: 24,
+    index: 9,
+    name: "小明",
+    age: 18,
   },
-
   {
-    index: 5,
-    name: "小虫",
-    age: 24,
+    index: 10,
+    name: "小明",
+    age: 18,
+  },
+  {
+    index: 11,
+    name: "小明",
+    age: 18,
+  },
+  {
+    index: 12,
+    name: "小明",
+    age: 18,
+  },
+  {
+    index: 13,
+    name: "小明",
+    age: 18,
   },
 ];
+
+const getcellStyle = (row, col, rowIndex, colIndex) => {
+  const lineHeight = 20 + rowIndex * 5 + "px";
+  return {
+    lineHeight,
+  };
+};
+
+const getHeaderCellStyle = (prop, idx) => {
+  return {
+    lineHeight: "45px",
+    backgroundColor: "lightblue",
+    color: "white",
+  };
+};
 
 const objs = [
   {
@@ -194,17 +229,6 @@ const objs = [
 `,
   },
 ];
-
-const getCellStyle = (row, column, rowIndex, colIndex) => {
-  let textAlign = "center",
-    lineHeight = "25px",
-    padding = "5px";
-  return {
-    textAlign,
-    lineHeight,
-    padding,
-  };
-};
 </script>
 
 <style lang="less" scoped>

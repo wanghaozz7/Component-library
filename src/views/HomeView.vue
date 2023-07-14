@@ -55,7 +55,7 @@
     <div class="sideBar">
       <side-bar
         :sideBarData="sideBarData"
-        :defaultUnfoldAll="true"
+        :defaultUnfoldAll="false"
         :rowHeight="40"
         @checkedNodeArrayChange="handleCheckedNodeArrayChange"
       />
@@ -108,6 +108,10 @@ import carousel from "@/components/carousel/index.vue";
 import carouselItem from "@/components/carousel/components/carouselItem/index.vue";
 import scrollBar from "@/components/scrollBar/index.vue";
 import useComponent from "@/components/useComponent/index.vue";
+
+const fn = (row, col, rowIndex, colIndex) => {
+  console.log("fn");
+};
 
 // 已选中的叶子节点一维数组
 let checkedNodeArray = reactive([]);
