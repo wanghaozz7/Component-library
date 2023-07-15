@@ -20,15 +20,12 @@
         <tr v-for="(row, rowIndex) in data" :key="rowIndex" :class="tableRowClass">
           <td v-for="(colValue, colKey, colIndex) in row" :key="colIndex"
             :style="tableCellStyle(row, colValue, rowIndex, colIndex)">
-            {{
-              row[columnsProps[colIndex]?.prop]
-              ? row[columnsProps[colIndex]?.prop]
-              : ""
-            }}
+            {{ getLabel(row, colIndex) }}
           </td>
         </tr>
       </table>
     </div>
+    <div class="empty" v-if="data.length === 0">{{ emptyText }}</div>
   </div>
 </template>
 
@@ -43,61 +40,63 @@ import {
 } from "vue";
 
 const props = defineProps({
-  // ok
   data: {
     type: Array,
     default() {
       return [];
     },
   },
-  // ok
   height: {
     type: Number,
     default: -1,
   },
-  // ok
   maxHeight: {
     type: Number,
     default: -1,
   },
-  // ok
   stripe: {
     type: Boolean,
     default: false,
   },
-  // ok
   border: {
     type: Boolean,
     default: false,
   },
-  // big / normal / small
+  outSideBorder: {
+    type: Boolean,
+    default: true
+  },
   size: {
     type: String,
     default: "medium",
   },
-  // ok
   showHeader: {
     type: Boolean,
     default: true,
   },
-  // ok
   highlightCurrentRow: {
     type: Boolean,
     default: true,
   },
-  // ok
   cellStyle: {
     type: [Function, Object],
     default() {
       return {};
     },
   },
-  // ok
   headerCellStyle: {
     type: [Function, Object],
     default() {
       return {};
     },
+  },
+  emptyText: {
+    type: String,
+    default: "暂无内容",
+  },
+  cellEmptyText: {
+    type: String,
+    default: "",
   },
 });
 
@@ -108,29 +107,31 @@ let bodyHeight = ref("auto");
 
 const ctx = getCurrentInstance().ctx;
 const normalBorder = "1px solid #ebebeb";
+const noBorder = "0px solid transparent";
 
 const tableStyle = computed(() => {
   const height = props.height === -1 ? "auto" : props.height + "px";
   const maxHeight = props.maxHeight === -1 ? "" : props.maxHeight + "px";
+  const border = props.outSideBorder ? normalBorder : '';
   return {
     height,
     maxHeight,
+    border
   };
 });
-
 const tableBodyStyle = computed(() => {
   const height = bodyHeight.value + "px";
   // 如果有border且表头被隐藏
   const borderTop = !props.showHeader ? props.border ? normalBorder : '' : '';
-  return {
+  const finalStyle = {
     height,
     borderTop
   };
+  return props.data.length === 0 ? Object.assign(finalStyle, { border: noBorder }) : finalStyle
 });
 const tableRowClass = computed(() => {
   return props.highlightCurrentRow ? "highlightCurrentRow" : "";
 });
-
 const headerCellStyle = computed(() => {
   return (prop, idx) => {
     // 默认样式
@@ -189,7 +190,6 @@ const headerCellStyle = computed(() => {
     return Object.assign(getDaultStyle(), getCallBackStyle(), getImportantStyle());
   };
 });
-
 const tableCellStyle = computed(() => {
   // 回调参数分别是 行数据 列数据(值) 行索引 列索引
   return (row, col, rowIndex, colIndex) => {
@@ -241,25 +241,29 @@ const tableCellStyle = computed(() => {
     // 优先级最高的样式(合并顺序最晚覆盖之前的样式)
     const getImportantStyle = () => {
       // 最后一行取消底部border由bodywrapper的border代替(防止滚动下的重合)
-      const borderBottom =
-        rowIndex === props.data.length - 1
-          ? "0px solid transparent"
-          : normalBorder;
-
+      const borderBottom = rowIndex === props.data.length - 1 ? noBorder : normalBorder;
       // 斑马纹
       let backgroundColor;
       if (props.stripe) {
         if (rowIndex % 2 === 0) backgroundColor = '#fff';
         else backgroundColor = '#fafafa'
       }
-      return {
+      const finalStyle = {
         borderBottom,
         backgroundColor
       }
+      return props.data.length === 0 ? Object.assign(finalStyle, { border: noBorder }) : finalStyle
     };
     return Object.assign(getDefaultStyle(), getCallBackStyle(), getImportantStyle());
   };
 });
+const getLabel = computed(() => {
+  return (row, colIndex) => {
+    return row[columnsProps[colIndex]?.prop]
+      ? row[columnsProps[colIndex]?.prop]
+      : props.cellEmptyText;
+  }
+})
 
 const filterPx = (str) => {
   return parseInt(str.replaceAll("px"));
@@ -351,18 +355,13 @@ onMounted(() => {
 <style scoped lang="less">
 .table-container {
   padding: 20px;
-  border: 1px solid #ebebeb;
   overflow: hidden;
   box-sizing: border-box;
-
-
 
   .body-wrapper {
     overflow: auto;
     box-sizing: border-box;
     border-bottom: 1px solid #ebebeb;
-
-
 
     .highlightCurrentRow {
       transition: background-color 0.25s ease;
@@ -371,6 +370,19 @@ onMounted(() => {
         background-color: rgb(236, 242, 244) !important;
       }
     }
+  }
+
+  .empty {
+    width: 100%;
+    height: 150px;
+    border: 1px solid #ebeef5;
+    border-top: 0px solid transparent;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    color: gray;
   }
 }
 </style>

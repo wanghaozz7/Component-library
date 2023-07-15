@@ -20,14 +20,9 @@
       </div>
     </show-component> -->
 
-    <!-- <attributeList></attributeList> -->
+    <attributeList :title="title" :list-data="listData" type="attributes" />
 
-    <table-list :data="tableData" :border="true" :max-height="350" :cell-style="getcellStyle" :stripe="true"
-      :header-cell-style="getHeaderCellStyle" :show-header="true" size="normal">
-      <table-column :width="80" label="#" prop="index"></table-column>
-      <table-column :min-width="80" label="姓名" prop="name"></table-column>
-      <table-column :min-width="80" label="年龄" prop="age"></table-column>
-    </table-list>
+
   </div>
 </template>
 
@@ -36,8 +31,6 @@
 import showComponent from "./components/showComponent/index.vue";
 import attributeList from "./components/attributeList/index.vue";
 
-import tableList from "@/components/table/index.vue";
-import tableColumn from "@/components/table/tableColumn.vue";
 
 const props = defineProps({
   title: {
@@ -51,88 +44,67 @@ const props = defineProps({
   },
 });
 
-const tableData = [
+const listData = [
   {
-    index: 1,
-    name: "小明",
-    age: 18,
+    params: "data",
+    desc: "显示的数据",
+    type: "array",
+    optional: "",
+    default: "",
   },
   {
-    name: "小明",
-    age: 18,
-    index: 2,
+    params: "border",
+    desc: "是否带有纵向边框",
+    type: "boolean",
+    optional: "",
+    default: "false",
   },
   {
-    index: undefined,
-    age: 18,
-    name: "小明",
+    params: "cellStyle",
+    desc: "单元格样式回调,可以根据参数传回不同的样式也可以使所有单元格共享相同样式",
+    type: "function/object",
+    optional: "",
+    default: "",
   },
   {
-    index: 4,
-    name: "小明",
-    age: 18,
+    params: "height",
+    desc: "默认高度为内容高度,设置固定高度后若内容溢出则出现滚动条并固定表头",
+    type: "Number",
+    optional: "",
+    default: "",
   },
   {
-    index: 5,
-    name: "小明",
-    age: 18,
+    params: "showHeader",
+    desc: "是否显示表头",
+    type: "boolean",
+    optional: "",
+    default: "true",
   },
   {
-    index: 6,
-    name: "小明",
-    age: 18,
+    params: "emptyText",
+    desc: "表格没有传数据或数据长度为0时提示内容",
+    type: "string",
+    optional: "",
+    default: "暂无内容",
   },
   {
-    index: 7,
-    name: "小明",
-    age: 18,
+    params: "cellEmptyText",
+    desc: "string",
+    type: "表格某一行的某一列无数据时显示的内容",
+    optional: "",
+    default: " ",
   },
   {
-    index: 8,
-    name: "小明",
-    age: 18,
-  },
-  {
-    index: 9,
-    name: "小明",
-    age: 18,
-  },
-  {
-    index: 10,
-    name: "小明",
-    age: 18,
-  },
-  {
-    index: 11,
-    name: "小明",
-    age: 18,
-  },
-  {
-    index: 12,
-    name: "小明",
-    age: 18,
-  },
-  {
-    index: 13,
-    name: "小明",
-    age: 18,
+    params: "outsideBorder",
+    desc: "是否显示包裹表格的最外层border",
+    type: "boolean",
+    optional: "",
+    default: "true",
   },
 ];
 
-const getcellStyle = (row, col, rowIndex, colIndex) => {
-  const lineHeight = 20 + rowIndex * 5 + "px";
-  return {
-    lineHeight,
-  };
-};
+const title = 'Table Attributes';
 
-const getHeaderCellStyle = (prop, idx) => {
-  return {
-    lineHeight: "45px",
-    backgroundColor: "lightblue",
-    color: "white",
-  };
-};
 
 const objs = [
   {

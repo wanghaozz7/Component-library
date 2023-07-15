@@ -22,6 +22,8 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  align: {},
+  headerAlign: {},
 });
 
 let colWidth = ref(props.width !== -1 ? props.width : props.minWidth);
