@@ -21,9 +21,6 @@
 <script setup name="sideBar">
 import { reactive, ref } from "vue";
 
-import top from "./components/top/index.vue";
-import collapse from "./components/collapse/index.vue";
-
 const props = defineProps({
   // 树形结构
   sideBarData: {

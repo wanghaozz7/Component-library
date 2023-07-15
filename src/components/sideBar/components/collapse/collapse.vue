@@ -17,8 +17,6 @@
 <script setup name="collapse">
 import { ref, watch } from "vue";
 
-import collapseItem from "./collapseItem/index.vue";
-
 const props = defineProps({
   collapseData: {
     type: Array,

@@ -38,9 +38,6 @@
 <script setup name="collapseItem">
 import { ref, computed, getCurrentInstance, onMounted, watch } from "vue";
 
-import checkBox from "./components/checkBox/index.vue";
-import arrow from "./components/arrow/index.vue";
-
 const props = defineProps({
   // 节点本身({label:'',children:[]})
   node: {

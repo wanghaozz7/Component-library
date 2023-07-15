@@ -53,12 +53,8 @@
       </div>
     </scroll-bar> -->
     <div class="sideBar">
-      <side-bar
-        :sideBarData="sideBarData"
-        :defaultUnfoldAll="false"
-        :rowHeight="40"
-        @checkedNodeArrayChange="handleCheckedNodeArrayChange"
-      />
+      <side-bar :sideBarData="sideBarData" :defaultUnfoldAll="false" :rowHeight="40"
+        @checkedNodeArrayChange="handleCheckedNodeArrayChange" />
     </div>
     <div class="mainContent">
       <!-- <tooltip
@@ -94,7 +90,7 @@
           </carousel-item>
         </carousel>
       </div> -->
-      <use-component />
+      <use-component :title="title" />
     </div>
   </div>
 </template>
@@ -102,12 +98,10 @@
 <script setup name="HomeView">
 import { reactive } from "vue";
 
-import sideBar from "@/components/sideBar/index.vue";
-import tooltip from "@/components/tooltip/index.vue";
-import carousel from "@/components/carousel/index.vue";
-import carouselItem from "@/components/carousel/components/carouselItem/index.vue";
-import scrollBar from "@/components/scrollBar/index.vue";
-import useComponent from "@/components/useComponent/index.vue";
+const title = {
+  text: "Table Attributes",
+  desc: "通过基础的 24 分栏，迅速简便地创建布局",
+}
 
 const fn = (row, col, rowIndex, colIndex) => {
   console.log("fn");
@@ -200,14 +194,17 @@ const handleCheckedNodeArrayChange = (array) => (checkedNodeArray = array);
 <style scoped lang="less">
 .homeViewContainer {
   display: flex;
+
   .sideBar {
     width: 240px;
     height: auto;
   }
+
   .mainContent {
     flex: 1;
     align-items: center;
     justify-content: center;
+
     // background-color: rgb(207, 207, 207);
     .carousel-container {
       width: 600px;

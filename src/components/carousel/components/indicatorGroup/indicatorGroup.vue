@@ -1,25 +1,15 @@
 <template>
   <div class="indicator-group">
     <div v-for="idx in indicatorCount" :key="idx">
-      <dot
-        :isActive="idx === activeIdx"
-        @click="handleClick(idx)"
-        @mouseenter="handleMouseenter(idx)"
-        v-if="indicatorType === 'dot'"
-      />
-      <rectangle
-        :isActive="idx === activeIdx"
-        @click="handleClick(idx)"
-        @mouseenter="handleMouseenter(idx)"
-        v-if="indicatorType === 'rectangle'"
-      />
+      <dot :isActive="idx === activeIdx" @click="handleClick(idx)" @mouseenter="handleMouseenter(idx)"
+        v-if="indicatorType === 'dot'" />
+      <rectangle :isActive="idx === activeIdx" @click="handleClick(idx)" @mouseenter="handleMouseenter(idx)"
+        v-if="indicatorType === 'rectangle'" />
     </div>
   </div>
 </template>
 
 <script setup name="indicatorGroup">
-import dot from "./components/dot/index.vue";
-import rectangle from "./components/rectangle/index.vue";
 
 const props = defineProps({
   // 个数

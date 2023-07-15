@@ -4,7 +4,7 @@
   <card class="card-container">
     <template v-slot:header>
       <div class="header">
-        <slot />
+        <slot></slot>
       </div>
     </template>
     <div class="code-area">
@@ -13,8 +13,7 @@
         <div class="button">
           <div class="icon" :style="iconStyle"></div>
           <div class="text">
-            <span v-show="!showCode">显示</span
-            ><span v-show="showCode">收起</span>代码
+            <span v-show="!showCode">显示</span><span v-show="showCode">收起</span>代码
           </div>
         </div>
       </div>
@@ -25,8 +24,6 @@
 <script setup>
 import { ref, computed, onMounted, getCurrentInstance } from "vue";
 
-import card from "@/components/card/index.vue";
-
 const props = defineProps({
   code: {
     type: String,
@@ -35,10 +32,7 @@ const props = defineProps({
   title: {
     type: Object,
     default() {
-      return {
-        text: "Dropdown 下拉菜单",
-        desc: "将动作或菜单折叠到下拉菜单中。",
-      };
+      return {};
     },
   },
   defaultShowCode: {
@@ -58,7 +52,6 @@ const codeStyle = computed(() => {
     height,
   };
 });
-
 const iconStyle = computed(() => {
   const rotate = showCode.value ? "180deg" : "";
   const marginTop = showCode.value ? "-2px" : "8px";
@@ -95,7 +88,7 @@ onMounted(() => {
 }
 
 .card-container {
-  width: 300px;
+
 
   .code-area {
     position: relative;

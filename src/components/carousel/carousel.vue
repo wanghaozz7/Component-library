@@ -1,29 +1,16 @@
 <template>
-  <div
-    class="carousel"
-    ref="carousel"
-    @mouseenter="handleMouseEnter"
-    @mouseleave="handleMouseLeave"
-  >
+  <div class="carousel" ref="carousel" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
     <div class="carousel-body" :style="{ left: offset + 'px' }">
       <slot />
     </div>
     <arrowGroup @goForward="handleGoForward" @goBack="handleGoBack" />
-    <indicatorGroup
-      :indicatorCount="itemCount"
-      :activeIdx="curIdx"
-      :trigger="trigger"
-      :indicatorType="indicatorType"
-      @change="handleChange"
-    />
+    <indicatorGroup :indicatorCount="itemCount" :activeIdx="curIdx" :trigger="trigger" :indicatorType="indicatorType"
+      @change="handleChange" />
   </div>
 </template>
 
 <script setup name="carousel">
 import { ref, onMounted, onUnmounted, getCurrentInstance } from "vue";
-
-import arrowGroup from "./components/arrowGroup/index.vue";
-import indicatorGroup from "./components/indicatorGroup/index.vue";
 
 const props = defineProps({
   // 是否循环滚动
@@ -102,9 +89,8 @@ const preCirculation = () => {
   let el = ``,
     t = ``;
   //在首部添加尾元素
-  el += `<div class='carousel-item'>${
-    carousel_item[itemCount - 1].innerHTML
-  }</div>`;
+  el += `<div class='carousel-item'>${carousel_item[itemCount - 1].innerHTML
+    }</div>`;
   for (let tmp of carousel_item) {
     t = `<div class="carousel-item">${tmp.innerHTML}</div>`;
     el += t;
@@ -198,7 +184,7 @@ const renderMove = (targetIdx) => {
   }
 };
 
-const moveAnimate = (step, targetOffset, targetIdx, callBack = () => {}) => {
+const moveAnimate = (step, targetOffset, targetIdx, callBack = () => { }) => {
   offset.value += step;
   // 到达终点 => 处理状态
   if (
@@ -248,10 +234,10 @@ const webIsActive = () => {
     "hidden" in document
       ? "hidden"
       : "webkithidden" in document
-      ? "webkithidden"
-      : "mozhidden" in document
-      ? "mozhidden"
-      : null;
+        ? "webkithidden"
+        : "mozhidden" in document
+          ? "mozhidden"
+          : null;
   let vibchage =
     "visibilitychange" || "webkitvisibilitychange" || "mozvisibilitychange";
   document.addEventListener(vibchage, function () {
@@ -306,6 +292,7 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   overflow: hidden;
+
   .carousel-body {
     width: 100%;
     height: 100%;

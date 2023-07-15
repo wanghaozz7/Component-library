@@ -12,7 +12,6 @@
 </template>
 
 <script setup name="top">
-import checkBox from "../collapse/collapseItem/components/checkBox/index.vue";
 
 const props = defineProps({
   checkedCount: {

@@ -8,9 +8,6 @@
 
 <script setup name="attributeList">
 
-import tableList from "@/components/table/index.vue";
-import tableColumn from "@/components/table/tableColumn.vue";
-
 const props = defineProps({
   listData: {
     type: Array,
