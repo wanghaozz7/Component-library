@@ -1,8 +1,8 @@
 <template>
-  <div class="table-container" :style="tableStyle" ref="table">
+  <div class="table-container" :style="tableStyle" ref="table" v-resize:20="onResize">
     <div v-if="showHeader" ref="tableHeader">
       <table cellspacing="0">
-        <colgroup>
+        <colgroup ref="headerColgroup">
           <slot />
         </colgroup>
         <tr>
@@ -14,7 +14,7 @@
     </div>
     <div class="body-wrapper" :style="tableBodyStyle" ref="tableBody">
       <table cellspacing="0">
-        <colgroup ref="colgroup">
+        <colgroup ref="bodyColgroup">
           <slot />
         </colgroup>
         <tr v-for="(row, rowIndex) in data" :key="rowIndex" :class="tableRowClass">
@@ -37,6 +37,7 @@ import {
   computed,
   ref,
   nextTick,
+
 } from "vue";
 
 const props = defineProps({
@@ -101,7 +102,7 @@ const props = defineProps({
 });
 
 const columnsProps = reactive([]);
-const widthArr = reactive([]);
+const colWidthArr = reactive([]);
 let showScrollBar = ref(false);
 let bodyHeight = ref("auto");
 
@@ -141,6 +142,7 @@ const headerCellStyle = computed(() => {
 
       const borderBottom = normalBorder;
       const textAlign = 'center';
+      const color = '#909399'
 
       let lineHeight, padding, fontSize;
 
@@ -174,7 +176,8 @@ const headerCellStyle = computed(() => {
         padding,
         textAlign,
         lineHeight,
-        fontSize
+        fontSize,
+        color
       }
     };
     // 通过回调返回的样式
@@ -197,6 +200,8 @@ const tableCellStyle = computed(() => {
     const getDefaultStyle = () => {
       const borderLeft = props.border ? normalBorder : "";
       const borderRight = props.border ? colIndex === columnsProps.length - 1 ? normalBorder : "" : "";
+
+      const color = '#606266'
       const borderBottom = normalBorder;
       const textAlign = 'center';
 
@@ -205,22 +210,22 @@ const tableCellStyle = computed(() => {
         case 'big':
           height = '30px';
           padding = '8px';
-          fontSize = '18px'
+          fontSize = '16px'
           break;
         case 'normal':
           height = '25px';
-          padding = '5px';
-          fontSize = '16px'
+          padding = '6px';
+          fontSize = '14px'
           break;
         case 'small':
           height = '15px';
-          padding = '5px';
-          fontSize = '14px'
+          padding = '4px';
+          fontSize = '12px'
           break;
         default:
           height = '25px';
-          padding = '5px';
-          fontSize = '16px'
+          padding = '6px';
+          fontSize = '14px'
       }
       return {
         borderLeft,
@@ -229,7 +234,8 @@ const tableCellStyle = computed(() => {
         padding,
         textAlign,
         height,
-        fontSize
+        fontSize,
+        color
       };
     };
     // 通过回调返回的样式
@@ -259,56 +265,66 @@ const tableCellStyle = computed(() => {
 });
 const getLabel = computed(() => {
   return (row, colIndex) => {
-    return row[columnsProps[colIndex]?.prop]
-      ? row[columnsProps[colIndex]?.prop]
-      : props.cellEmptyText;
+    return row[columnsProps[colIndex]?.prop] === '' || row[columnsProps[colIndex]?.prop] === undefined
+      ? props.cellEmptyText
+      : row[columnsProps[colIndex]?.prop];
   }
 })
 
 const filterPx = (str) => {
   return parseInt(str.replaceAll("px"));
 };
+// 自定义指令处理slot高度
+const vResize = {
+  mounted(el, binding) {
+    // 这里使用debounce防抖处理，防抖的延时时间可以通过自定义指令的参数传过来，如`v-resize:300`表示300ms延时
+    // 也可以将此处延时去掉，放在绑定的函数中自定义
+    function debounce(fn, delay = 16) {
+      let t = null;
+      return function () {
+        if (t) {
+          clearTimeout(t);
+        }
+        const context = this;
+        const args = arguments;
+        t = setTimeout(function () {
+          fn.apply(context, args);
+        }, delay);
+      };
+    }
+    el._resizer = new window.ResizeObserver(
+      debounce(binding.value, Number(binding.arg) || 16)
+    );
+    el._resizer.observe(el);
+  },
+  unmounted(el) {
+    el._resizer.disconnect();
+  },
+};
+// 尺寸变化后的回调
+const onResize = (arg) => {
+  const height = arg[0].contentRect.height;
+  const width = arg[0].contentRect.width;
+  getColWidth()
+};
 
-onMounted(() => {
-  const colgroup = ctx.$refs.colgroup.children;
-  // 获取每一列(column)的props
-  for (let col of colgroup) columnsProps.push(col.__vueParentComponent.props);
-
-  // 判断是否出现溢出
-  const table = ctx.$refs.table;
-  showScrollBar.value = table.scrollHeight > table.clientHeight;
-
+const getColWidth = () => {
   // 获得table的实际宽度根据每列的width计算并分配宽度
   const tableWidth = window.getComputedStyle(ctx.$refs.tableBody).width;
-
-
-
   let availableWidth = filterPx(tableWidth);
-  if (showScrollBar.value) availableWidth -= 17;
   let count = 0;
-
+  if (showScrollBar.value) availableWidth -= 17;
+  // 第一次遍历为width赋值
   for (let idx in columnsProps) {
     const prop = columnsProps[idx];
-    const width = prop.width,
-      minWidth = prop.minWidth;
-    widthArr[idx] = {
-      prop: prop.prop,
-    };
-    // 对于固定宽度的列 直接赋值
-    // 同时 可分配availableWidth = tableWidth - 固定宽度之和
-    // 对于minWidth
-    // 将availableWidth 均等分给需要分配的列 如果小于minWidth 则减去minWidth 并赋值
+    const width = prop.width;
     if (width !== -1) {
       availableWidth -= width;
-      widthArr[idx].width = width;
-    } else {
-      count++;
-    }
+      colWidthArr[idx] = width;
+    } else count++;
   }
-
-  // 从左到右赋值 如果当前平均值大于等于minWidth则直接赋值 如果小于则依然赋值(压缩右侧)
+  // 第二次遍历为minWidth赋值
   let averageWidth = parseInt(availableWidth / count);
-
   for (let idx in columnsProps) {
     const prop = columnsProps[idx];
     const width = prop.width,
@@ -316,27 +332,48 @@ onMounted(() => {
     if (width !== -1) continue;
     if (averageWidth >= minWidth) {
       // 直接赋平均值
-      widthArr[idx].width = averageWidth;
+      colWidthArr[idx] = averageWidth;
       availableWidth -= averageWidth;
       count--;
       // 平均值不变
     } else {
       // 赋最小值
       if (availableWidth > minWidth) {
-        widthArr[idx].width = minWidth;
+        colWidthArr[idx] = minWidth;
         availableWidth -= minWidth;
         count--;
         // 重新计算平均值
         averageWidth = parseInt(availableWidth / count);
       } else {
         // 将剩下的全部分配给该列
-        widthArr[idx].width = availableWidth;
+        colWidthArr[idx] = availableWidth;
         availableWidth = 0;
         averageWidth = 0;
         count--;
       }
     }
+
+    // 分别给header和body的col赋值
+    const bodyColgroup = ctx.$refs.bodyColgroup.children;
+    const headerColgroup = ctx.$refs.headerColgroup.children;
+
+    bodyColgroup[idx].__vueParentComponent.devtoolsRawSetupState.colWidth.value = colWidthArr[idx];
+    headerColgroup[idx].__vueParentComponent.devtoolsRawSetupState.colWidth.value = colWidthArr[idx];
+
   }
+}
+
+onMounted(() => {
+  const bodyColgroup = ctx.$refs.bodyColgroup.children;
+  // 获取表头的属性
+  for (let col of bodyColgroup) columnsProps.push(col.__vueParentComponent.props);
+
+  // 判断是否出现溢出
+  const table = ctx.$refs.table;
+  showScrollBar.value = table.scrollHeight > table.clientHeight;
+
+  // 更新列宽度
+  getColWidth()
 
   nextTick(() => {
     // 溢出则计算高度显示滚动条
@@ -347,9 +384,10 @@ onMounted(() => {
       const height = props.height !== -1 ? props.height : props.maxHeight;
       bodyHeight.value = height - 40 - filterPx(headerHeight);
     }
-
   });
 });
+
+
 </script>
 
 <style scoped lang="less">

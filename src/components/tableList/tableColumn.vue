@@ -1,9 +1,9 @@
 <template>
-  <col :width="colWidth" ref="col" />
+  <col :width="colWidth" />
 </template>
 
 <script setup name="table-column">
-import { onMounted, getCurrentInstance, nextTick, ref } from "vue";
+import { ref } from "vue";
 
 const props = defineProps({
   width: {
@@ -26,21 +26,9 @@ const props = defineProps({
   headerAlign: {},
 });
 
+// 由父节点直接修改
 let colWidth = ref(props.width !== -1 ? props.width : props.minWidth);
 
-const ctx = getCurrentInstance().ctx;
-
-onMounted(() => {
-  nextTick(() => {
-    const colgroup = ctx.$refs.col.parentNode;
-    const widthArr =
-      colgroup.__vueParentComponent.devtoolsRawSetupState.widthArr;
-    const res = widthArr.find((x) => {
-      return x.prop === props.prop;
-    });
-    colWidth.value = res.width;
-  });
-});
 </script>
 
 <style scoped lang="less"></style>

@@ -34,7 +34,7 @@ const getAttributesColumnList = () => {
     { label: '说明', prop: 'desc' },
     { label: '类型', prop: 'type' },
     { label: '可选值', prop: 'optional' },
-    { label: '默认值', prop: '默认值' }
+    { label: '默认值', prop: 'default' }
   ];
 };
 const getEventsColumnList = () => {
@@ -67,12 +67,11 @@ const getSlotColumnList = () => {
 const getHeaderCellStyle = () => {
   return {
     fontSize: '14px',
-    color: 'gray',
     fontWeight: '500'
   }
 }
 const getCellStyle = () => {
-  return { color: 'gray', fontSize: '14px' };
+  return { fontSize: '14px' };
 }
 
 switch (props.type) {
@@ -94,6 +93,7 @@ switch (props.type) {
 <style scoped lang="less">
 .title {
   font-weight: 500;
-  padding-left: 20px
+  padding-left: 20px;
+  margin-top: 50px
 }
 </style>

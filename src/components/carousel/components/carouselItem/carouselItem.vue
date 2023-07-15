@@ -3,8 +3,9 @@
     <slot />
   </div>
 </template>
-<!-- <script setup name="carouselItem" >
-</script> -->
+<script setup name="carouselItem" >
+const msg = 11
+</script>
 
 <style>
 /* 穿透全局样式，因为循环需要生成前后的元素，scope会限制作用域 */

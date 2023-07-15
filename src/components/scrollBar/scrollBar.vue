@@ -1,17 +1,7 @@
 <template>
-  <div
-    class="container"
-    ref="container"
-    :style="containerStyle"
-    @wheel="handleWheel"
-    @mouseenter="handleMouseEnter"
-    @mouseleave="handleMouseLeave"
-  >
-    <div
-      class="content"
-      v-resize:20="onResize"
-      :style="{ top: -1 * offset + 'px' }"
-    >
+  <div class="container" ref="container" :style="containerStyle" @wheel="handleWheel" @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave">
+    <div class="content" v-resize:20="onResize" :style="{ 'top': getContentOffset + 'px' }" ref="content">
       <slot />
     </div>
     <div class="scroll-bar" :style="scrollBarStyle" />
@@ -19,7 +9,7 @@
 </template>
 
 <script setup name="scroll-bar">
-import { getCurrentInstance, onMounted, ref, computed } from "vue";
+import { getCurrentInstance, onMounted, ref, computed, nextTick } from "vue";
 
 const props = defineProps({
   // 显示滚动条的时机 ('always','hover','none')
@@ -43,7 +33,9 @@ let containerMaxHeight = ref(0);
 let scrollBarLen = ref(0);
 let contentHeight = ref(0);
 let contentWidth = ref(0);
-let offset = ref(0);
+// 滚动条的偏移量
+let scrollBarOffset = ref(0);
+let contentOffset = ref(0);
 let isHover = ref(false);
 let isDrag = ref(false);
 let isMove = ref(false);
@@ -53,9 +45,16 @@ let scrollBar;
 let y;
 let maxOffset;
 
+
+const getContentOffset = computed(() => {
+  contentOffset.value = -1 * (contentHeight.value - containerMaxHeight.value) / (containerMaxHeight.value - scrollBarLen.value) * scrollBarOffset.value;
+  return contentOffset.value;
+})
+
+
 const containerStyle = computed(() => {
   const maxHeight = containerMaxHeight.value + "px";
-  const height = contentHeight.value + "px";
+  const height = maxHeight;
   const width = contentWidth.value + "px";
   // 拖动时不高亮选中文本
   const userSelect = isDrag.value ? "none" : "";
@@ -70,7 +69,7 @@ const containerStyle = computed(() => {
 const scrollBarStyle = computed(() => {
   let opacity;
   const height = scrollBarLen.value + "px";
-  const top = offset.value + "px";
+  const top = scrollBarOffset.value + "px";
   const backgroundColor = isDrag.value ? "#d1d1d1" : "";
   const transition = isDrag.value ? "" : "all 0.2s";
 
@@ -132,17 +131,24 @@ const onResize = (arg) => {
   calScrollBarLen();
 };
 
-// 计算滚动条的长度和滚动范围
+// 计算滚动条的长度和位置(内容高度变化后)
 const calScrollBarLen = () => {
-  const t = scrollBarLen.value;
+  // 滚动条长度 = （盒子的长度 / 内容的长度）* 盒子的长度
+  // 滚动条走的距离 = 内容走的距离 *（盒子的长度 - 滚动条的长度）/（内容的长度 - 盒子的长度）
+
+  // 更新滚动条长度
   scrollBarLen.value = Math.floor(
     containerMaxHeight.value * (containerMaxHeight.value / contentHeight.value)
   );
-  scrollBarLen.value =
-    scrollBarLen.value < containerMaxHeight.value ? scrollBarLen.value : 0;
+  // 判断是否隐藏滚动条
+  scrollBarLen.value = scrollBarLen.value < containerMaxHeight.value ? scrollBarLen.value : 0;
+
+
   maxOffset = containerMaxHeight.value - scrollBarLen.value;
-  // 之后更新滚动位置
-  // offsetChange(offset.value, "mouse");
+  // scrollBarOffset(滚动条走的距离)
+  console.log(getContentOffset);
+
+  scrollBarOffset.value = Math.abs(contentOffset.value) * (containerMaxHeight.value - scrollBarLen.value) / (contentHeight.value - containerMaxHeight.value);
 };
 
 // 滚动条拖动事件
@@ -162,22 +168,22 @@ const mouseDownAndMove = (el, callback) => {
   });
 };
 
-const offsetChange = (change, type) => {
+const scrollBarOffsetChange = (change, type) => {
   // 如果没有出现滚动条则不能滚动
   if (scrollBarLen.value === 0) return;
-  if (change + offset.value >= maxOffset) handleMove(maxOffset, type);
-  else if (change + offset.value <= 0) handleMove(0, type);
-  else handleMove(offset.value + change, type);
+  if (change + scrollBarOffset.value >= maxOffset) handleMove(maxOffset, type);
+  else if (change + scrollBarOffset.value <= 0) handleMove(0, type);
+  else handleMove(scrollBarOffset.value + change, type);
 };
 
 const handleMove = (target, type) => {
-  if (type === "mouse") offset.value = target;
+  if (type === "mouse") scrollBarOffset.value = target;
   else {
     if (isMove.value) return;
-    const sub = target - offset.value;
+    const sub = target - scrollBarOffset.value;
     if (sub == 0) return;
     const step = sub / 10;
-    const delay = 20;
+    const delay = 10;
     isMove.value = true;
     moveAnimate(step, target, delay);
   }
@@ -185,14 +191,14 @@ const handleMove = (target, type) => {
 
 const moveAnimate = (step, target, delay) => {
   if (
-    (step > 0 && offset.value >= target) ||
-    (step < 0 && offset.value <= target)
+    (step > 0 && scrollBarOffset.value >= target) ||
+    (step < 0 && scrollBarOffset.value <= target)
   ) {
-    offset.value = target;
+    scrollBarOffset.value = target;
     isMove.value = false;
     return;
   }
-  offset.value += step;
+  scrollBarOffset.value += step;
   setTimeout(() => {
     moveAnimate(step, target, delay);
   }, delay);
@@ -213,10 +219,10 @@ const handleWheel = (e) => {
 
   if (e.wheelDelta < 0) {
     // 向下
-    offsetChange(k * Math.abs(props.wheelSensitivity), "wheel");
+    scrollBarOffsetChange(k * Math.abs(props.wheelSensitivity), "wheel");
   } else {
     // 向上
-    offsetChange(k * -1 * Math.abs(props.wheelSensitivity), "wheel");
+    scrollBarOffsetChange(k * -1 * Math.abs(props.wheelSensitivity), "wheel");
   }
 };
 
@@ -240,7 +246,7 @@ onMounted(() => {
     if (y === 0) y = e.y;
     else {
       const change = e.y - y;
-      offsetChange(change, "mouse");
+      scrollBarOffsetChange(change, "mouse");
       y = e.y;
     }
   });
@@ -264,6 +270,7 @@ onMounted(() => {
   .content {
     position: absolute;
   }
+
   .scroll-bar {
     position: absolute;
     right: 0;
@@ -272,6 +279,7 @@ onMounted(() => {
     background-color: #ebebeb;
     cursor: pointer;
     z-index: 99;
+
     &:hover {
       background-color: #d1d1d1;
     }
