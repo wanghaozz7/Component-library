@@ -8,7 +8,7 @@
       </div>
     </template>
     <div class="code-area">
-      <div class="code" v-text="code" :style="codeStyle" ref="code"></div>
+      <div class="code" :style="codeStyle" ref="code"></div>
       <div class="extention" @click="handleClick">
         <div class="button">
           <div class="icon" :style="iconStyle"></div>
@@ -67,8 +67,15 @@ const handleClick = () => {
 
 onMounted(() => {
   const codeRef = ctx.$refs.code;
-  const style = window.getComputedStyle(codeRef);
-  maxHeight = style.height;
+  const arr = props.code.split('\n');
+  for (let row of arr) {
+    const div = document.createElement('div');
+    div.innerText = row
+    div.style.height = '14px';
+    div.style.padding = '5px'
+    codeRef.appendChild(div)
+  }
+  maxHeight = arr.length * 24 + 'px';
   minHeight = 0;
   if (!props.defaultShowCode) codeRef.style.height = 0;
   else showCode.value = true;

@@ -2,7 +2,7 @@
   <div class="homeViewContainer">
     <scroll-bar showScrollBar="hover" :wheelSensitivity="50" direction="normal">
       <div class="sideBar">
-        <side-bar :sideBarData="sideBarData" :defaultUnfoldAll="false" :rowHeight="40"
+        <side-bar :sideBarData="sideBarData" :defaultUnfoldAll="true" :rowHeight="40"
           @checkedNodeArrayChange="handleCheckedNodeArrayChange" />
       </div>
     </scroll-bar>
@@ -41,21 +41,24 @@
           </use-component>
           <use-component :title="carouselConfig.title" :lists="carouselConfig.lists"
             v-show="carouselSelected.length !== 0">
-            <show-component :code="carouselConfig.children[0].code" :title="carouselConfig.children[0].title">
-              <div class="carousel-container">
-                <carousel indicatorType="rectangle" trigger="click">
-                  <carousel-item v-for="item in 5" :key="item">
-                    <div class="carousel-item">
-                      +++++{{ item }}+++++
-                    </div>
-                  </carousel-item>
-                </carousel>
-              </div>
-            </show-component>
+            <div v-show="getShowType('carousel', '1')">
+              <show-component :code="carouselConfig.children[0].code" :title="carouselConfig.children[0].title">
+                <div class="carousel-container">
+                  <carousel indicatorType="rectangle" trigger="click">
+                    <carousel-item v-for="item in 5" :key="item">
+                      <div class="carousel-item">
+                        +++++{{ item }}+++++
+                      </div>
+                    </carousel-item>
+                  </carousel>
+                </div>
+              </show-component>
+            </div>
           </use-component>
         </div>
       </div>
     </scroll-bar>
+
 
   </div>
 </template>
@@ -113,6 +116,50 @@ const getShowType = computed(() => {
 let checkedNodeArray = reactive([]);
 // 侧边栏数据
 const sideBarData = [
+  {
+    label: 'Table 表格',
+    children: [
+      {
+        label: '基础用法',
+        id: 'table-1',
+        defaultChecked: true
+      },
+      {
+        label: '带斑马纹表格',
+        id: 'table-2',
+        defaultChecked: true
+      },
+      {
+        label: '带边框表格',
+        id: 'table-3',
+        defaultChecked: true
+      }
+    ]
+  },
+  {
+    label: 'Tooltip 文字提示',
+    children: [
+      {
+        label: '基础用法',
+        id: 'tooltip-1'
+      }
+    ]
+  },
+  {
+    label: 'Carousel 轮播图',
+    children: [
+      {
+        label: '基础用法',
+        id: 'carousel-1'
+      }
+    ]
+  },
+];
+
+
+
+
+[
   {
     label: "一级节点10000000000000000000000",
     defaultUnfold: false,
@@ -330,45 +377,6 @@ const sideBarData = [
         ],
       },
     ],
-  },
-];
-
-
-[
-  {
-    label: 'Table 表格',
-    children: [
-      {
-        label: '基础用法',
-        id: 'table-1'
-      },
-      {
-        label: '带斑马纹表格',
-        id: 'table-2'
-      },
-      {
-        label: '带边框表格',
-        id: 'table-3'
-      }
-    ]
-  },
-  {
-    label: 'Tooltip 文字提示',
-    children: [
-      {
-        label: '基础用法',
-        id: 'tooltip-1'
-      }
-    ]
-  },
-  {
-    label: 'Carousel 轮播图',
-    children: [
-      {
-        label: '基础用法',
-        id: 'carousel-1'
-      }
-    ]
   },
 ];
 

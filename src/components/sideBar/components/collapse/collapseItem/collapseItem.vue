@@ -1,15 +1,7 @@
 <template>
   <div class="collapse-item" :style="{ height: getHeight + 'px' }">
-    <div
-      class="show-part"
-      @click.self="handleClick"
-      :style="{ 'line-height': rowHeight + 'px' }"
-    >
-      <div
-        class="left-part"
-        @click="handleClick"
-        :style="{ 'margin-left': getLeftOffset + 'px' }"
-      >
+    <div class="show-part" @click.self="handleClick" :style="{ 'line-height': rowHeight + 'px' }">
+      <div class="left-part" @click="handleClick" :style="{ 'margin-left': getLeftOffset + 'px' }">
         <arrow :isFold="isFold" v-if="!isLeaf()" />
         <div class="text" :style="{ 'max-width': getMaxWidth + 'px' }">
           {{ node.label }}
@@ -18,19 +10,10 @@
       <checkBox @check="handleCheck" :checkedState="checkedState" />
     </div>
     <div ref="hiddenPart">
-      <collapse-item
-        v-for="(children, index) in node.children"
-        :key="children.label"
-        :node="children"
-        :totalNode="totalNode.children[index]"
-        :fatherCheckedState="checkedState"
-        :offset="offset + 5"
-        :rowHeight="rowHeight"
-        :defaultUnfoldAll="defaultUnfoldAll"
-        @heightChange="handleHeightChange"
-        @childCountChange="handleChildCountChange"
-        @nodeChange="handleNodeChange"
-      />
+      <collapse-item v-for="(children, index) in node.children" :key="children.label" :node="children"
+        :totalNode="totalNode.children[index]" :fatherCheckedState="checkedState" :offset="offset + 5"
+        :rowHeight="rowHeight" :defaultUnfoldAll="defaultUnfoldAll" @heightChange="handleHeightChange"
+        @childCountChange="handleChildCountChange" @nodeChange="handleNodeChange" />
     </div>
   </div>
 </template>
@@ -39,7 +22,7 @@
 import { ref, computed, getCurrentInstance, onMounted, watch } from "vue";
 
 const props = defineProps({
-  // 节点本身({label:'',children:[]})
+  // 节点本身({label:'',children:[],defaultChecked: boolean})
   node: {
     type: Object,
     default() {
@@ -184,6 +167,10 @@ onMounted(() => {
   rowWidth.value = ctx.$refs.hiddenPart.offsetWidth;
   // 节点是否展开
   if (props.defaultUnfoldAll || props.node.defaultUnfold) isFold.value = false;
+  if (props.node.defaultChecked) {
+    checkedState.value = 'all';
+    handleChildCountChange(1)
+  }
 });
 
 // 监听折叠状态
@@ -231,6 +218,7 @@ export default { name: "collapseItem" };
   width: 100%;
   overflow: hidden;
   transition: all 0.3s;
+
   .show-part {
     display: flex;
     justify-content: space-between;
@@ -238,9 +226,11 @@ export default { name: "collapseItem" };
     border-radius: 4px;
     padding: 0 10px;
     cursor: pointer;
+
     &:hover {
       background-color: #eee;
     }
+
     .left-part {
       display: flex;
       align-items: center;

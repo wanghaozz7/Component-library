@@ -146,8 +146,6 @@ const calScrollBarLen = () => {
 
   maxOffset = containerMaxHeight.value - scrollBarLen.value;
   // scrollBarOffset(滚动条走的距离)
-  console.log(getContentOffset);
-
   scrollBarOffset.value = Math.abs(contentOffset.value) * (containerMaxHeight.value - scrollBarLen.value) / (contentHeight.value - containerMaxHeight.value);
 };
 
