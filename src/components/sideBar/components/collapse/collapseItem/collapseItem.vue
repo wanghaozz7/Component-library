@@ -13,7 +13,8 @@
       <collapse-item v-for="(children, index) in node.children" :key="children.label" :node="children"
         :totalNode="totalNode.children[index]" :fatherCheckedState="checkedState" :offset="offset + 5"
         :rowHeight="rowHeight" :defaultUnfoldAll="defaultUnfoldAll" @heightChange="handleHeightChange"
-        @childCountChange="handleChildCountChange" @nodeChange="handleNodeChange" />
+        :default-checked-all="defaultCheckedAll" @childCountChange="handleChildCountChange"
+        @nodeChange="handleNodeChange" />
     </div>
   </div>
 </template>
@@ -56,6 +57,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  defaultCheckedAll: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const emit = defineEmits(["heightChange", "childCountChange", "nodeChange"]);
@@ -167,7 +172,7 @@ onMounted(() => {
   rowWidth.value = ctx.$refs.hiddenPart.offsetWidth;
   // 节点是否展开
   if (props.defaultUnfoldAll || props.node.defaultUnfold) isFold.value = false;
-  if (props.node.defaultChecked) {
+  if (isLeaf() && (props.node.defaultChecked || props.defaultCheckedAll)) {
     checkedState.value = 'all';
     handleChildCountChange(1)
   }

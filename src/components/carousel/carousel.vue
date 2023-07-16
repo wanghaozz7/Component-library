@@ -1,5 +1,6 @@
 <template>
-  <div class="carousel" ref="carousel" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
+  <div class="carousel" ref="carousel" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave"
+    v-resize:20="onResize">
     <div class="carousel-body" :style="{ left: offset + 'px' }">
       <slot />
     </div>
@@ -268,8 +269,52 @@ const handleMouseEnter = () => clearAutoRollingInterval();
 
 const handleMouseLeave = () => setAutoRollingInterval();
 
-onMounted(() => {
+const vResize = {
+  mounted(el, binding) {
+    // 这里使用debounce防抖处理，防抖的延时时间可以通过自定义指令的参数传过来，如`v-resize:300`表示300ms延时
+    // 也可以将此处延时去掉，放在绑定的函数中自定义
+    function debounce(fn, delay = 16) {
+      let t = null;
+      return function () {
+        if (t) {
+          clearTimeout(t);
+        }
+        const context = this;
+        const args = arguments;
+        t = setTimeout(function () {
+          fn.apply(context, args);
+        }, delay);
+      };
+    }
+    el._resizer = new window.ResizeObserver(
+      debounce(binding.value, Number(binding.arg) || 16)
+    );
+    el._resizer.observe(el);
+  },
+  unmounted(el) {
+    el._resizer.disconnect();
+  },
+};
+
+const onResize = (arg) => {
+  const height = arg[0].contentRect.height;
+  const width = arg[0].contentRect.width;
+  getAttr();
+
+};
+
+const getAttr = () => {
   // 获取属性
+  carousel = ctx.$refs.carousel;
+  carouselWidth = carousel.offsetWidth;
+
+  // 重置下标范围   curIdx:1 ~ itemCount+1    偏移量范围 offset:carouselWidth*-1 ~ itemCount*carouselWidth*-1
+  offset.value = carouselWidth * -1; // 默认偏移量更改
+  curIdx.value = 1; // 默认下标更改
+}
+
+
+onMounted(() => {
   carousel = ctx.$refs.carousel;
   carousel_body = carousel.children[0];
   carousel_item = carousel_body.children;

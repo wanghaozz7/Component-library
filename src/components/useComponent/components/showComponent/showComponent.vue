@@ -4,7 +4,7 @@
   <card class="card-container">
     <template v-slot:header>
       <div class="header">
-        <slot></slot>
+        <slot />
       </div>
     </template>
     <div class="code-area">
@@ -44,7 +44,7 @@ const props = defineProps({
 let showCode = ref(false);
 
 const ctx = getCurrentInstance().ctx;
-let maxHeight, minHeight;
+let maxHeight, minHeight = 0, codeRef;
 
 const codeStyle = computed(() => {
   const height = showCode.value ? maxHeight : minHeight;
@@ -65,18 +65,67 @@ const handleClick = () => {
   showCode.value = !showCode.value;
 };
 
-onMounted(() => {
-  const codeRef = ctx.$refs.code;
+
+const getCodeArea = () => {
+  // 将String转为代码块
+  // 首先将代码块分为三部分 template script style 通过三个标签分开三块区域
+  // 对于每块区域 有tag(标签名) attr(键名) string(键值) 以及其他文字部分
+  codeRef = ctx.$refs.code;
   const arr = props.code.split('\n');
   for (let row of arr) {
     const div = document.createElement('div');
-    div.innerText = row
-    div.style.height = '14px';
-    div.style.padding = '5px'
+
+    div.className = 'normalCode'
+
+    let indent = '';
+    // 首先记录下每一行开头的缩进量
+    for (let char of row) {
+      if (char === ' ') indent += ' ';
+      else break;
+    }
+    const indentSpan = document.createElement('span');
+    indentSpan.innerText = indent;
+    div.appendChild(indentSpan)
+
+    const words = row.split(' ');
+    for (let word of words) {
+      const span = document.createElement('span');
+      const keyValues = word.split('=');
+      if (keyValues.length === 2) {
+        const value = keyValues[1];
+        const key = keyValues[0] + '=';
+        const wordString = document.createElement('span');
+        const wordAttr = document.createElement('span');
+        if ((value.startsWith("'") && (value.endsWith("'") || value.endsWith(","))) || (value.startsWith('"') && (value.endsWith('"') || value.endsWith(",")))) {
+          wordString.className = 'word-string';
+        }
+
+        wordString.innerText = value + ' ';
+        wordAttr.innerText = key;
+        span.appendChild(wordAttr);
+        span.appendChild(wordString);
+
+
+      } else {
+        span.innerText = word + ' ';
+        if (word.endsWith(':')) span.className = 'word-key';
+        else if (word.endsWith(',')) span.className = 'word-string';
+      }
+      div.appendChild(span)
+    }
+
+
     codeRef.appendChild(div)
+
+
   }
+  // 通过代码行数计算出code区域的高度
   maxHeight = arr.length * 24 + 'px';
-  minHeight = 0;
+}
+
+
+onMounted(() => {
+  getCodeArea();
   if (!props.defaultShowCode) codeRef.style.height = 0;
   else showCode.value = true;
 });
@@ -154,5 +203,21 @@ onMounted(() => {
       }
     }
   }
+}
+</style>
+
+<style>
+.normalCode {
+  height: 14px;
+  padding: 5px;
+  color: #409EFF;
+}
+
+.word-key {
+  color: #606266;
+}
+
+.word-string {
+  color: #756bb1
 }
 </style>

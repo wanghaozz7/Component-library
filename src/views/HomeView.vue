@@ -1,13 +1,13 @@
 <template>
   <div class="homeViewContainer">
-    <scroll-bar showScrollBar="hover" :wheelSensitivity="50" direction="normal">
+    <scroll-bar showScrollBar="hover" direction="normal">
       <div class="sideBar">
-        <side-bar :sideBarData="sideBarData" :defaultUnfoldAll="true" :rowHeight="40"
+        <side-bar :sideBarData="sideBarData" :defaultUnfoldAll="true" :defaultCheckedAll="true" :rowHeight="40"
           @checkedNodeArrayChange="handleCheckedNodeArrayChange" />
       </div>
     </scroll-bar>
 
-    <scroll-bar showScrollBar="hover" :wheelSensitivity="150" direction="normal">
+    <scroll-bar showScrollBar="hover" direction="normal">
       <div class="mainContent">
         <div class="block">
           <use-component :title="tableConfig.title" :lists="tableConfig.lists" v-show="tableSelected.length !== 0">
@@ -39,6 +39,18 @@
               </show-component>
             </div>
           </use-component>
+          <use-component :title="tooltipConfig.title" :lists="tooltipConfig.lists" v-show="tooltipSelected.length !== 0">
+            <div v-show="getShowType('tooltip', '1')">
+              <show-component :code="tooltipConfig.children[0].code" :title="tooltipConfig.children[0].title">
+                <div style="height: 250px;display: flex;align-items: center;justify-content: center;">
+                  <tooltip content="我是文字提示">
+                    <div style="height: 100px;background-color: lightpink;width: 100px;border: 1px solid black;">111</div>
+                  </tooltip>
+                </div>
+
+              </show-component>
+            </div>
+          </use-component>
           <use-component :title="carouselConfig.title" :lists="carouselConfig.lists"
             v-show="carouselSelected.length !== 0">
             <div v-show="getShowType('carousel', '1')">
@@ -67,29 +79,32 @@
 import { reactive, computed } from "vue";
 
 import tableConfig from '../config/table.js'
+import tooltipConfig from '../config/tooltip.js'
 import carouselConfig from '../config/carousel.js'
+
 
 
 const tableSelected = reactive([]);
 const carouselSelected = reactive([]);
+const tooltipSelected = reactive([]);
 
 
 const tableData = [{
   date: '2016-05-02',
   name: '王小虎',
-  address: '上海市普陀区金沙江路 1518 弄'
+  address: '上海市普陀区金沙江路1518弄'
 }, {
   date: '2016-05-04',
   name: '王小虎',
-  address: '上海市普陀区金沙江路 1517 弄'
+  address: '上海市普陀区金沙江路1517弄'
 }, {
   date: '2016-05-01',
   name: '王小虎',
-  address: '上海市普陀区金沙江路 1519 弄'
+  address: '上海市普陀区金沙江路1519弄'
 }, {
   date: '2016-05-03',
   name: '王小虎',
-  address: '上海市普陀区金沙江路 1516 弄'
+  address: '上海市普陀区金沙江路1516弄'
 }]
 
 
@@ -100,6 +115,9 @@ const getShowType = computed(() => {
       case 'table':
         searchArr = tableSelected;
         break;
+      case 'tooltip':
+        searchArr = tooltipSelected;
+        break
       case 'carousel':
         searchArr = carouselSelected;
         break
@@ -127,12 +145,10 @@ const sideBarData = [
       {
         label: '带斑马纹表格',
         id: 'table-2',
-        defaultChecked: true
       },
       {
         label: '带边框表格',
         id: 'table-3',
-        defaultChecked: true
       }
     ]
   },
@@ -150,7 +166,7 @@ const sideBarData = [
     children: [
       {
         label: '基础用法',
-        id: 'carousel-1'
+        id: 'carousel-1',
       }
     ]
   },
@@ -386,6 +402,7 @@ const handleCheckedNodeArrayChange = (array) => {
   checkedNodeArray = array;
   tableSelected.length = 0;
   carouselSelected.length = 0;
+  tooltipSelected.length = 0;
   for (let node of checkedNodeArray) {
     const id = node.id;
     const arr = id.split('-');
@@ -393,9 +410,12 @@ const handleCheckedNodeArrayChange = (array) => {
       case 'table':
         tableSelected.push(arr[1]);
         break;
+      case 'tooltip':
+        tooltipSelected.push(arr[1]);
+        break;
       case 'carousel':
         carouselSelected.push(arr[1]);
-        break
+        break;
     }
   }
 
@@ -418,13 +438,12 @@ const handleCheckedNodeArrayChange = (array) => {
   .mainContent {
     flex: 1;
 
-
-
     .block {
       display: flex;
       justify-content: center;
       align-items: center;
       flex-wrap: wrap;
+
     }
   }
 }

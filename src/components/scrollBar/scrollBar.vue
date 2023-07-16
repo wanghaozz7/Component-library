@@ -20,13 +20,23 @@ const props = defineProps({
   // 滚轮灵敏度 (取数字的绝对值代表滚动一次的距离)
   wheelSensitivity: {
     type: Number,
-    default: 100,
+    default: 25,
   },
   // 滚动方向 ('normal','opposite')
   direction: {
     type: String,
     default: "normal",
   },
+  // 滚动的帧数
+  frame: {
+    type: Number,
+    default: 20
+  },
+  // 总延迟 (delay = frame * 执行一次动画后的延迟)
+  delay: {
+    type: Number,
+    default: 25
+  }
 });
 
 let containerMaxHeight = ref(0);
@@ -38,6 +48,7 @@ let scrollBarOffset = ref(0);
 let contentOffset = ref(0);
 let isHover = ref(false);
 let isDrag = ref(false);
+// 防抖 频繁滚动下更新滚动的目标和速度(滚动的时间还是从最后一次滚动开始delay后结束)
 let isMove = ref(false);
 
 const ctx = getCurrentInstance().ctx;
@@ -143,7 +154,6 @@ const calScrollBarLen = () => {
   // 判断是否隐藏滚动条
   scrollBarLen.value = scrollBarLen.value < containerMaxHeight.value ? scrollBarLen.value : 0;
 
-
   maxOffset = containerMaxHeight.value - scrollBarLen.value;
   // scrollBarOffset(滚动条走的距离)
   scrollBarOffset.value = Math.abs(contentOffset.value) * (containerMaxHeight.value - scrollBarLen.value) / (contentHeight.value - containerMaxHeight.value);
@@ -169,37 +179,56 @@ const mouseDownAndMove = (el, callback) => {
 const scrollBarOffsetChange = (change, type) => {
   // 如果没有出现滚动条则不能滚动
   if (scrollBarLen.value === 0) return;
-  if (change + scrollBarOffset.value >= maxOffset) handleMove(maxOffset, type);
-  else if (change + scrollBarOffset.value <= 0) handleMove(0, type);
-  else handleMove(scrollBarOffset.value + change, type);
+  // 滚动范围修正滚动值
+  if (change + target >= maxOffset) {
+    // 向下滚动到达底部
+    handleMove(maxOffset - scrollBarOffset.value, type);
+  }
+  else if (change + target <= 0) {
+    // 向上滚动到达顶部
+    handleMove(-scrollBarOffset.value, type);
+  }
+  else handleMove(change, type);
 };
 
-const handleMove = (target, type) => {
-  if (type === "mouse") scrollBarOffset.value = target;
+let step, delay, target = scrollBarOffset.value;
+const handleMove = (change, type) => {
+  const moveAnimate = () => {
+    if (
+      (step > 0 && scrollBarOffset.value >= target) ||
+      (step < 0 && scrollBarOffset.value <= target)
+    ) {
+      scrollBarOffset.value = target;
+      isMove.value = false;
+      return;
+    }
+    scrollBarOffset.value += step;
+    setTimeout(() => {
+      moveAnimate();
+    }, delay);
+  };
+  // 如果是鼠标拖动则直接闪现
+  if (type === "mouse") scrollBarOffset.value += change;
   else {
-    if (isMove.value) return;
-    const sub = target - scrollBarOffset.value;
-    if (sub == 0) return;
-    const step = sub / 10;
-    const delay = 10;
-    isMove.value = true;
-    moveAnimate(step, target, delay);
+    if (change == 0) return;
+    if (isMove.value) {
+      // 如果是快速滚动(请求滚动时仍然在滚动) 在原来的基础更新参数
+      target += change;
+      target = target > 0 ? target : 0;
+      target = target < maxOffset ? target : maxOffset;
+      step = (target - scrollBarOffset.value) / props.frame;
+      delay = props.delay / props.frame;
+    } else {
+      // 如果不是快速滚动则是从当前位置进行滚动
+      target = scrollBarOffset.value + change
+      step = change / props.frame;
+      delay = props.delay / props.frame;
+      isMove.value = true;
+      moveAnimate();
+    }
+    console.log('target', target, change);
   }
-};
 
-const moveAnimate = (step, target, delay) => {
-  if (
-    (step > 0 && scrollBarOffset.value >= target) ||
-    (step < 0 && scrollBarOffset.value <= target)
-  ) {
-    scrollBarOffset.value = target;
-    isMove.value = false;
-    return;
-  }
-  scrollBarOffset.value += step;
-  setTimeout(() => {
-    moveAnimate(step, target, delay);
-  }, delay);
 };
 
 const handleWheel = (e) => {
@@ -214,7 +243,6 @@ const handleWheel = (e) => {
     default:
       k = 1;
   }
-
   if (e.wheelDelta < 0) {
     // 向下
     scrollBarOffsetChange(k * Math.abs(props.wheelSensitivity), "wheel");

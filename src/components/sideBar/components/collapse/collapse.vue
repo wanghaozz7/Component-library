@@ -1,16 +1,8 @@
 <template>
   <div class="collapse">
-    <collapse-item
-      v-for="(node, idx) in collapseData"
-      :key="node.label"
-      :node="node"
-      :totalNode="totalTree.children[idx]"
-      :fatherCheckedState="checkedState"
-      :defaultUnfoldAll="defaultUnfoldAll"
-      :rowHeight="rowHeight"
-      @childCountChange="handleChildCountChange"
-      @nodeChange="handleNodeChange"
-    />
+    <collapse-item v-for="(node, idx) in collapseData" :key="node.label" :node="node" :totalNode="totalTree.children[idx]"
+      :fatherCheckedState="checkedState" :defaultUnfoldAll="defaultUnfoldAll" :defaultCheckedAll="defaultCheckedAll"
+      :rowHeight="rowHeight" @childCountChange="handleChildCountChange" @nodeChange="handleNodeChange" />
   </div>
 </template>
 
@@ -42,6 +34,10 @@ const props = defineProps({
     tpye: Number,
     default: 32,
   },
+  defaultCheckedAll: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const emit = defineEmits([
@@ -91,10 +87,14 @@ watch(
 <style scoped lang="less">
 .collapse {
   // 去除双击后选择文字
-  -moz-user-select: none; /*火狐*/
-  -webkit-user-select: none; /*webkit浏览器*/
-  -ms-user-select: none; /*IE10*/
-  -khtml-user-select: none; /*早期浏览器*/
+  -moz-user-select: none;
+  /*火狐*/
+  -webkit-user-select: none;
+  /*webkit浏览器*/
+  -ms-user-select: none;
+  /*IE10*/
+  -khtml-user-select: none;
+  /*早期浏览器*/
   user-select: none;
 }
 </style>

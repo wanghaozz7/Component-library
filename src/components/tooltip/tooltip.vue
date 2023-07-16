@@ -1,10 +1,5 @@
 <template>
-  <div
-    class="tooltip"
-    ref="tooltip"
-    @mouseenter="handleMouseEnter"
-    @mouseleave="handleMouseLeave"
-  >
+  <div class="tooltip" ref="tooltip" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" v-resize:20="onResize">
     <slot />
     <div class="tooltip-body" :style="hiddenPartStyle">
       <div class="triangle" :style="triangleStyle">
@@ -49,6 +44,8 @@ let contentHeight = ref(0);
 let showTooltip = ref(false);
 let opacity = ref(0);
 let display = ref("");
+
+const ctx = getCurrentInstance().ctx;
 
 const hiddenPartStyle = computed(() => {
   const sw = showPartWidth.value,
@@ -210,23 +207,62 @@ const closeTooltip = () => {
   }, props.delay);
 };
 
-onMounted(() => {
-  const ctx = getCurrentInstance().ctx;
+const vResize = {
+  mounted(el, binding) {
+    // 这里使用debounce防抖处理，防抖的延时时间可以通过自定义指令的参数传过来，如`v-resize:300`表示300ms延时
+    // 也可以将此处延时去掉，放在绑定的函数中自定义
+    function debounce(fn, delay = 16) {
+      let t = null;
+      return function () {
+        if (t) {
+          clearTimeout(t);
+        }
+        const context = this;
+        const args = arguments;
+        t = setTimeout(function () {
+          fn.apply(context, args);
+        }, delay);
+      };
+    }
+    el._resizer = new window.ResizeObserver(
+      debounce(binding.value, Number(binding.arg) || 16)
+    );
+    el._resizer.observe(el);
+  },
+  unmounted(el) {
+    el._resizer.disconnect();
+  },
+};
+
+const onResize = (arg) => {
+  // const height = arg[0].contentRect.height;
+  // const width = arg[0].contentRect.width;
+
+
   const tooltip = ctx.$refs.tooltip;
   const showPart = tooltip.children[0];
   const content = ctx.$refs.content;
 
+
   // 将内层的样式转移到外层
 
   tooltip.style = showPart.style;
-  showPart.style = {};
-  tooltip.classList.add(showPart.classList);
-  showPart.classList.remove(showPart.classList);
+
+  if (showPart.classList.length !== 0) {
+    tooltip.classList.add(showPart.classList);
+    showPart.classList.remove(showPart.classList);
+  }
+
 
   showPartWidth.value = showPart.clientWidth;
   showPartHeight.value = showPart.clientHeight;
   contentWidth.value = content.clientWidth;
   contentHeight.value = content.clientHeight;
+};
+
+
+onMounted(() => {
+
 });
 
 watch(
@@ -244,10 +280,12 @@ watch(
 <style scoped lang="less">
 .tooltip {
   position: relative;
+
   .tooltip-body {
     position: absolute;
     transition: all 0.3s;
     z-index: 999 !important;
+
     .triangle {
       position: absolute;
       top: 0;
@@ -256,6 +294,7 @@ watch(
       border: 8px solid transparent;
       border-bottom-color: black;
       z-index: 999 !important;
+
       .innerTriangle {
         position: absolute;
         left: -8px;
@@ -265,6 +304,7 @@ watch(
         border: 8px solid transparent;
       }
     }
+
     .content {
       position: absolute;
       white-space: nowrap;

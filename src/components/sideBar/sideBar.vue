@@ -1,20 +1,10 @@
 <template>
   <div class="sideBar-container">
-    <top
-      :checkedCount="count"
-      :checkedState="checkedState"
-      @rootStateChange="handleRootStateChange"
-    />
-    <collapse
-      :collapseData="tree"
-      :totalTree="totalTree"
-      :checkedState="checkedState"
-      :defaultUnfoldAll="defaultUnfoldAll"
-      :rowHeight="rowHeight"
-      @collapseCountChange="handleCollapseCountChange"
-      @collapseStateChange="handleCollapseStateChange"
-      @nodeChange="handleNodeChange"
-    />
+    <top :checkedCount="count" :checkedState="checkedState" @rootStateChange="handleRootStateChange" />
+    <collapse :collapseData="tree" :totalTree="totalTree" :checkedState="checkedState"
+      :defaultUnfoldAll="defaultUnfoldAll" :defaultCheckedAll="defaultCheckedAll" :rowHeight="rowHeight"
+      @collapseCountChange="handleCollapseCountChange" @collapseStateChange="handleCollapseStateChange"
+      @nodeChange="handleNodeChange" />
   </div>
 </template>
 
@@ -39,6 +29,10 @@ const props = defineProps({
     tpye: Number,
     default: 32,
   },
+  defaultCheckedAll: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const emit = defineEmits(["checkedNodeArrayChange"]);
