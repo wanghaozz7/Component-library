@@ -75,31 +75,28 @@ export default {
         desc: "提供了4种不同悬浮位置的用法",
       },
       code: `
-      <div class="carousel-container">
-          <carousel indicatorType="rectangle" trigger="click">
-                <carousel-item v-for="item in 5" :key="item">
-                      <div class="carousel-item">
-                        +++++{{ item }}+++++
-                      </div>
-                </carousel-item>
-          </carousel>
-      </div>
-
-      <style scoped>
-      .carousel-container {
-          height: 350px;
-          margin: 50px;
-      }
-      .carousel-item {
-          width: 100%;
-          height: 100%;
-          font-size: 36px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          background-color: rgb(194, 249, 194);
-      }
-      </style>
+            <div 
+                style="
+                height: 250px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+              "
+            >
+              <tooltip content="我是文字提示">
+                <div
+                  style="
+                    height: 100px;
+                    background-color: lightpink;
+                    width: 100px;
+                    border: 1px solid black;
+                  "
+                >
+                  111
+                </div>
+              </tooltip>
+            </div>
       `,
     },
   ],

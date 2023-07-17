@@ -2,426 +2,172 @@
   <div class="homeViewContainer">
     <scroll-bar showScrollBar="hover" direction="normal">
       <div class="sideBar">
-        <side-bar :sideBarData="sideBarData" :defaultUnfoldAll="true" :defaultCheckedAll="true" :rowHeight="40"
-          @checkedNodeArrayChange="handleCheckedNodeArrayChange" />
+        <side-bar
+          :sideBarData="sideBarData"
+          :defaultUnfoldAll="true"
+          :defaultCheckedAll="false"
+          :rowHeight="40"
+          @checkedNodeArrayChange="handleCheckedNodeArrayChange"
+          @nodeCheckedChange="handleNodeCheckedChange"
+        />
       </div>
     </scroll-bar>
-
     <scroll-bar showScrollBar="hover" direction="normal">
       <div class="mainContent">
         <div class="block">
-          <use-component :title="tableConfig.title" :lists="tableConfig.lists" v-show="tableSelected.length !== 0">
-            <div v-show="getShowType('table', '1')">
-              <show-component :code="tableConfig.children[0].code" :title="tableConfig.children[0].title">
-                <table-list :data="tableData" :out-side-border="false">
-                  <table-column prop="date" label="日期" :width="180" />
-                  <table-column prop="name" label="姓名" :width="180" />
-                  <table-column prop="address" label="地址" :min-width="180" />
-                </table-list>
-              </show-component>
-            </div>
-            <div v-show="getShowType('table', '2')">
-              <show-component :code="tableConfig.children[1].code" :title="tableConfig.children[1].title">
-                <table-list :data="tableData" :out-side-border="false" :stripe="true">
-                  <table-column prop="date" label="日期" :width="180" />
-                  <table-column prop="name" label="姓名" :width="180" />
-                  <table-column prop="address" label="地址" :min-width="180" />
-                </table-list>
-              </show-component>
-            </div>
-            <div v-show="getShowType('table', '3')">
-              <show-component :code="tableConfig.children[2].code" :title="tableConfig.children[2].title">
-                <table-list :data="tableData" :out-side-border="false" :stripe="true" :border="true">
-                  <table-column prop="date" label="日期" :width="180" />
-                  <table-column prop="name" label="姓名" :width="180" />
-                  <table-column prop="address" label="地址" :min-width="180" />
-                </table-list>
-              </show-component>
-            </div>
-          </use-component>
-          <use-component :title="tooltipConfig.title" :lists="tooltipConfig.lists" v-show="tooltipSelected.length !== 0">
-            <div v-show="getShowType('tooltip', '1')">
-              <show-component :code="tooltipConfig.children[0].code" :title="tooltipConfig.children[0].title">
-                <div style="height: 250px;display: flex;align-items: center;justify-content: center;">
-                  <tooltip content="我是文字提示">
-                    <div style="height: 100px;background-color: lightpink;width: 100px;border: 1px solid black;">111</div>
-                  </tooltip>
-                </div>
-
-              </show-component>
-            </div>
-          </use-component>
-          <use-component :title="carouselConfig.title" :lists="carouselConfig.lists"
-            v-show="carouselSelected.length !== 0">
-            <div v-show="getShowType('carousel', '1')">
-              <show-component :code="carouselConfig.children[0].code" :title="carouselConfig.children[0].title">
-                <div class="carousel-container">
-                  <carousel indicatorType="rectangle" trigger="click">
-                    <carousel-item v-for="item in 5" :key="item">
-                      <div class="carousel-item">
-                        +++++{{ item }}+++++
-                      </div>
-                    </carousel-item>
-                  </carousel>
-                </div>
-              </show-component>
-            </div>
-          </use-component>
+          <use-table :selectedArr="tableSelected" />
+          <use-tooltip :selectedArr="tooltipSelected" />
+          <use-carousel :selectedArr="carouselSelected" />
         </div>
+        <!-- <tooltip placement="top">
+          <div
+            style="
+              width: 100px;
+              height: 100px;
+              background-color: red;
+              margin: 100px auto;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            "
+          >
+            111
+          </div>
+        </tooltip>
+        <tooltip placement="right">
+          <div
+            style="
+              width: 100px;
+              height: 100px;
+              background-color: red;
+              margin: 100px auto;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            "
+          >
+            111
+          </div>
+        </tooltip>
+        <tooltip placement="bottom">
+          <div
+            style="
+              width: 100px;
+              height: 100px;
+              background-color: red;
+              margin: 100px auto;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            "
+          >
+            111
+          </div>
+        </tooltip>
+        <tooltip placement="left">
+          <div
+            style="
+              width: 100px;
+              height: 100px;
+              background-color: red;
+              margin: 100px auto;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            "
+          >
+            111
+          </div>
+        </tooltip> -->
       </div>
     </scroll-bar>
-
-
   </div>
 </template>
 
 <script setup name="HomeView">
-import { reactive, computed } from "vue";
-
-import tableConfig from '../config/table.js'
-import tooltipConfig from '../config/tooltip.js'
-import carouselConfig from '../config/carousel.js'
-
-
+import { reactive } from "vue";
 
 const tableSelected = reactive([]);
 const carouselSelected = reactive([]);
 const tooltipSelected = reactive([]);
 
-
-const tableData = [{
-  date: '2016-05-02',
-  name: '王小虎',
-  address: '上海市普陀区金沙江路1518弄'
-}, {
-  date: '2016-05-04',
-  name: '王小虎',
-  address: '上海市普陀区金沙江路1517弄'
-}, {
-  date: '2016-05-01',
-  name: '王小虎',
-  address: '上海市普陀区金沙江路1519弄'
-}, {
-  date: '2016-05-03',
-  name: '王小虎',
-  address: '上海市普陀区金沙江路1516弄'
-}]
-
-
-const getShowType = computed(() => {
-  return (component, id) => {
-    let searchArr;
-    switch (component) {
-      case 'table':
-        searchArr = tableSelected;
-        break;
-      case 'tooltip':
-        searchArr = tooltipSelected;
-        break
-      case 'carousel':
-        searchArr = carouselSelected;
-        break
-    }
-    const res = searchArr.find(x => {
-      return x === id;
-    })
-    return res !== undefined
-  }
-})
-
-
 // 已选中的叶子节点一维数组
-let checkedNodeArray = reactive([]);
+const checkedNodeArray = reactive([]);
 // 侧边栏数据
 const sideBarData = [
   {
-    label: 'Table 表格',
+    label: "Table 表格",
     children: [
       {
-        label: '基础用法',
-        id: 'table-1',
-        defaultChecked: true
+        label: "基础用法",
+        id: "table-1",
+        // defaultChecked: true,
       },
       {
-        label: '带斑马纹表格',
-        id: 'table-2',
+        label: "带斑马纹表格",
+        id: "table-2",
       },
       {
-        label: '带边框表格',
-        id: 'table-3',
-      }
-    ]
-  },
-  {
-    label: 'Tooltip 文字提示',
-    children: [
-      {
-        label: '基础用法',
-        id: 'tooltip-1'
-      }
-    ]
-  },
-  {
-    label: 'Carousel 轮播图',
-    children: [
-      {
-        label: '基础用法',
-        id: 'carousel-1',
-      }
-    ]
-  },
-];
-
-
-
-
-[
-  {
-    label: "一级节点10000000000000000000000",
-    defaultUnfold: false,
-    children: [
-      {
-        label: "二级节点10000000000000000000000",
-        defaultUnfold: false,
-        children: [
-          {
-            label: "三级节点110000000000000000000000",
-            defaultUnfold: false,
-            children: [
-              {
-                label: "四级节点111000000000000000000000000",
-                defaultUnfold: false,
-              },
-              {
-                label: "四级节点112000000000000000000000000",
-                defaultUnfold: true,
-              },
-            ],
-          },
-          { label: "三级节点12" },
-          { label: "三级节点13" },
-        ],
-      },
-      {
-        label: "二级节点2",
-        children: [
-          { label: "三级节点21" },
-          { label: "三级节点22" },
-          { label: "三级节点23" },
-        ],
-      },
-      {
-        label: "二级节点3",
-        children: [
-          { label: "三级节点31" },
-          { label: "三级节点32" },
-          { label: "三级节点33" },
-        ],
+        label: "带边框表格",
+        id: "table-3",
       },
     ],
   },
   {
-    label: "一级节点2",
+    label: "Tooltip 文字提示",
     children: [
       {
-        label: "二级节点1",
-        children: [
-          { label: "三级节点11" },
-          { label: "三级节点12" },
-          { label: "三级节点13" },
-        ],
-      },
-      {
-        label: "二级节点2",
-        children: [
-          { label: "三级节点21" },
-          { label: "三级节点22" },
-          { label: "三级节点23" },
-        ],
-      },
-      {
-        label: "二级节点3",
-        children: [
-          { label: "三级节点31" },
-          { label: "三级节点32" },
-          { label: "三级节点33" },
-        ],
+        label: "基础用法",
+        id: "tooltip-1",
+        defaultChecked: true,
       },
     ],
   },
   {
-    label: "一级节点2",
+    label: "Carousel 轮播图",
     children: [
       {
-        label: "二级节点1",
-        children: [
-          { label: "三级节点11" },
-          { label: "三级节点12" },
-          { label: "三级节点13" },
-        ],
-      },
-      {
-        label: "二级节点2",
-        children: [
-          { label: "三级节点21" },
-          { label: "三级节点22" },
-          { label: "三级节点23" },
-        ],
-      },
-      {
-        label: "二级节点3",
-        children: [
-          { label: "三级节点31" },
-          { label: "三级节点32" },
-          { label: "三级节点33" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "一级节点2",
-    children: [
-      {
-        label: "二级节点1",
-        children: [
-          { label: "三级节点11" },
-          { label: "三级节点12" },
-          { label: "三级节点13" },
-        ],
-      },
-      {
-        label: "二级节点2",
-        children: [
-          { label: "三级节点21" },
-          { label: "三级节点22" },
-          { label: "三级节点23" },
-        ],
-      },
-      {
-        label: "二级节点3",
-        children: [
-          { label: "三级节点31" },
-          { label: "三级节点32" },
-          { label: "三级节点33" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "一级节点2",
-    children: [
-      {
-        label: "二级节点1",
-        children: [
-          { label: "三级节点11" },
-          { label: "三级节点12" },
-          { label: "三级节点13" },
-        ],
-      },
-      {
-        label: "二级节点2",
-        children: [
-          { label: "三级节点21" },
-          { label: "三级节点22" },
-          { label: "三级节点23" },
-        ],
-      },
-      {
-        label: "二级节点3",
-        children: [
-          { label: "三级节点31" },
-          { label: "三级节点32" },
-          { label: "三级节点33" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "一级节点2",
-    children: [
-      {
-        label: "二级节点1",
-        children: [
-          { label: "三级节点11" },
-          { label: "三级节点12" },
-          { label: "三级节点13" },
-        ],
-      },
-      {
-        label: "二级节点2",
-        children: [
-          { label: "三级节点21" },
-          { label: "三级节点22" },
-          { label: "三级节点23" },
-        ],
-      },
-      {
-        label: "二级节点3",
-        children: [
-          { label: "三级节点31" },
-          { label: "三级节点32" },
-          { label: "三级节点33" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "一级节点2",
-    children: [
-      {
-        label: "二级节点1",
-        children: [
-          { label: "三级节点11" },
-          { label: "三级节点12" },
-          { label: "三级节点13" },
-        ],
-      },
-      {
-        label: "二级节点2",
-        children: [
-          { label: "三级节点21" },
-          { label: "三级节点22" },
-          { label: "三级节点23" },
-        ],
-      },
-      {
-        label: "二级节点3",
-        children: [
-          { label: "三级节点31" },
-          { label: "三级节点32" },
-          { label: "三级节点33" },
-        ],
+        label: "基础用法",
+        id: "carousel-1",
       },
     ],
   },
 ];
 
-// description: 叶子节点选中变化的回调
-// params: array => 选中叶子节点的一维数组(保持追加顺序)
+// params: array => 选中叶子节点的一维数组(按照点击顺序的逆序)
 const handleCheckedNodeArrayChange = (array) => {
-  checkedNodeArray = array;
+  console.log("array", array);
+
+  // checkedNodeArray.length = 0;
+  // checkedNodeArray.push(...array);
   tableSelected.length = 0;
   carouselSelected.length = 0;
   tooltipSelected.length = 0;
-  for (let node of checkedNodeArray) {
+  for (let node of array) {
     const id = node.id;
-    const arr = id.split('-');
-    switch (arr[0]) {
-      case 'table':
-        tableSelected.push(arr[1]);
+    switch (id.split("-")[0]) {
+      case "table":
+        tableSelected.push(id);
         break;
-      case 'tooltip':
-        tooltipSelected.push(arr[1]);
+      case "tooltip":
+        tooltipSelected.push(id);
         break;
-      case 'carousel':
-        carouselSelected.push(arr[1]);
+      case "carousel":
+        carouselSelected.push(id);
         break;
     }
   }
-
 };
 
-
+// params: node => 变化的节点,type => 变化的类型
+const handleNodeCheckedChange = (node, type) => {
+  // const component = node.id.split("-")[0],
+  //   id = node.id.split("-")[1];
+  // console.log("component,id", component, id);
+  // if (type === "add") {
+  // } else {
+  // }
+};
 </script>
 
 <style scoped lang="less">
@@ -443,24 +189,7 @@ const handleCheckedNodeArrayChange = (array) => {
       justify-content: center;
       align-items: center;
       flex-wrap: wrap;
-
     }
-  }
-}
-
-.carousel-container {
-
-  height: 350px;
-  margin: 50px;
-
-  .carousel-item {
-    width: 100%;
-    height: 100%;
-    font-size: 36px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: rgb(194, 249, 194);
   }
 }
 </style>

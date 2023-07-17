@@ -1,10 +1,21 @@
 <template>
   <div class="sideBar-container">
-    <top :checkedCount="count" :checkedState="checkedState" @rootStateChange="handleRootStateChange" />
-    <collapse :collapseData="tree" :totalTree="totalTree" :checkedState="checkedState"
-      :defaultUnfoldAll="defaultUnfoldAll" :defaultCheckedAll="defaultCheckedAll" :rowHeight="rowHeight"
-      @collapseCountChange="handleCollapseCountChange" @collapseStateChange="handleCollapseStateChange"
-      @nodeChange="handleNodeChange" />
+    <top
+      :checkedCount="count"
+      :checkedState="checkedState"
+      @rootStateChange="handleRootStateChange"
+    />
+    <collapse
+      :collapseData="tree"
+      :totalTree="totalTree"
+      :checkedState="checkedState"
+      :defaultUnfoldAll="defaultUnfoldAll"
+      :defaultCheckedAll="defaultCheckedAll"
+      :rowHeight="rowHeight"
+      @collapseCountChange="handleCollapseCountChange"
+      @collapseStateChange="handleCollapseStateChange"
+      @nodeChange="handleNodeChange"
+    />
   </div>
 </template>
 
@@ -31,11 +42,11 @@ const props = defineProps({
   },
   defaultCheckedAll: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 
-const emit = defineEmits(["checkedNodeArrayChange"]);
+const emit = defineEmits(["checkedNodeArrayChange", "nodeCheckedChange"]);
 
 // 侧边栏数据的树形结构
 const tree = reactive(props.sideBarData);
@@ -99,18 +110,21 @@ const handleRootStateChange = (state) => {
 
 // 叶子节点选中变化
 const handleNodeChange = (node, type) => {
-  switch (type) {
-    // 追加
-    case "add":
-      checkedNodeArray.push(node);
-      break;
-    case "delete":
-      const index = checkedNodeArray.indexOf((x) => {
+  emit("nodeCheckedChange", node, type);
+
+  if (type === "add") {
+    checkedNodeArray.unshift(node);
+  } else {
+    const index = checkedNodeArray.indexOf(
+      checkedNodeArray.find((x) => {
+        // 如果节点有id则比较id 没有则比较label
+        if (x?.id !== undefined) return x.id === node.id;
         return x.label === node.label;
-      });
-      checkedNodeArray.splice(index, 1);
-      break;
+      })
+    );
+    checkedNodeArray.splice(index, 1);
   }
+
   emit("checkedNodeArrayChange", checkedNodeArray);
 };
 </script>

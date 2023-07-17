@@ -1,7 +1,18 @@
 <template>
-  <div class="container" ref="container" :style="containerStyle" @wheel="handleWheel" @mouseenter="handleMouseEnter"
-    @mouseleave="handleMouseLeave">
-    <div class="content" v-resize:20="onResize" :style="{ 'top': getContentOffset + 'px' }" ref="content">
+  <div
+    class="container"
+    ref="container"
+    :style="containerStyle"
+    @wheel="handleWheel"
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave"
+  >
+    <div
+      class="content"
+      v-resize:20="onResize"
+      :style="{ top: getContentOffset + 'px' }"
+      ref="content"
+    >
       <slot />
     </div>
     <div class="scroll-bar" :style="scrollBarStyle" />
@@ -9,7 +20,7 @@
 </template>
 
 <script setup name="scroll-bar">
-import { getCurrentInstance, onMounted, ref, computed, nextTick } from "vue";
+import { getCurrentInstance, onMounted, ref, computed } from "vue";
 
 const props = defineProps({
   // 显示滚动条的时机 ('always','hover','none')
@@ -30,13 +41,13 @@ const props = defineProps({
   // 滚动的帧数
   frame: {
     type: Number,
-    default: 20
+    default: 20,
   },
   // 总延迟 (delay = frame * 执行一次动画后的延迟)
   delay: {
     type: Number,
-    default: 25
-  }
+    default: 25,
+  },
 });
 
 let containerMaxHeight = ref(0);
@@ -55,13 +66,17 @@ const ctx = getCurrentInstance().ctx;
 let scrollBar;
 let y;
 let maxOffset;
-
+let step;
+let delay;
+let target = scrollBarOffset.value;
 
 const getContentOffset = computed(() => {
-  contentOffset.value = -1 * (contentHeight.value - containerMaxHeight.value) / (containerMaxHeight.value - scrollBarLen.value) * scrollBarOffset.value;
+  contentOffset.value =
+    ((-1 * (contentHeight.value - containerMaxHeight.value)) /
+      (containerMaxHeight.value - scrollBarLen.value)) *
+    scrollBarOffset.value;
   return contentOffset.value;
-})
-
+});
 
 const containerStyle = computed(() => {
   const maxHeight = containerMaxHeight.value + "px";
@@ -152,11 +167,15 @@ const calScrollBarLen = () => {
     containerMaxHeight.value * (containerMaxHeight.value / contentHeight.value)
   );
   // 判断是否隐藏滚动条
-  scrollBarLen.value = scrollBarLen.value < containerMaxHeight.value ? scrollBarLen.value : 0;
+  scrollBarLen.value =
+    scrollBarLen.value < containerMaxHeight.value ? scrollBarLen.value : 0;
 
   maxOffset = containerMaxHeight.value - scrollBarLen.value;
   // scrollBarOffset(滚动条走的距离)
-  scrollBarOffset.value = Math.abs(contentOffset.value) * (containerMaxHeight.value - scrollBarLen.value) / (contentHeight.value - containerMaxHeight.value);
+  scrollBarOffset.value =
+    (Math.abs(contentOffset.value) *
+      (containerMaxHeight.value - scrollBarLen.value)) /
+    (contentHeight.value - containerMaxHeight.value);
 };
 
 // 滚动条拖动事件
@@ -183,15 +202,12 @@ const scrollBarOffsetChange = (change, type) => {
   if (change + target >= maxOffset) {
     // 向下滚动到达底部
     handleMove(maxOffset - scrollBarOffset.value, type);
-  }
-  else if (change + target <= 0) {
+  } else if (change + target <= 0) {
     // 向上滚动到达顶部
     handleMove(-scrollBarOffset.value, type);
-  }
-  else handleMove(change, type);
+  } else handleMove(change, type);
 };
 
-let step, delay, target = scrollBarOffset.value;
 const handleMove = (change, type) => {
   const moveAnimate = () => {
     if (
@@ -220,15 +236,13 @@ const handleMove = (change, type) => {
       delay = props.delay / props.frame;
     } else {
       // 如果不是快速滚动则是从当前位置进行滚动
-      target = scrollBarOffset.value + change
+      target = scrollBarOffset.value + change;
       step = change / props.frame;
       delay = props.delay / props.frame;
       isMove.value = true;
       moveAnimate();
     }
-    console.log('target', target, change);
   }
-
 };
 
 const handleWheel = (e) => {
@@ -252,13 +266,8 @@ const handleWheel = (e) => {
   }
 };
 
-const handleMouseEnter = (e) => {
-  isHover.value = true;
-};
-
-const handleMouseLeave = (e) => {
-  isHover.value = false;
-};
+const handleMouseEnter = (e) => (isHover.value = true);
+const handleMouseLeave = (e) => (isHover.value = false);
 
 onMounted(() => {
   containerMaxHeight.value = document.documentElement.clientHeight;

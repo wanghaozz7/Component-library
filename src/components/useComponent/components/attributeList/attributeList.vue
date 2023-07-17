@@ -1,99 +1,109 @@
 <template>
   <h2 class="title">{{ title }}</h2>
-  <table-list :data="listData" :out-side-border="false" :header-cell-style="getHeaderCellStyle" :cell-style="getCellStyle"
-    :highlight-current-row="false" cell-empty-text="—" size="big">
-    <table-column v-for="col in columnList" :key="col" :label="col.label" :prop="col.prop" />
+  <table-list
+    :data="listData"
+    :out-side-border="false"
+    :header-cell-style="getHeaderCellStyle"
+    :cell-style="getCellStyle"
+    :highlight-current-row="false"
+    cell-empty-text="—"
+    size="big"
+  >
+    <table-column
+      v-for="col in columnList"
+      :key="col"
+      :label="col.label"
+      :prop="col.prop"
+    />
   </table-list>
 </template>
 
 <script setup name="attributeList">
-
 const props = defineProps({
   listData: {
     type: Array,
     default() {
-      return []
-    }
+      return [];
+    },
   },
   // attributes events slot
   type: {
     type: String,
-    default: 'attributes'
+    default: "attributes",
   },
   title: {
     type: String,
-    default: ''
-  }
-})
+    default: "",
+  },
+});
 
 let columnList;
 
 const getAttributesColumnList = () => {
   return [
-    { label: '参数', prop: 'params' },
-    { label: '说明', prop: 'desc' },
-    { label: '类型', prop: 'type' },
-    { label: '可选值', prop: 'optional' },
-    { label: '默认值', prop: 'default' }
+    { label: "参数", prop: "params" },
+    { label: "说明", prop: "desc" },
+    { label: "类型", prop: "type" },
+    { label: "可选值", prop: "optional" },
+    { label: "默认值", prop: "default" },
   ];
 };
 const getEventsColumnList = () => {
   return [
     {
-      label: '方法名',
-      prop: 'method'
-    }, {
-      label: '说明',
-      prop: 'desc'
+      label: "方法名",
+      prop: "method",
     },
     {
-      label: '参数',
-      prop: 'params'
-    }
+      label: "说明",
+      prop: "desc",
+    },
+    {
+      label: "参数",
+      prop: "params",
+    },
   ];
 };
 const getSlotColumnList = () => {
   return [
     {
-      label: 'name',
-      prop: 'name'
+      label: "name",
+      prop: "name",
     },
     {
-      label: '说明',
-      prop: 'desc'
-    }
+      label: "说明",
+      prop: "desc",
+    },
   ];
 };
 const getHeaderCellStyle = () => {
   return {
-    fontSize: '14px',
-    fontWeight: '500'
-  }
-}
+    fontSize: "14px",
+    fontWeight: "500",
+  };
+};
 const getCellStyle = () => {
-  return { fontSize: '14px' };
-}
+  return { fontSize: "14px" };
+};
 
 switch (props.type) {
-  case 'attributes':
+  case "attributes":
     columnList = getAttributesColumnList();
-    break
-  case 'events':
+    break;
+  case "events":
     columnList = getEventsColumnList();
-    break
-  case 'slot':
+    break;
+  case "slot":
     columnList = getSlotColumnList();
-    break
+    break;
   default:
     columnList = getAttributesColumnList();
 }
-
 </script>
 
 <style scoped lang="less">
 .title {
   font-weight: 500;
-  padding-left: 20px;
-  margin-top: 50px
+  margin-top: 50px;
 }
 </style>

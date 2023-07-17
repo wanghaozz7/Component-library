@@ -9,11 +9,12 @@
     </template>
     <div class="code-area">
       <div class="code" :style="codeStyle" ref="code"></div>
-      <div class="extention" @click="handleClick">
+      <div class="extention" @click="handleClick" :style="extentionStyle">
         <div class="button">
           <div class="icon" :style="iconStyle"></div>
           <div class="text">
-            <span v-show="!showCode">显示</span><span v-show="showCode">收起</span>代码
+            <span v-show="!showCode">显示</span
+            ><span v-show="showCode">收起</span>代码
           </div>
         </div>
       </div>
@@ -44,7 +45,9 @@ const props = defineProps({
 let showCode = ref(false);
 
 const ctx = getCurrentInstance().ctx;
-let maxHeight, minHeight = 0, codeRef;
+let maxHeight,
+  minHeight = 0,
+  codeRef;
 
 const codeStyle = computed(() => {
   const height = showCode.value ? maxHeight : minHeight;
@@ -60,69 +63,73 @@ const iconStyle = computed(() => {
     marginTop,
   };
 });
+const extentionStyle = computed(() => {
+  const borderTop = showCode.value ? "1px solid #ebebeb" : "";
+  return {
+    borderTop,
+  };
+});
 
 const handleClick = () => {
   showCode.value = !showCode.value;
 };
-
 
 const getCodeArea = () => {
   // 将String转为代码块
   // 首先将代码块分为三部分 template script style 通过三个标签分开三块区域
   // 对于每块区域 有tag(标签名) attr(键名) string(键值) 以及其他文字部分
   codeRef = ctx.$refs.code;
-  const arr = props.code.split('\n');
+  const arr = props.code.split("\n");
   for (let row of arr) {
-    const div = document.createElement('div');
+    const div = document.createElement("div");
 
-    div.className = 'normalCode'
+    div.className = "normalCode";
 
-    let indent = '';
+    let indent = "";
     // 首先记录下每一行开头的缩进量
     for (let char of row) {
-      if (char === ' ') indent += ' ';
+      if (char === " ") indent += " ";
       else break;
     }
-    const indentSpan = document.createElement('span');
+    const indentSpan = document.createElement("span");
     indentSpan.innerText = indent;
-    div.appendChild(indentSpan)
+    div.appendChild(indentSpan);
 
-    const words = row.split(' ');
+    const words = row.split(" ");
     for (let word of words) {
-      const span = document.createElement('span');
-      const keyValues = word.split('=');
+      const span = document.createElement("span");
+      const keyValues = word.split("=");
       if (keyValues.length === 2) {
         const value = keyValues[1];
-        const key = keyValues[0] + '=';
-        const wordString = document.createElement('span');
-        const wordAttr = document.createElement('span');
-        if ((value.startsWith("'") && (value.endsWith("'") || value.endsWith(","))) || (value.startsWith('"') && (value.endsWith('"') || value.endsWith(",")))) {
-          wordString.className = 'word-string';
+        const key = keyValues[0] + "=";
+        const wordString = document.createElement("span");
+        const wordAttr = document.createElement("span");
+        if (
+          (value.startsWith("'") &&
+            (value.endsWith("'") || value.endsWith(","))) ||
+          (value.startsWith('"') &&
+            (value.endsWith('"') || value.endsWith(",")))
+        ) {
+          wordString.className = "word-string";
         }
 
-        wordString.innerText = value + ' ';
+        wordString.innerText = value + " ";
         wordAttr.innerText = key;
         span.appendChild(wordAttr);
         span.appendChild(wordString);
-
-
       } else {
-        span.innerText = word + ' ';
-        if (word.endsWith(':')) span.className = 'word-key';
-        else if (word.endsWith(',')) span.className = 'word-string';
+        span.innerText = word + " ";
+        if (word.endsWith(":")) span.className = "word-key";
+        else if (word.endsWith(",")) span.className = "word-string";
       }
-      div.appendChild(span)
+      div.appendChild(span);
     }
 
-
-    codeRef.appendChild(div)
-
-
+    codeRef.appendChild(div);
   }
   // 通过代码行数计算出code区域的高度
-  maxHeight = arr.length * 24 + 'px';
-}
-
+  maxHeight = arr.length * 24 + "px";
+};
 
 onMounted(() => {
   getCodeArea();
@@ -144,8 +151,6 @@ onMounted(() => {
 }
 
 .card-container {
-
-
   .code-area {
     position: relative;
 
@@ -197,7 +202,7 @@ onMounted(() => {
           transition: all 0.3s;
           overflow: hidden;
           color: #ebebeb;
-          font-size: 12px;
+          font-size: 14px;
           user-select: none;
         }
       }
@@ -210,7 +215,7 @@ onMounted(() => {
 .normalCode {
   height: 14px;
   padding: 5px;
-  color: #409EFF;
+  color: #409eff;
 }
 
 .word-key {
@@ -218,6 +223,6 @@ onMounted(() => {
 }
 
 .word-string {
-  color: #756bb1
+  color: #756bb1;
 }
 </style>
