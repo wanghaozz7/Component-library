@@ -3,7 +3,7 @@
     <slot />
   </div>
   <div class="tooltip" ref="tooltip">
-    <div class="content">{{ content }}</div>
+    <div class="content" :style="contentStyle">{{ content }}</div>
     <div class="icon">
       <div class="inner"></div>
     </div>
@@ -11,7 +11,7 @@
 </template>
 
 <script setup>
-import { getCurrentInstance, onMounted, onUnmounted, ref } from "vue";
+import { computed, getCurrentInstance, onMounted, onUnmounted, ref } from "vue";
 
 const props = defineProps({
   placement: {
@@ -30,18 +30,32 @@ const props = defineProps({
     type: Number,
     default: 200,
   },
+  // light/dark
+  theme: {
+    type: String,
+    default: "light",
+  },
 });
 
 let showTooltip = ref(false);
 
 const ctx = getCurrentInstance().ctx;
 let slotWidth, tooltipWidth, slotHeight, tooltipHeight, pos;
+const innerIconColor = props.theme === "light" ? "#fff" : "#000";
+
+const contentStyle = computed(() => {
+  const backgroundColor = props.theme === "light" ? "#fff" : "#000";
+  const color = props.theme === "light" ? "#000" : "#fff";
+  return {
+    backgroundColor,
+    color,
+  };
+});
 
 const styleFilter = (str) => {
   if (typeof str === "number") return str;
   return parseInt(str.replaceAll("px"));
 };
-
 const handleMouseEnter = (e) => {
   if (showTooltip.value) return;
   showTooltip.value = true;
@@ -51,10 +65,6 @@ const handleMouseEnter = (e) => {
   const inner = icon.children[0];
   const slot = ctx.$refs.slotWrapper.children[0];
   const pos = slot.getBoundingClientRect();
-
-  const tooltipStyle = {},
-    iconStyle = {},
-    innerStyle = {};
 
   const tooltipStyleArr = [],
     iconStyleArr = [],
@@ -80,9 +90,9 @@ const handleMouseEnter = (e) => {
       iconStyleArr.push(["bottom", "-15px"]);
       iconStyleArr.push(["borderTopColor", "black"]);
 
-      innerStyleArr.push(["borderTopColor", "white"]);
+      innerStyleArr.push(["borderTopColor", innerIconColor]);
       innerStyleArr.push(["bottom", "-6px"]);
-      innerStyleArr.push(["left", "-7.5px"]);
+      innerStyleArr.push(["left", "-7px"]);
       break;
     case "bottom":
       // left同上
@@ -104,9 +114,9 @@ const handleMouseEnter = (e) => {
       iconStyleArr.push(["transform", "translateX(-50%)"]);
       iconStyleArr.push(["borderTopColor", "black"]);
 
-      innerStyleArr.push(["borderTopColor", "white"]);
+      innerStyleArr.push(["borderTopColor", innerIconColor]);
       innerStyleArr.push(["bottom", "-6px"]);
-      innerStyleArr.push(["left", "-7.5px"]);
+      innerStyleArr.push(["left", "-7px"]);
       break;
     case "left":
       // left = 相对left - (tooltip宽度 + 固定值)
@@ -127,37 +137,56 @@ const handleMouseEnter = (e) => {
       iconStyleArr.push(["transform", "translateY(-50%)"]);
       iconStyleArr.push(["borderLeftColor", "black"]);
 
-      innerStyleArr.push(["borderLeftColor", "white"]);
+      innerStyleArr.push(["borderLeftColor", innerIconColor]);
       innerStyleArr.push(["bottom", "-7px"]);
       innerStyleArr.push(["left", "-8px"]);
       break;
     case "right":
       // left = 相对left + (slot宽度 + 固定值)
       // top = 同上
+
       tooltipStyleArr.push([
         "left",
         pos.left + styleFilter(slotWidth) + props.offset + "px",
       ]);
-      tooltipStyle.top =
-        pos.top + (styleFilter(slotHeight) - styleFilter(tooltipHeight)) / 2;
       tooltipStyleArr.push([
         "top",
         pos.top +
           (styleFilter(slotHeight) - styleFilter(tooltipHeight)) / 2 +
           "px",
       ]);
-      tooltipStyleArr.push(["transform", "rotateY(180deg)"]);
 
-      iconStyleArr.push(["right", "-15px"]);
+      iconStyleArr.push(["left", "-15px"]);
       iconStyleArr.push(["top", "50%"]);
       iconStyleArr.push(["transform", "translateY(-50%)"]);
-      iconStyleArr.push(["borderLeftColor", "black"]);
+      iconStyleArr.push(["borderRightColor", "black"]);
 
-      innerStyleArr.push(["borderLeftColor", "white"]);
+      innerStyleArr.push(["borderRightColor", innerIconColor]);
       innerStyleArr.push(["bottom", "-7px"]);
-      innerStyleArr.push(["left", "-8px"]);
+      innerStyleArr.push(["left", "-6px"]);
       break;
-      break;
+    default:
+      // left = 相对left + (slot宽度 - tooltip宽度)/2
+      // top = 相对top - (tooltip高度 + 固定值)
+      tooltipStyleArr.push([
+        "left",
+        pos.left +
+          (styleFilter(slotWidth) - styleFilter(tooltipWidth)) / 2 +
+          "px",
+      ]);
+      tooltipStyleArr.push([
+        "top",
+        pos.top - (styleFilter(tooltipHeight) + props.offset) + "px",
+      ]);
+
+      iconStyleArr.push(["left", "50%"]);
+      iconStyleArr.push(["transform", "translateX(-50%)"]);
+      iconStyleArr.push(["bottom", "-15px"]);
+      iconStyleArr.push(["borderTopColor", "black"]);
+
+      innerStyleArr.push(["borderTopColor", "white"]);
+      innerStyleArr.push(["bottom", "-6px"]);
+      innerStyleArr.push(["left", "-7px"]);
   }
 
   for (let arr of tooltipStyleArr) {
@@ -217,11 +246,12 @@ onUnmounted(() => {
 .tooltip {
   position: absolute;
   .content {
-    padding: 5px;
+    padding: 6px;
     line-height: 25px;
     white-space: nowrap;
     border: 1px solid black;
     border-radius: 4px;
+    background-color: #fff;
   }
   .icon {
     position: absolute;
@@ -231,7 +261,6 @@ onUnmounted(() => {
     z-index: 9999;
     .inner {
       position: absolute;
-
       width: 0;
       height: 0;
       border: 7.5px solid transparent;

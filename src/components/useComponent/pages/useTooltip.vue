@@ -9,66 +9,24 @@
         :code="tooltipConfig.children[0].code"
         :title="tooltipConfig.children[0].title"
       >
-        <tooltip placement="top">
-          <div
-            style="
-              width: 100px;
-              height: 100px;
-              background-color: red;
-              margin: 100px auto;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-            "
-          >
-            111
-          </div>
-        </tooltip>
-        <tooltip placement="right">
-          <div
-            style="
-              width: 100px;
-              height: 100px;
-              background-color: red;
-              margin: 100px auto;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-            "
-          >
-            111
-          </div>
-        </tooltip>
-        <tooltip placement="bottom">
-          <div
-            style="
-              width: 100px;
-              height: 100px;
-              background-color: red;
-              margin: 100px auto;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-            "
-          >
-            111
-          </div>
-        </tooltip>
-        <tooltip placement="left">
-          <div
-            style="
-              width: 100px;
-              height: 100px;
-              background-color: red;
-              margin: 100px auto;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-            "
-          >
-            111
-          </div>
-        </tooltip>
+        <div style="margin-top: 50px" class="cont">
+          <tooltip placement="top" content="我悬浮在上边~">
+            <div class="item">上</div>
+          </tooltip>
+        </div>
+        <div style="margin: 50px 0; gap: 150px" class="cont">
+          <tooltip placement="left" content="我悬浮在左边~">
+            <div class="item">左</div>
+          </tooltip>
+          <tooltip placement="right" content="我悬浮在右边~">
+            <div class="item">右</div>
+          </tooltip>
+        </div>
+        <div style="margin-bottom: 50px" class="cont">
+          <tooltip placement="bottom" content="我悬浮在下边~">
+            <div class="item">下</div>
+          </tooltip>
+        </div>
       </show-component>
     </div>
   </use-component>
@@ -112,5 +70,21 @@ const getShowType = computed(() => {
     align-items: center;
     padding: 8px;
   }
+}
+.item {
+  width: 75px;
+  height: 75px;
+  border: 1px solid gray;
+  margin: 100px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.cont {
+  height: 75px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

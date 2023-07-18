@@ -198,14 +198,22 @@ const mouseDownAndMove = (el, callback) => {
 const scrollBarOffsetChange = (change, type) => {
   // 如果没有出现滚动条则不能滚动
   if (scrollBarLen.value === 0) return;
-  // 滚动范围修正滚动值
-  if (change + target >= maxOffset) {
-    // 向下滚动到达底部
-    handleMove(maxOffset - scrollBarOffset.value, type);
-  } else if (change + target <= 0) {
-    // 向上滚动到达顶部
-    handleMove(-scrollBarOffset.value, type);
-  } else handleMove(change, type);
+  if (type === "mouse") {
+    // 鼠标拖动
+    const newOffset = change + scrollBarOffset.value;
+    if (newOffset > maxOffset || newOffset < 0) return;
+    handleMove(change, type);
+  } else {
+    // 滚轮滚动
+    // 滚动范围修正滚动值(到达边界的最后一次change值的修正)
+    if (change + target >= maxOffset) {
+      // 向下滚动到达底部
+      handleMove(maxOffset - scrollBarOffset.value, type);
+    } else if (change + target <= 0) {
+      // 向上滚动到达顶部
+      handleMove(-scrollBarOffset.value, type);
+    } else handleMove(change, type);
+  }
 };
 
 const handleMove = (change, type) => {
@@ -223,10 +231,9 @@ const handleMove = (change, type) => {
       moveAnimate();
     }, delay);
   };
-  // 如果是鼠标拖动则直接闪现
+  if (change == 0) return;
   if (type === "mouse") scrollBarOffset.value += change;
   else {
-    if (change == 0) return;
     if (isMove.value) {
       // 如果是快速滚动(请求滚动时仍然在滚动) 在原来的基础更新参数
       target += change;
