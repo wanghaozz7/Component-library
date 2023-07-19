@@ -2,26 +2,15 @@
   <div class="homeViewContainer">
     <scroll-bar showScrollBar="hover">
       <div class="sideBar">
-        <side-bar
-          :sideBarData="sideBarData"
-          :defaultUnfoldAll="true"
-          :defaultCheckedAll="true"
-          :rowHeight="40"
-          @checkedNodeArrayChange="handleCheckedNodeArrayChange"
-          @nodeCheckedChange="handleNodeCheckedChange"
-        />
+        <side-bar :sideBarData="sideBarData" :defaultUnfoldAll="true" :defaultCheckedAll="true" :rowHeight="40"
+          @checkedNodeArrayChange="handleCheckedNodeArrayChange" @nodeCheckedChange="handleNodeCheckedChange" />
       </div>
     </scroll-bar>
     <div class="mainContent">
       <scroll-bar showScrollBar="hover" @offsetChange="handleOffsetChange">
         <div class="block">
-          <use-component-router
-            v-for="component in stack"
-            :key="component"
-            :selectedArr="component.arr"
-            :scrollOffset="scrollOffset"
-            :componentName="component.name"
-          ></use-component-router>
+          <use-component-router v-for="component in stack" :key="component" :selectedArr="component.arr"
+            :scrollOffset="scrollOffset" :componentName="component.name"></use-component-router>
         </div>
       </scroll-bar>
     </div>
@@ -83,19 +72,19 @@ const handleNodeCheckedChange = (node, type) => {
   }
   if (type === "add") {
     if (idx === -1) {
-      stack.push({
+      stack.unshift({
         name: component,
         arr: [],
       });
-      idx = stack.length - 1;
+      idx = 0;
     }
-    stack[idx].arr.push(node.id);
+    stack[idx].arr.unshift(node.id);
   } else {
     const arr = stack[idx].arr;
     let index = -1;
     for (let i in arr) {
-      if (arr[i].id === node.id) {
-        index = -1;
+      if (arr[i] == node.id) {
+        index = i;
         break;
       }
     }
