@@ -1,35 +1,19 @@
 <template>
   <div style="margin-top: 50px" class="cont">
-    <tooltip
-      placement="top"
-      content="我悬浮在上边~"
-      :refreshTooltip="refreshTooltip"
-    >
+    <tooltip placement="top" content="我悬浮在上边~" :refreshTooltip="refreshTooltip">
       <div class="item">上</div>
     </tooltip>
   </div>
   <div style="margin: 50px 0; gap: 150px" class="cont">
-    <tooltip
-      placement="left"
-      content="我悬浮在左边~"
-      :refreshTooltip="refreshTooltip"
-    >
+    <tooltip placement="left" content="我悬浮在左边~" :refreshTooltip="refreshTooltip">
       <div class="item">左</div>
     </tooltip>
-    <tooltip
-      placement="right"
-      content="我悬浮在右边~"
-      :refreshTooltip="refreshTooltip"
-    >
+    <tooltip placement="right" content="我悬浮在右边~" :refreshTooltip="refreshTooltip">
       <div class="item">右</div>
     </tooltip>
   </div>
   <div style="margin-bottom: 50px" class="cont">
-    <tooltip
-      placement="bottom"
-      content="我悬浮在下边~"
-      :refreshTooltip="refreshTooltip"
-    >
+    <tooltip placement="bottom" content="我悬浮在下边~" :refreshTooltip="refreshTooltip">
       <div class="item">下</div>
     </tooltip>
   </div>
@@ -42,7 +26,6 @@ const props = defineProps({
     default: false,
   },
 });
-const msg = 111;
 </script>
 
 <style scoped lang="less">
@@ -52,6 +35,7 @@ const msg = 111;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+
   .tooltip-content {
     border: 1px solid gray;
     border-radius: 4px;
@@ -61,6 +45,7 @@ const msg = 111;
     padding: 8px;
   }
 }
+
 .item {
   width: 75px;
   height: 75px;
@@ -71,6 +56,7 @@ const msg = 111;
   align-items: center;
   cursor: pointer;
 }
+
 .cont {
   height: 75px;
   display: flex;

@@ -1,11 +1,7 @@
 <template>
   <use-component :title="config.title" :lists="config.lists">
-    <show-component
-      :code="config.children[index].code"
-      :title="config.children[index].title"
-      v-for="(component, index) in selectedArr"
-      :key="index"
-    >
+    <show-component v-for="(component, index) in selectedArr" :key="index" :code="config.children[index].code"
+      :title="config.children[index].title">
       <component :is="component" :refreshTooltip="refreshTooltip" />
     </show-component>
   </use-component>
@@ -45,9 +41,11 @@ const getConfig = () => {
       return carouselConfig;
   }
 };
+
 let refreshTooltip = ref(false);
+
 const config = getConfig();
-console.log("config", config, props.selectedArr);
+
 watch(
   () => props.scrollOffset,
   (newValue, oldValue) => {
