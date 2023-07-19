@@ -10,20 +10,36 @@
         :title="tooltipConfig.children[0].title"
       >
         <div style="margin-top: 50px" class="cont">
-          <tooltip placement="top" content="我悬浮在上边~">
+          <tooltip
+            placement="top"
+            content="我悬浮在上边~"
+            :refreshTooltip="refreshTooltip"
+          >
             <div class="item">上</div>
           </tooltip>
         </div>
         <div style="margin: 50px 0; gap: 150px" class="cont">
-          <tooltip placement="left" content="我悬浮在左边~">
+          <tooltip
+            placement="left"
+            content="我悬浮在左边~"
+            :refreshTooltip="refreshTooltip"
+          >
             <div class="item">左</div>
           </tooltip>
-          <tooltip placement="right" content="我悬浮在右边~">
+          <tooltip
+            placement="right"
+            content="我悬浮在右边~"
+            :refreshTooltip="refreshTooltip"
+          >
             <div class="item">右</div>
           </tooltip>
         </div>
         <div style="margin-bottom: 50px" class="cont">
-          <tooltip placement="bottom" content="我悬浮在下边~">
+          <tooltip
+            placement="bottom"
+            content="我悬浮在下边~"
+            :refreshTooltip="refreshTooltip"
+          >
             <div class="item">下</div>
           </tooltip>
         </div>
@@ -33,7 +49,7 @@
 </template>
 
 <script setup name="useTooltip">
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import tooltipConfig from "../config/tooltip.js";
 
 const props = defineProps({
@@ -43,7 +59,13 @@ const props = defineProps({
       return [];
     },
   },
+  scrollOffset: {
+    type: Number,
+    default: 0,
+  },
 });
+
+let refreshTooltip = ref(false);
 
 const getShowType = computed(() => {
   return (id) => {
@@ -53,6 +75,13 @@ const getShowType = computed(() => {
     return res !== undefined;
   };
 });
+
+watch(
+  () => props.scrollOffset,
+  (newValue, oldValue) => {
+    refreshTooltip.value = !refreshTooltip.value;
+  }
+);
 </script>
 
 <style scoped lang="less">

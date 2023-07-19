@@ -10,7 +10,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup name="tooltip">
 import {
   computed,
   getCurrentInstance,
@@ -18,6 +18,7 @@ import {
   onMounted,
   onUnmounted,
   ref,
+  watch,
 } from "vue";
 
 const props = defineProps({
@@ -42,12 +43,22 @@ const props = defineProps({
     type: String,
     default: "light",
   },
+  // 如果使用了scroll-bar则需要在滚动的时候刷新tooltip的位置
+  refreshTooltip: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 let showTooltip = ref(false);
 
 const ctx = getCurrentInstance().ctx;
-let slotWidth, tooltipWidth, slotHeight, tooltipHeight, pos;
+let slotWidth,
+  tooltipWidth,
+  slotHeight,
+  tooltipHeight,
+  pos,
+  winHeight = 0;
 const innerIconColor = props.theme === "light" ? "#fff" : "#000";
 
 const contentStyle = computed(() => {
@@ -64,10 +75,7 @@ const styleFilter = (str) => {
   return parseInt(str.replaceAll("px"));
 };
 
-const handleMouseEnter = (e) => {
-  if (showTooltip.value) return;
-  showTooltip.value = true;
-
+const getTooltipAttr = () => {
   const tooltip = ctx.$refs.tooltip;
   const content = tooltip.children[0];
   const icon = tooltip.children[1];
@@ -90,7 +98,10 @@ const handleMouseEnter = (e) => {
       ]);
       tooltipStyleArr.push([
         "top",
-        pos.top - (styleFilter(tooltipHeight) + props.offset) + "px",
+        winHeight +
+          pos.top -
+          (styleFilter(tooltipHeight) + props.offset) +
+          "px",
       ]);
 
       iconStyleArr.push(["left", "50%"]);
@@ -113,7 +124,7 @@ const handleMouseEnter = (e) => {
       ]);
       tooltipStyleArr.push([
         "top",
-        pos.top + styleFilter(slotHeight) + props.offset + "px",
+        winHeight + pos.top + styleFilter(slotHeight) + props.offset + "px",
       ]);
       tooltipStyleArr.push(["transform", "rotateX(180deg)"]);
       iconStyleArr.push(["left", "50%"]);
@@ -134,7 +145,8 @@ const handleMouseEnter = (e) => {
       ]);
       tooltipStyleArr.push([
         "top",
-        pos.top +
+        winHeight +
+          pos.top +
           (styleFilter(slotHeight) - styleFilter(tooltipHeight)) / 2 +
           "px",
       ]);
@@ -158,7 +170,8 @@ const handleMouseEnter = (e) => {
       ]);
       tooltipStyleArr.push([
         "top",
-        pos.top +
+        winHeight +
+          pos.top +
           (styleFilter(slotHeight) - styleFilter(tooltipHeight)) / 2 +
           "px",
       ]);
@@ -183,7 +196,10 @@ const handleMouseEnter = (e) => {
       ]);
       tooltipStyleArr.push([
         "top",
-        pos.top - (styleFilter(tooltipHeight) + props.offset) + "px",
+        winHeight +
+          pos.top -
+          (styleFilter(tooltipHeight) + props.offset) +
+          "px",
       ]);
 
       iconStyleArr.push(["left", "50%"]);
@@ -212,11 +228,13 @@ const handleMouseEnter = (e) => {
       value = arr[1];
     inner.style[key] = value;
   }
-  // console.log("出现", slot.offsetTop);
+};
 
-  const obj = getOffsetOfBody(slot);
-  // console.log("出现", obj);
-
+const handleMouseEnter = (e) => {
+  if (showTooltip.value) return;
+  showTooltip.value = true;
+  getTooltipAttr();
+  const tooltip = ctx.$refs.tooltip;
   tooltip.style.display = "block";
 };
 
@@ -228,31 +246,8 @@ const handleMouseLeave = (e) => {
   }, props.delay);
 };
 
-const handleBodyMouseWheel = (e) => {
-  const slot = ctx.$refs.slotWrapper.children[0];
-  const pos = slot.getBoundingClientRect();
-
-  const obj = getOffsetOfBody(slot);
-  // console.log("滚动", obj);
-};
-
-const getOffsetOfBody = (el) => {
-  var left,
-    top = null;
-  var elPar = el.offsetParent;
-  left += el.offsetLeft;
-  top += el.offsetTop;
-  while (elPar) {
-    if (navigator.userAgent.indexOf("MSIE 8.0") == -1) {
-      //若不是IE8，则需要加上offsetParent的clientLeft和clientTop
-      left += elPar.clientLeft;
-      top += elPar.clientTop;
-    }
-    left += elPar.offsetLeft;
-    top += elPar.offsetTop;
-    elPar = elPar.offsetParent;
-  }
-  return { left: left, top: top };
+const handleScroll = (e) => {
+  winHeight = e.target.scrollTop || document.documentElement.scrollTop;
 };
 
 onMounted(() => {
@@ -265,7 +260,7 @@ onMounted(() => {
 
   const body = document.getElementsByTagName("body")[0];
   body.appendChild(tooltip);
-  body.addEventListener("mousewheel", handleBodyMouseWheel);
+  window.addEventListener("scroll", handleScroll, true);
 
   // 先获取属性再隐藏
   slotWidth = window.getComputedStyle(slot).width;
@@ -280,6 +275,13 @@ onUnmounted(() => {
   slot.removeEventListener("mouseenter", handleMouseEnter);
   slot.removeEventListener("mouseleave", handleMouseLeave);
 });
+
+watch(
+  () => props.refreshTooltip,
+  (newValue, oldValue) => {
+    getTooltipAttr();
+  }
+);
 </script>
 
 <style scoped lang="less">

@@ -1,14 +1,25 @@
 <template>
-  <div class="scroll-bar-wrapper" :style="getScrollBarWrapperStyle">
+  <div
+    class="scroll-bar-wrapper"
+    :style="getScrollBarWrapperStyle"
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave"
+    @mousewheel="handleScroll"
+  >
     <div ref="slot" :style="getSlotStyle" v-resize:20="onResize">
       <slot />
     </div>
-    <div class="scroll-bar" :style="getScrollBarStyle" ref="scrollBar"></div>
+    <div
+      class="scroll-bar"
+      :style="getScrollBarStyle"
+      ref="scrollBar"
+      v-if="props.showScrollBar !== 'none'"
+    ></div>
   </div>
 </template>
 
 <script setup name="">
-import { computed, getCurrentInstance, onMounted, onUnmounted, ref } from "vue";
+import { getCurrentInstance, ref, computed, onMounted } from "vue";
 
 const props = defineProps({
   // 最大高度 超出后显示滚动条
@@ -26,7 +37,14 @@ const props = defineProps({
     type: Number,
     default: 100,
   },
+  // 滚动条出现的时机
+  showScrollBar: {
+    type: String,
+    default: "hover",
+  },
 });
+
+const emits = defineEmits(["offsetChange"]);
 
 // 只需要控制内容的偏移量(slotOffset) 滚动条的offset只是展示 通过计算生成
 let slotOffset = ref(0),
@@ -34,7 +52,8 @@ let slotOffset = ref(0),
   showScrollBar = ref(false),
   scrollBarLen = ref(0),
   isMove = ref(false),
-  isDrag = ref(false);
+  isDrag = ref(false),
+  isHover = ref(false);
 
 let slotMaxOffset, slotHeight, wrapperHeight, y;
 // 提取出动画的参数是为了修改滚动的速度(所以其他变量不能随意使用newSlotOffset)
@@ -54,6 +73,8 @@ const getScrollBarWrapperStyle = computed(() => {
 
 const getSlotStyle = computed(() => {
   const transform = `translateY(-${slotOffset.value}px)`;
+
+  emits("offsetChange", slotOffset.value);
   return {
     transform,
   };
@@ -67,10 +88,29 @@ const getScrollBarStyle = computed(() => {
     (slotOffset.value * (wrapperHeight - scrollBarLen.value)) /
     (slotHeight - wrapperHeight);
   const top = scrollBarOffset.value + "px";
+  const transition = isDrag.value ? "" : "all 0.2s";
+  let opacity;
+
+  switch (props.showScrollBar) {
+    case "always":
+      opacity = "1";
+      break;
+    case "none":
+      opacity = "0";
+      break;
+    case "hover":
+      opacity = isHover.value || isDrag.value ? "1" : "0";
+      break;
+    default:
+      opacity = isHover.value || isDrag.value ? "1" : "0";
+  }
+
   return {
     height,
     top,
     backgroundColor,
+    opacity,
+    transition,
   };
 });
 
@@ -180,6 +220,14 @@ const handleDrag = (target) => {
   if (target >= 0 && target <= slotMaxOffset) slotOffset.value = target;
 };
 
+const handleMouseEnter = (e) => {
+  isHover.value = true;
+};
+
+const handleMouseLeave = (e) => {
+  isHover.value = false;
+};
+
 // 执行滚动动画
 const scrollAnimate = (change) => {
   if (change === 0) return;
@@ -216,15 +264,10 @@ const scrollAnimate = (change) => {
 };
 
 onMounted(() => {
-  const slot = ctx.$refs.slot.children[0];
-  const scrollBar = ctx.$refs.scrollBar;
-  // 分别为监听内容区的滚轮事件和滚动条的拖动事件
-  slot.addEventListener("mousewheel", handleScroll);
-  mouseDownAndMove(scrollBar, handleMouseDownAndMove);
-});
-
-onUnmounted(() => {
-  slot.removeEventListener("mousewheel", handleScroll);
+  if (props.showScrollBar !== "none") {
+    const scrollBar = ctx.$refs.scrollBar;
+    mouseDownAndMove(scrollBar, handleMouseDownAndMove);
+  }
 });
 </script>
 
@@ -238,10 +281,11 @@ onUnmounted(() => {
     height: 100%;
     width: 8px;
     border-radius: 8px;
-    background-color: #ebebeb;
     right: 0;
     top: 0;
     cursor: pointer;
+    background-color: #ebebeb;
+    z-index: 99;
     &:hover {
       background-color: #d1d1d1;
     }

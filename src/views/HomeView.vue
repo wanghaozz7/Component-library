@@ -1,6 +1,6 @@
 <template>
   <div class="homeViewContainer">
-    <scroll-bar showScrollBar="hover" direction="normal">
+    <scroll-bar showScrollBar="hover">
       <div class="sideBar">
         <side-bar
           :sideBarData="sideBarData"
@@ -13,10 +13,13 @@
       </div>
     </scroll-bar>
     <div class="mainContent">
-      <scroll-bar>
+      <scroll-bar showScrollBar="hover" @offsetChange="handleOffsetChange">
         <div class="block">
           <use-table :selectedArr="tableSelected" />
-          <use-tooltip :selectedArr="tooltipSelected" />
+          <use-tooltip
+            :selectedArr="tooltipSelected"
+            :scrollOffset="scrollOffset"
+          />
           <use-carousel :selectedArr="carouselSelected" />
         </div>
       </scroll-bar>
@@ -25,11 +28,13 @@
 </template>
 
 <script setup name="HomeView">
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 
 const tableSelected = reactive([]);
 const carouselSelected = reactive([]);
 const tooltipSelected = reactive([]);
+
+let scrollOffset = ref(0);
 
 // 已选中的叶子节点一维数组
 const checkedNodeArray = reactive([]);
@@ -76,10 +81,6 @@ const sideBarData = [
 
 // params: array => 选中叶子节点的一维数组(按照点击顺序的逆序)
 const handleCheckedNodeArrayChange = (array) => {
-  // console.log("array", array);
-
-  // checkedNodeArray.length = 0;
-  // checkedNodeArray.push(...array);
   tableSelected.length = 0;
   carouselSelected.length = 0;
   tooltipSelected.length = 0;
@@ -108,6 +109,8 @@ const handleNodeCheckedChange = (node, type) => {
   // } else {
   // }
 };
+
+const handleOffsetChange = (offset) => (scrollOffset.value = offset);
 </script>
 
 <style scoped lang="less">
