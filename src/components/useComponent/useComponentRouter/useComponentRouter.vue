@@ -6,15 +6,17 @@
       v-for="(component, index) in selectedArr"
       :key="index"
     >
-      <component :is="component" :scrollOffset="scrollOffset" />
+      <component :is="component" :refreshTooltip="refreshTooltip" />
     </show-component>
   </use-component>
 </template>
 
 <script setup name="useComponentRouter">
-import tableConfig from "../../config/table";
-import carouselConfig from "../../config/carousel";
-import tooltipConfig from "../../config/tooltip";
+import { watch, ref } from "vue";
+
+import tableConfig from "../config/table";
+import carouselConfig from "../config/carousel";
+import tooltipConfig from "../config/tooltip";
 
 const props = defineProps({
   selectedArr: {
@@ -43,6 +45,13 @@ const getConfig = () => {
       return carouselConfig;
   }
 };
+let refreshTooltip = ref(false);
 const config = getConfig();
 console.log("config", config, props.selectedArr);
+watch(
+  () => props.scrollOffset,
+  (newValue, oldValue) => {
+    refreshTooltip.value = !refreshTooltip.value;
+  }
+);
 </script>

@@ -8,6 +8,10 @@
   </div>
 </template>
 
+<script setup name="carousel1">
+const msg = 111;
+</script>
+
 <style scoped lang="less">
 .carousel-container {
   height: 350px;
