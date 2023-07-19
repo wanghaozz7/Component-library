@@ -1,12 +1,22 @@
 <template>
-  <div class="carousel" ref="carousel" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave"
-    v-resize:20="onResize">
+  <div
+    class="carousel"
+    ref="carousel"
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave"
+    v-resize:20="onResize"
+  >
     <div class="carousel-body" :style="{ left: offset + 'px' }">
       <slot />
     </div>
     <arrowGroup @goForward="handleGoForward" @goBack="handleGoBack" />
-    <indicatorGroup :indicatorCount="itemCount" :activeIdx="curIdx" :trigger="trigger" :indicatorType="indicatorType"
-      @change="handleChange" />
+    <indicatorGroup
+      :indicatorCount="itemCount"
+      :activeIdx="curIdx"
+      :trigger="trigger"
+      :indicatorType="indicatorType"
+      @change="handleChange"
+    />
   </div>
 </template>
 
@@ -90,8 +100,9 @@ const preCirculation = () => {
   let el = ``,
     t = ``;
   //在首部添加尾元素
-  el += `<div class='carousel-item'>${carousel_item[itemCount - 1].innerHTML
-    }</div>`;
+  el += `<div class='carousel-item'>${
+    carousel_item[itemCount - 1].innerHTML
+  }</div>`;
   for (let tmp of carousel_item) {
     t = `<div class="carousel-item">${tmp.innerHTML}</div>`;
     el += t;
@@ -185,7 +196,7 @@ const renderMove = (targetIdx) => {
   }
 };
 
-const moveAnimate = (step, targetOffset, targetIdx, callBack = () => { }) => {
+const moveAnimate = (step, targetOffset, targetIdx, callBack = () => {}) => {
   offset.value += step;
   // 到达终点 => 处理状态
   if (
@@ -235,10 +246,10 @@ const webIsActive = () => {
     "hidden" in document
       ? "hidden"
       : "webkithidden" in document
-        ? "webkithidden"
-        : "mozhidden" in document
-          ? "mozhidden"
-          : null;
+      ? "webkithidden"
+      : "mozhidden" in document
+      ? "mozhidden"
+      : null;
   let vibchage =
     "visibilitychange" || "webkitvisibilitychange" || "mozvisibilitychange";
   document.addEventListener(vibchage, function () {
@@ -299,8 +310,8 @@ const vResize = {
 const onResize = (arg) => {
   const height = arg[0].contentRect.height;
   const width = arg[0].contentRect.width;
-  getAttr();
 
+  if (width != 0 && height != 0) getAttr();
 };
 
 const getAttr = () => {
@@ -311,8 +322,7 @@ const getAttr = () => {
   // 重置下标范围   curIdx:1 ~ itemCount+1    偏移量范围 offset:carouselWidth*-1 ~ itemCount*carouselWidth*-1
   offset.value = carouselWidth * -1; // 默认偏移量更改
   curIdx.value = 1; // 默认下标更改
-}
-
+};
 
 onMounted(() => {
   carousel = ctx.$refs.carousel;
@@ -323,11 +333,11 @@ onMounted(() => {
   // 循环滚动结构
   if (props.circular) preCirculation();
   // 设置自动滚动定时器
-  setAutoRollingInterval();
+  if (props.autoRolling) setAutoRollingInterval();
 });
 
 onUnmounted(() => {
-  clearAutoRollingInterval();
+  if (props.autoRolling) clearAutoRollingInterval();
 });
 </script>
 

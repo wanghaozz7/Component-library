@@ -18,7 +18,7 @@
   </div>
 </template>
 
-<script setup name="">
+<script setup name="scrollBar">
 import { getCurrentInstance, ref, computed, onMounted } from "vue";
 
 const props = defineProps({
@@ -73,8 +73,9 @@ const getScrollBarWrapperStyle = computed(() => {
 
 const getSlotStyle = computed(() => {
   const transform = `translateY(-${slotOffset.value}px)`;
-
+  // 滚动时将回调发出
   emits("offsetChange", slotOffset.value);
+
   return {
     transform,
   };
@@ -155,7 +156,7 @@ const getAttr = () => {
   if (slotHeight > wrapperHeight) showScrollBar.value = true;
   else showScrollBar.value = false;
 
-  // 如果出现了滚动条 —— 计算滚动范围 滚动条的长度 滚动条的滚动范围
+  // 如果出现了滚动条 —— 滚动条的长度 计算滚动范围
   if (showScrollBar.value) {
     // 滚动条长度 = （盒子的长度 / 内容的长度）* 盒子的长度
     scrollBarLen.value = (wrapperHeight * wrapperHeight) / slotHeight;
@@ -169,7 +170,7 @@ const getAttr = () => {
 // 添加滚动条拖动事件
 const mouseDownAndMove = (el, callback) => {
   // 添加鼠标按下监听
-  el.addEventListener("mousedown", function (e) {
+  el.addEventListener("mousedown", function () {
     // 当鼠标按下时, 添加鼠标移动监听
     y = 0;
     isDrag.value = true;
@@ -220,14 +221,9 @@ const handleDrag = (target) => {
   if (target >= 0 && target <= slotMaxOffset) slotOffset.value = target;
 };
 
-const handleMouseEnter = (e) => {
-  isHover.value = true;
-};
+const handleMouseEnter = (e) => (isHover.value = true);
 
-const handleMouseLeave = (e) => {
-  isHover.value = false;
-};
-
+const handleMouseLeave = (e) => (isHover.value = false);
 // 执行滚动动画
 const scrollAnimate = (change) => {
   if (change === 0) return;
