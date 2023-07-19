@@ -50,7 +50,7 @@
 
 <script setup name="useTooltip">
 import { computed, ref, watch } from "vue";
-import tooltipConfig from "../config/tooltip.js";
+import tooltipConfig from "../../config/tooltip.js";
 
 const props = defineProps({
   selectedArr: {

@@ -50,7 +50,7 @@
 
 <script setup name="useTable">
 import { computed } from "vue";
-import tableConfig from "../config/table.js";
+import tableConfig from "../../config/table.js";
 
 const props = defineProps({
   selectedArr: {

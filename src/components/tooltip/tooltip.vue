@@ -14,7 +14,6 @@
 import {
   computed,
   getCurrentInstance,
-  nextTick,
   onMounted,
   onUnmounted,
   ref,
@@ -271,9 +270,12 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  const slot = ctx.$refs.slotWrapper.children[0];
-  slot.removeEventListener("mouseenter", handleMouseEnter);
-  slot.removeEventListener("mouseleave", handleMouseLeave);
+  const slotWrapper = ctx.$refs?.slotWrapper;
+  const slot = slotWrapper ? slotWrapper.children[0] : undefined;
+  if (slot) {
+    slot.removeEventListener("mouseenter", handleMouseEnter);
+    slot.removeEventListener("mouseleave", handleMouseLeave);
+  }
 });
 
 watch(

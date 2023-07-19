@@ -3,8 +3,13 @@
     <div class="title">{{ title.text }}</div>
     <div class="desc">{{ title.desc }}</div>
     <slot />
-    <attribute-list v-for="list in lists" :key="list.title" :title="list.title" :list-data="list.listData"
-      :type="list.type" />
+    <attribute-list
+      v-for="list in lists"
+      :key="list.title"
+      :title="list.title"
+      :list-data="list.listData"
+      :type="list.type"
+    />
   </div>
 </template>
 
@@ -21,12 +26,10 @@ const props = defineProps({
   lists: {
     type: Array,
     default() {
-      return []
-    }
+      return [];
+    },
   },
-
 });
-
 </script>
 
 <style lang="less" scoped>
