@@ -11,7 +11,14 @@
 </template>
 
 <script setup>
-import { computed, getCurrentInstance, onMounted, onUnmounted, ref } from "vue";
+import {
+  computed,
+  getCurrentInstance,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  ref,
+} from "vue";
 
 const props = defineProps({
   placement: {
@@ -56,19 +63,20 @@ const styleFilter = (str) => {
   if (typeof str === "number") return str;
   return parseInt(str.replaceAll("px"));
 };
+
 const handleMouseEnter = (e) => {
   if (showTooltip.value) return;
   showTooltip.value = true;
+
   const tooltip = ctx.$refs.tooltip;
   const content = tooltip.children[0];
   const icon = tooltip.children[1];
   const inner = icon.children[0];
   const slot = ctx.$refs.slotWrapper.children[0];
   const pos = slot.getBoundingClientRect();
-
-  const tooltipStyleArr = [],
-    iconStyleArr = [],
-    innerStyleArr = [];
+  const tooltipStyleArr = [];
+  const iconStyleArr = [];
+  const innerStyleArr = [];
 
   switch (props.placement) {
     case "top":
@@ -108,7 +116,6 @@ const handleMouseEnter = (e) => {
         pos.top + styleFilter(slotHeight) + props.offset + "px",
       ]);
       tooltipStyleArr.push(["transform", "rotateX(180deg)"]);
-
       iconStyleArr.push(["left", "50%"]);
       iconStyleArr.push(["bottom", "-15px"]);
       iconStyleArr.push(["transform", "translateX(-50%)"]);
@@ -192,7 +199,6 @@ const handleMouseEnter = (e) => {
   for (let arr of tooltipStyleArr) {
     const key = arr[0],
       value = arr[1];
-    console.log("key,value", key, value);
     tooltip.style[key] = value;
     if (key === "transform") content.style[key] = value;
   }
@@ -206,14 +212,47 @@ const handleMouseEnter = (e) => {
       value = arr[1];
     inner.style[key] = value;
   }
+  // console.log("出现", slot.offsetTop);
+
+  const obj = getOffsetOfBody(slot);
+  // console.log("出现", obj);
+
   tooltip.style.display = "block";
 };
+
 const handleMouseLeave = (e) => {
   const style = ctx.$refs.tooltip.style;
   setTimeout(() => {
     style.display = "none";
     showTooltip.value = false;
   }, props.delay);
+};
+
+const handleBodyMouseWheel = (e) => {
+  const slot = ctx.$refs.slotWrapper.children[0];
+  const pos = slot.getBoundingClientRect();
+
+  const obj = getOffsetOfBody(slot);
+  // console.log("滚动", obj);
+};
+
+const getOffsetOfBody = (el) => {
+  var left,
+    top = null;
+  var elPar = el.offsetParent;
+  left += el.offsetLeft;
+  top += el.offsetTop;
+  while (elPar) {
+    if (navigator.userAgent.indexOf("MSIE 8.0") == -1) {
+      //若不是IE8，则需要加上offsetParent的clientLeft和clientTop
+      left += elPar.clientLeft;
+      top += elPar.clientTop;
+    }
+    left += elPar.offsetLeft;
+    top += elPar.offsetTop;
+    elPar = elPar.offsetParent;
+  }
+  return { left: left, top: top };
 };
 
 onMounted(() => {
@@ -226,6 +265,7 @@ onMounted(() => {
 
   const body = document.getElementsByTagName("body")[0];
   body.appendChild(tooltip);
+  body.addEventListener("mousewheel", handleBodyMouseWheel);
 
   // 先获取属性再隐藏
   slotWidth = window.getComputedStyle(slot).width;

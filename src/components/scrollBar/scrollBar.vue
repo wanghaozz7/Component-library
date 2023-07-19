@@ -1,44 +1,22 @@
 <template>
-  <div
-    class="container"
-    ref="container"
-    :style="containerStyle"
-    @wheel="handleWheel"
-    @mouseenter="handleMouseEnter"
-    @mouseleave="handleMouseLeave"
-  >
-    <div
-      class="content"
-      v-resize:20="onResize"
-      :style="{ top: getContentOffset + 'px' }"
-      ref="content"
-    >
+  <div class="scroll-bar-wrapper" :style="getScrollBarWrapperStyle">
+    <div ref="slot" :style="getSlotStyle" v-resize:20="onResize">
       <slot />
     </div>
-    <div class="scroll-bar" :style="scrollBarStyle" />
+    <div class="scroll-bar" :style="getScrollBarStyle" ref="scrollBar"></div>
   </div>
 </template>
 
-<script setup name="scroll-bar">
-import { getCurrentInstance, onMounted, ref, computed } from "vue";
+<script setup name="">
+import { computed, getCurrentInstance, onMounted, onUnmounted, ref } from "vue";
 
 const props = defineProps({
-  // 显示滚动条的时机 ('always','hover','none')
-  showScrollBar: {
+  // 最大高度 超出后显示滚动条
+  maxHeight: {
     type: String,
-    default: "hover",
+    default: "100vh",
   },
-  // 滚轮灵敏度 (取数字的绝对值代表滚动一次的距离)
-  wheelSensitivity: {
-    type: Number,
-    default: 25,
-  },
-  // 滚动方向 ('normal','opposite')
-  direction: {
-    type: String,
-    default: "normal",
-  },
-  // 滚动的帧数
+  // 滚动一次的帧数
   frame: {
     type: Number,
     default: 20,
@@ -46,79 +24,53 @@ const props = defineProps({
   // 总延迟 (delay = frame * 执行一次动画后的延迟)
   delay: {
     type: Number,
-    default: 25,
+    default: 100,
   },
 });
 
-let containerMaxHeight = ref(0);
-let scrollBarLen = ref(0);
-let contentHeight = ref(0);
-let contentWidth = ref(0);
-// 滚动条的偏移量
-let scrollBarOffset = ref(0);
-let contentOffset = ref(0);
-let isHover = ref(false);
-let isDrag = ref(false);
-// 防抖 频繁滚动下更新滚动的目标和速度(滚动的时间还是从最后一次滚动开始delay后结束)
-let isMove = ref(false);
+// 只需要控制内容的偏移量(slotOffset) 滚动条的offset只是展示 通过计算生成
+let slotOffset = ref(0),
+  scrollBarOffset = ref(0),
+  showScrollBar = ref(false),
+  scrollBarLen = ref(0),
+  isMove = ref(false),
+  isDrag = ref(false);
 
+let slotMaxOffset, slotHeight, wrapperHeight, y;
+// 提取出动画的参数是为了修改滚动的速度(所以其他变量不能随意使用newSlotOffset)
+let step, newSlotOffset, delay;
 const ctx = getCurrentInstance().ctx;
-let scrollBar;
-let y;
-let maxOffset;
-let step;
-let delay;
-let target = scrollBarOffset.value;
 
-const getContentOffset = computed(() => {
-  contentOffset.value =
-    ((-1 * (contentHeight.value - containerMaxHeight.value)) /
-      (containerMaxHeight.value - scrollBarLen.value)) *
-    scrollBarOffset.value;
-  return contentOffset.value;
-});
-
-const containerStyle = computed(() => {
-  const maxHeight = containerMaxHeight.value + "px";
-  const height = maxHeight;
-  const width = contentWidth.value + "px";
+const getScrollBarWrapperStyle = computed(() => {
+  const maxHeight = props.maxHeight;
   // 拖动时不高亮选中文本
   const userSelect = isDrag.value ? "none" : "";
+
   return {
     maxHeight,
-    height,
-    width,
     userSelect,
   };
 });
 
-const scrollBarStyle = computed(() => {
-  let opacity;
+const getSlotStyle = computed(() => {
+  const transform = `translateY(-${slotOffset.value}px)`;
+  return {
+    transform,
+  };
+});
+
+const getScrollBarStyle = computed(() => {
+  // 滚动条走的距离 = 内容走的距离 *（盒子的长度 - 滚动条的长度）/（内容的长度 - 盒子的长度）
   const height = scrollBarLen.value + "px";
-  const top = scrollBarOffset.value + "px";
   const backgroundColor = isDrag.value ? "#d1d1d1" : "";
-  const transition = isDrag.value ? "" : "all 0.2s";
-
-  switch (props.showScrollBar) {
-    case "always":
-      opacity = "1";
-      break;
-    case "none":
-      opacity = "0";
-      break;
-    case "hover":
-      opacity = isHover.value || isDrag.value ? "1" : "0";
-      break;
-    default:
-      opacity = isHover.value || isDrag.value ? "1" : "0";
-  }
-
+  scrollBarOffset.value =
+    (slotOffset.value * (wrapperHeight - scrollBarLen.value)) /
+    (slotHeight - wrapperHeight);
+  const top = scrollBarOffset.value + "px";
   return {
     height,
     top,
-    opacity,
     backgroundColor,
-    transition,
   };
 });
 
@@ -152,33 +104,29 @@ const vResize = {
 
 // slot高度变化回调
 const onResize = (arg) => {
-  contentHeight.value = arg[0].contentRect.height;
-  contentWidth.value = arg[0].contentRect.width;
-  calScrollBarLen();
+  slotHeight = filterString(arg[0].contentRect.height);
+  getAttr();
 };
 
-// 计算滚动条的长度和位置(内容高度变化后)
-const calScrollBarLen = () => {
-  // 滚动条长度 = （盒子的长度 / 内容的长度）* 盒子的长度
-  // 滚动条走的距离 = 内容走的距离 *（盒子的长度 - 滚动条的长度）/（内容的长度 - 盒子的长度）
+// 获取所有属性
+const getAttr = () => {
+  const wrapper = ctx.$refs.slot.parentNode;
+  wrapperHeight = filterString(window.getComputedStyle(wrapper).height);
+  if (slotHeight > wrapperHeight) showScrollBar.value = true;
+  else showScrollBar.value = false;
 
-  // 更新滚动条长度
-  scrollBarLen.value = Math.floor(
-    containerMaxHeight.value * (containerMaxHeight.value / contentHeight.value)
-  );
-  // 判断是否隐藏滚动条
-  scrollBarLen.value =
-    scrollBarLen.value < containerMaxHeight.value ? scrollBarLen.value : 0;
-
-  maxOffset = containerMaxHeight.value - scrollBarLen.value;
-  // scrollBarOffset(滚动条走的距离)
-  scrollBarOffset.value =
-    (Math.abs(contentOffset.value) *
-      (containerMaxHeight.value - scrollBarLen.value)) /
-    (contentHeight.value - containerMaxHeight.value);
+  // 如果出现了滚动条 —— 计算滚动范围 滚动条的长度 滚动条的滚动范围
+  if (showScrollBar.value) {
+    // 滚动条长度 = （盒子的长度 / 内容的长度）* 盒子的长度
+    scrollBarLen.value = (wrapperHeight * wrapperHeight) / slotHeight;
+    slotMaxOffset = slotHeight - wrapperHeight;
+  }
+  // 重置slotOffset
+  if (slotOffset.value > slotMaxOffset) slotOffset.value = slotMaxOffset;
+  else if (slotOffset.value < 0) slotOffset.value = 0;
 };
 
-// 滚动条拖动事件
+// 添加滚动条拖动事件
 const mouseDownAndMove = (el, callback) => {
   // 添加鼠标按下监听
   el.addEventListener("mousedown", function (e) {
@@ -195,133 +143,105 @@ const mouseDownAndMove = (el, callback) => {
   });
 };
 
-const scrollBarOffsetChange = (change, type) => {
-  // 如果没有出现滚动条则不能滚动
-  if (scrollBarLen.value === 0) return;
-  if (type === "mouse") {
-    // 鼠标拖动
-    const newOffset = change + scrollBarOffset.value;
-    if (newOffset > maxOffset || newOffset < 0) return;
-    handleMove(change, type);
-  } else {
-    // 滚轮滚动
-    // 滚动范围修正滚动值(到达边界的最后一次change值的修正)
-    if (change + target >= maxOffset) {
-      // 向下滚动到达底部
-      handleMove(maxOffset - scrollBarOffset.value, type);
-    } else if (change + target <= 0) {
-      // 向上滚动到达顶部
-      handleMove(-scrollBarOffset.value, type);
-    } else handleMove(change, type);
+// 处理滚动条拖动事件
+const handleMouseDownAndMove = (e) => {
+  if (y === 0) y = e.y;
+  else {
+    const change = e.y - y;
+    const newVal = scrollBarOffset.value + change;
+    // 内容走的距离 = 滚动条走的距离 *（内容的长度 - 盒子的长度）/（盒子的长度 - 滚动条的长度）
+    const target =
+      (newVal * (slotHeight - wrapperHeight)) /
+      (wrapperHeight - scrollBarLen.value);
+    handleDrag(target);
+    y = e.y;
   }
 };
 
-const handleMove = (change, type) => {
+const filterString = (str) => {
+  if (typeof str === "number") return str;
+  return parseInt(str.replaceAll("px"));
+};
+
+// 滚轮滚动
+const handleScroll = (e) => {
+  if (!showScrollBar.value) return;
+  const change = e.deltaY;
+  const target = slotOffset.value + change;
+  if (target >= 0 && target <= slotMaxOffset) scrollAnimate(change);
+  else {
+    if (change >= 0) scrollAnimate(slotMaxOffset - slotOffset.value);
+    else scrollAnimate(-slotOffset.value);
+  }
+};
+
+// 鼠标拖拽
+const handleDrag = (target) => {
+  if (target >= 0 && target <= slotMaxOffset) slotOffset.value = target;
+};
+
+// 执行滚动动画
+const scrollAnimate = (change) => {
+  if (change === 0) return;
   const moveAnimate = () => {
     if (
-      (step > 0 && scrollBarOffset.value >= target) ||
-      (step < 0 && scrollBarOffset.value <= target)
+      (step > 0 && slotOffset.value >= newSlotOffset) ||
+      (step < 0 && slotOffset.value <= newSlotOffset)
     ) {
-      scrollBarOffset.value = target;
+      slotOffset.value = newSlotOffset;
       isMove.value = false;
       return;
     }
-    scrollBarOffset.value += step;
+    slotOffset.value += step;
     setTimeout(() => {
       moveAnimate();
     }, delay);
   };
-  if (change == 0) return;
-  if (type === "mouse") scrollBarOffset.value += change;
-  else {
-    if (isMove.value) {
-      // 如果是快速滚动(请求滚动时仍然在滚动) 在原来的基础更新参数
-      target += change;
-      target = target > 0 ? target : 0;
-      target = target < maxOffset ? target : maxOffset;
-      step = (target - scrollBarOffset.value) / props.frame;
-      delay = props.delay / props.frame;
-    } else {
-      // 如果不是快速滚动则是从当前位置进行滚动
-      target = scrollBarOffset.value + change;
-      step = change / props.frame;
-      delay = props.delay / props.frame;
-      isMove.value = true;
-      moveAnimate();
-    }
-  }
-};
-
-const handleWheel = (e) => {
-  let k;
-  switch (props.direction) {
-    case "normal":
-      k = 1;
-      break;
-    case "opposite":
-      k = -1;
-      break;
-    default:
-      k = 1;
-  }
-  if (e.wheelDelta < 0) {
-    // 向下
-    scrollBarOffsetChange(k * Math.abs(props.wheelSensitivity), "wheel");
+  delay = props.delay / props.frame;
+  if (isMove.value) {
+    // 快速滚动从上一次的目标继续累加(滚动条处于动态)
+    newSlotOffset += change;
+    // 重置范围
+    newSlotOffset = newSlotOffset > 0 ? newSlotOffset : 0;
+    newSlotOffset =
+      newSlotOffset < slotMaxOffset ? newSlotOffset : slotMaxOffset;
+    step = (newSlotOffset - slotOffset.value) / props.frame;
   } else {
-    // 向上
-    scrollBarOffsetChange(k * -1 * Math.abs(props.wheelSensitivity), "wheel");
+    // 普通滚动从当前滚动条的位置进行滚动(滚动条处于静态)
+    step = change / props.frame;
+    newSlotOffset = change + slotOffset.value;
+    isMove.value = true;
+    moveAnimate();
   }
 };
-
-const handleMouseEnter = (e) => (isHover.value = true);
-const handleMouseLeave = (e) => (isHover.value = false);
 
 onMounted(() => {
-  containerMaxHeight.value = document.documentElement.clientHeight;
+  const slot = ctx.$refs.slot.children[0];
+  const scrollBar = ctx.$refs.scrollBar;
+  // 分别为监听内容区的滚轮事件和滚动条的拖动事件
+  slot.addEventListener("mousewheel", handleScroll);
+  mouseDownAndMove(scrollBar, handleMouseDownAndMove);
+});
 
-  const container = ctx.$refs.container;
-  const content = container.children[0];
-  const slot = content.children[0];
-  scrollBar = container.children[1];
-
-  mouseDownAndMove(scrollBar, function (e) {
-    if (y === 0) y = e.y;
-    else {
-      const change = e.y - y;
-      scrollBarOffsetChange(change, "mouse");
-      y = e.y;
-    }
-  });
-
-  container.style = slot.style;
-  slot.style = {};
-  container.classList.add(slot.classList);
-  slot.classList.remove(slot.classList);
-
-  const style = window.getComputedStyle(container);
-  content.style.width = style.width;
+onUnmounted(() => {
+  slot.removeEventListener("mousewheel", handleScroll);
 });
 </script>
 
 <style scoped lang="less">
-.container {
+.scroll-bar-wrapper {
   position: relative;
-  max-height: 100vh !important;
   overflow: hidden;
-
-  .content {
-    position: absolute;
-  }
 
   .scroll-bar {
     position: absolute;
-    right: 0;
+    height: 100%;
     width: 8px;
     border-radius: 8px;
     background-color: #ebebeb;
+    right: 0;
+    top: 0;
     cursor: pointer;
-    z-index: 99;
-
     &:hover {
       background-color: #d1d1d1;
     }

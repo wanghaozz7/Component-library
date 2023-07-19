@@ -5,82 +5,22 @@
         <side-bar
           :sideBarData="sideBarData"
           :defaultUnfoldAll="true"
-          :defaultCheckedAll="false"
+          :defaultCheckedAll="true"
           :rowHeight="40"
           @checkedNodeArrayChange="handleCheckedNodeArrayChange"
           @nodeCheckedChange="handleNodeCheckedChange"
         />
       </div>
     </scroll-bar>
-    <scroll-bar showScrollBar="hover" direction="normal">
-      <div class="mainContent">
+    <div class="mainContent">
+      <scroll-bar>
         <div class="block">
           <use-table :selectedArr="tableSelected" />
           <use-tooltip :selectedArr="tooltipSelected" />
           <use-carousel :selectedArr="carouselSelected" />
         </div>
-        <!-- <tooltip placement="top">
-          <div
-            style="
-              width: 100px;
-              height: 100px;
-              background-color: red;
-              margin: 100px auto;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-            "
-          >
-            111
-          </div>
-        </tooltip>
-        <tooltip placement="right">
-          <div
-            style="
-              width: 100px;
-              height: 100px;
-              background-color: red;
-              margin: 100px auto;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-            "
-          >
-            111
-          </div>
-        </tooltip>
-        <tooltip placement="bottom">
-          <div
-            style="
-              width: 100px;
-              height: 100px;
-              background-color: red;
-              margin: 100px auto;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-            "
-          >
-            111
-          </div>
-        </tooltip>
-        <tooltip placement="left">
-          <div
-            style="
-              width: 100px;
-              height: 100px;
-              background-color: red;
-              margin: 100px auto;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-            "
-          >
-            111
-          </div>
-        </tooltip> -->
-      </div>
-    </scroll-bar>
+      </scroll-bar>
+    </div>
   </div>
 </template>
 
@@ -136,7 +76,7 @@ const sideBarData = [
 
 // params: array => 选中叶子节点的一维数组(按照点击顺序的逆序)
 const handleCheckedNodeArrayChange = (array) => {
-  console.log("array", array);
+  // console.log("array", array);
 
   // checkedNodeArray.length = 0;
   // checkedNodeArray.push(...array);
