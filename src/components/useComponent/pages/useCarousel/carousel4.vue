@@ -1,15 +1,21 @@
 <template>
   <div class="carousel-container">
     <carousel showArrow="hover">
-      <carousel-item v-for="item in 5" :key="item">
-        <div class="carousel-item">+++++{{ item }}+++++</div>
+      <carousel-item v-for="(url, idx) in imgList" :key="idx">
+        <div class="carousel-item"><img :src="url" /></div>
       </carousel-item>
     </carousel>
   </div>
 </template>
 
 <script setup name="carousel1">
-const msg = 111;
+const imgList = [
+  "https://i0.hippopx.com/photos/320/918/427/sky-clouds-sunlight-dark-thumb.jpg",
+  "https://i0.hippopx.com/photos/683/318/324/wolf-wolves-snow-wolf-landscape-thumb.jpg",
+  "https://i0.hippopx.com/photos/477/768/839/swimmer-sport-swim-water-thumb.jpg",
+  "https://i0.hippopx.com/photos/969/496/921/woman-girl-dom-happy-thumb.jpg",
+  "https://i0.hippopx.com/photos/856/151/610/panorama-sunrise-dawn-bled-thumb.jpg",
+];
 </script>
 
 <style scoped lang="less">
@@ -25,6 +31,10 @@ const msg = 111;
     justify-content: center;
     align-items: center;
     background-color: rgb(194, 249, 194);
+    img {
+      width: 100%;
+      height: 100%;
+    }
   }
 }
 </style>

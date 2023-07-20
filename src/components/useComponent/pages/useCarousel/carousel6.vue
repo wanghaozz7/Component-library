@@ -1,6 +1,6 @@
 <template>
   <div class="carousel-container">
-    <carousel>
+    <carousel :circular="true" :autoRolling="true" showArrow="hover">
       <carousel-item v-for="(url, idx) in imgList" :key="idx">
         <div class="carousel-item"><img :src="url" /></div>
       </carousel-item>
@@ -31,6 +31,7 @@ const imgList = [
     justify-content: center;
     align-items: center;
     background-color: rgb(194, 249, 194);
+
     img {
       width: 100%;
       height: 100%;

@@ -1,8 +1,10 @@
 <template>
   <div class="carousel-container">
-    <carousel>
+    <carousel :autoRolling="true" :interval="2500" showArrow="hover">
       <carousel-item v-for="(url, idx) in imgList" :key="idx">
-        <div class="carousel-item"><img :src="url" /></div>
+        <div class="carousel-item">
+          <img :src="url" />
+        </div>
       </carousel-item>
     </carousel>
   </div>

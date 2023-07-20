@@ -1,16 +1,23 @@
 <template>
   <div class="indicator-group">
-    <div v-for="idx in indicatorCount" :key="idx">
-      <dot :isActive="idx === activeIdx" @click="handleClick(idx)" @mouseenter="handleMouseenter(idx)"
-        v-if="indicatorType === 'dot'" />
-      <rectangle :isActive="idx === activeIdx" @click="handleClick(idx)" @mouseenter="handleMouseenter(idx)"
-        v-if="indicatorType === 'rectangle'" />
+    <div v-for="(,idx) in indicatorCount" :key="idx">
+      <dot
+        :isActive="idx === activeIdx"
+        @click="handleClick(idx)"
+        @mouseenter="handleMouseenter(idx)"
+        v-if="indicatorType === 'dot'"
+      />
+      <rectangle
+        :isActive="idx === activeIdx"
+        @click="handleClick(idx)"
+        @mouseenter="handleMouseenter(idx)"
+        v-if="indicatorType === 'rectangle'"
+      />
     </div>
   </div>
 </template>
 
 <script setup name="indicatorGroup">
-
 const props = defineProps({
   // 个数
   indicatorCount: {
@@ -37,6 +44,8 @@ const props = defineProps({
 const emit = defineEmits(["change"]);
 
 const handleClick = (idx) => {
+  console.log("idx", idx);
+
   if (props.trigger === "click") emit("change", idx);
 };
 

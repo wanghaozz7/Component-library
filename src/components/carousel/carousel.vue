@@ -6,7 +6,7 @@
     @mouseleave="handleMouseLeave"
     v-resize:20="onResize"
   >
-    <div class="carousel-body" :style="{ left: offset + 'px' }">
+    <div class="carousel-body" :style="getCarouselBodyStyle">
       <slot />
     </div>
     <arrowGroup
@@ -17,7 +17,7 @@
     />
     <indicatorGroup
       :indicatorCount="itemCount"
-      :activeIdx="curIdx"
+      :activeIdx="getActiveIdx"
       :trigger="trigger"
       :indicatorType="indicatorType"
       @change="handleChange"
@@ -26,13 +26,13 @@
 </template>
 
 <script setup name="carousel">
-import { ref, onMounted, onUnmounted, getCurrentInstance } from "vue";
+import { ref, onMounted, onUnmounted, getCurrentInstance, computed } from "vue";
 
 const props = defineProps({
   // 是否循环滚动
   circular: {
     type: Boolean,
-    default: true,
+    default: false,
   },
   // 是否自动滚动
   autoRolling: {
@@ -76,32 +76,38 @@ const props = defineProps({
   },
 });
 
-// 控制轮播图展示的offset左偏移量
-let offset = ref(0);
-// 当前展示内容的下标
-let curIdx = ref(0);
-// 是否正在滚动
-let isMoving = ref(false);
-let isHover = ref(false);
-// 轮播内容的个数
-let itemCount;
-// 轮播图的宽度
-let carouselWidth;
-// 定时器的间隔
-const interval = props.delay / props.frame;
-// 自动滚动定时器
-let autoRollingInterval = null;
-// 存储定时器的沙漏实现定时器的开始和暂停
-let hourglass = 0;
+let offset = ref(0),
+  curIdx = ref(0),
+  isMoving = ref(false),
+  isHover = ref(false);
 
-// 上下文content
-const ctx = getCurrentInstance().ctx;
-let carousel, carousel_body, carousel_item;
+let itemCount,
+  carouselWidth,
+  autoRollingInterval = null,
+  hourglass = 0,
+  forward = true,
+  carousel,
+  carousel_body,
+  carousel_item;
+
+const ctx = getCurrentInstance().ctx,
+  interval = props.delay / props.frame;
+
+const getActiveIdx = computed(() => {
+  if (!props.circular) return curIdx.value;
+  return curIdx.value - 1;
+});
+
+const getCarouselBodyStyle = computed(() => {
+  const left = offset.value + "px";
+  return {
+    left,
+  };
+});
 
 const getOffsetByIdx = (idx) => {
   return Math.abs(idx * carouselWidth) * -1;
 };
-
 const preCirculation = () => {
   // 在首位添加一个末位元素 在末位添加一个首位元素
   let el = ``,
@@ -123,13 +129,19 @@ const preCirculation = () => {
   offset.value = carouselWidth * -1; // 默认偏移量更改
   curIdx.value = 1; // 默认下标更改
 };
-
 const renderMove = (targetIdx) => {
   if (isMoving.value) return;
   isMoving.value = true;
   const dif = Math.abs(curIdx.value - targetIdx);
+  // 单次滚动
   if (dif === 1) {
-    // 单次滚动
+    // 非循环滚动模式下 到达边界向反方向滚动一格 (如果是自动滚动则反向改变)
+    if (!props.circular && (targetIdx === itemCount || targetIdx === -1)) {
+      isMoving.value = false;
+      if (targetIdx === itemCount) renderMove(targetIdx - 2);
+      else renderMove(1);
+      return;
+    }
     const targetOffset = getOffsetByIdx(targetIdx);
     const offsetDif = targetOffset - offset.value;
     const step = Math.ceil(offsetDif / props.frame);
@@ -202,7 +214,6 @@ const renderMove = (targetIdx) => {
     moveAnimate(fitstStep, firstOffset, firstIdx, callBack);
   }
 };
-
 const moveAnimate = (step, targetOffset, targetIdx, callBack = () => {}) => {
   offset.value += step;
   // 到达终点 => 处理状态
@@ -218,34 +229,45 @@ const moveAnimate = (step, targetOffset, targetIdx, callBack = () => {}) => {
     moveAnimate(step, targetOffset, targetIdx, callBack);
   }, interval);
 };
-
-const intervalGoForward = () => {
+const intervalRolling = () => {
   // 判断元素是否在可视范围内和浏览器是否休眠
   if (webIsActive() || isInViePortOfOne(carousel)) {
     // 将时间间隔分为10份,当第十次时触发滚动并清除沙子 通过沙漏中的沙子实现计时器的暂停和继续
     hourglass += props.interval / 10;
     if (hourglass === props.interval) {
-      handleGoForward();
+      if (!props.circular) {
+        if (forward) {
+          if (curIdx.value === itemCount - 1) {
+            forward = !forward;
+            handleGoBack();
+          } else handleGoForward();
+        } else {
+          if (curIdx.value === 0) {
+            forward = !forward;
+            handleGoForward();
+          } else handleGoBack();
+        }
+      } else {
+        if (forward) handleGoForward();
+        else handleGoBack();
+      }
       hourglass = 0;
     }
   }
 };
-
 const setAutoRollingInterval = () => {
   if (props.autoRolling && autoRollingInterval === null) {
     autoRollingInterval = setInterval(() => {
-      intervalGoForward();
+      intervalRolling();
     }, props.interval / 10);
   }
 };
-
 const clearAutoRollingInterval = () => {
   if (props.autoRolling && autoRollingInterval !== null) {
     window.clearInterval(autoRollingInterval);
     autoRollingInterval = null;
   }
 };
-
 // 浏览器是否休眠
 const webIsActive = () => {
   let bowhidden =
@@ -263,7 +285,6 @@ const webIsActive = () => {
     else return false;
   });
 };
-
 // 元素是否处于可视区域内
 const isInViePortOfOne = (el) => {
   const viewPortHeight =
@@ -275,23 +296,17 @@ const isInViePortOfOne = (el) => {
   const top = offsetTop - scollTop;
   return top <= viewPortHeight && top >= 0;
 };
-
 const handleGoForward = () => renderMove(curIdx.value + 1);
-
 const handleGoBack = () => renderMove(curIdx.value - 1);
-
 const handleChange = (idx) => renderMove(idx);
-
 const handleMouseEnter = () => {
   isHover.value = true;
   clearAutoRollingInterval();
 };
-
 const handleMouseLeave = () => {
   isHover.value = false;
   setAutoRollingInterval();
 };
-
 const vResize = {
   mounted(el, binding) {
     // 这里使用debounce防抖处理，防抖的延时时间可以通过自定义指令的参数传过来，如`v-resize:300`表示300ms延时
@@ -318,21 +333,21 @@ const vResize = {
     el._resizer.disconnect();
   },
 };
-
 const onResize = (arg) => {
   const height = arg[0].contentRect.height;
   const width = arg[0].contentRect.width;
   if (width != 0 && height != 0) getAttr();
 };
-
 const getAttr = () => {
   // 获取属性
   carousel = ctx.$refs.carousel;
   carouselWidth = carousel.offsetWidth;
 
   // 重置下标范围   curIdx:1 ~ itemCount+1    偏移量范围 offset:carouselWidth*-1 ~ itemCount*carouselWidth*-1
-  offset.value = carouselWidth * -1; // 默认偏移量更改
-  curIdx.value = 1; // 默认下标更改
+  if (props.circular) {
+    offset.value = carouselWidth * -1; // 默认偏移量更改
+    curIdx.value = 1; // 默认下标更改
+  }
 };
 
 onMounted(() => {
@@ -341,9 +356,8 @@ onMounted(() => {
   carousel_item = carousel_body.children;
   carouselWidth = carousel.offsetWidth;
   itemCount = carousel_item.length;
-  // 循环滚动结构
+
   if (props.circular) preCirculation();
-  // 设置自动滚动定时器
   if (props.autoRolling) setAutoRollingInterval();
 });
 
