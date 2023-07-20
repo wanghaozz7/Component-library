@@ -54,28 +54,62 @@ export default {
         desc: "提供了4种不同悬浮位置的用法",
       },
       code: `
-            <div 
-                style="
-                height: 250px;
+            <template>
+              <div style="margin-top: 50px" class="cont">
+                <tooltip placement="top" content="我悬浮在上边~">
+                  <div class="item">上</div>
+                </tooltip>
+              </div>
+              <div style="margin: 50px 0; gap: 150px" class="cont">
+                <tooltip placement="left" content="我悬浮在左边~">
+                  <div class="item">左</div>
+                </tooltip>
+                <tooltip placement="right" content="我悬浮在右边~">
+                  <div class="item">右</div>
+                </tooltip>
+              </div>
+              <div style="margin-bottom: 50px" class="cont">
+                <tooltip placement="bottom" content="我悬浮在下边~">
+                  <div class="item">下</div>
+                </tooltip>
+              </div>
+            </template>
+            <style scoped lang="less">
+            .tooltip-container {
+              height: 100px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              cursor: pointer;
+
+              .tooltip-content {
+                border: 1px solid gray;
+                border-radius: 4px;
                 display: flex;
-                align-items: center;
                 justify-content: center;
-                cursor: pointer;
-              "
-            >
-              <tooltip content="我是文字提示">
-                <div
-                  style="
-                    height: 100px;
-                    background-color: lightpink;
-                    width: 100px;
-                    border: 1px solid black;
-                  "
-                >
-                  111
-                </div>
-              </tooltip>
-            </div>
+                align-items: center;
+                padding: 8px;
+              }
+            }
+
+            .item {
+              width: 75px;
+              height: 75px;
+              border: 1px solid gray;
+              margin: 100px auto;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              cursor: pointer;
+            }
+
+            .cont {
+              height: 75px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            }
+            </style>
       `,
     },
   ],

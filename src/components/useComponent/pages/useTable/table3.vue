@@ -1,17 +1,12 @@
 <template>
-  <table-list
-    :data="tableData"
-    :out-side-border="false"
-    :stripe="true"
-    :border="true"
-  >
+  <table-list :data="tableData" :out-side-border="false" :stripe="true" :border="true">
     <table-column prop="date" label="日期" :width="180" />
     <table-column prop="name" label="姓名" :width="180" />
     <table-column prop="address" label="地址" :min-width="180" />
   </table-list>
 </template>
 
-<script setup name="">
+<script setup name="table3">
 const tableData = [
   {
     date: "2016-05-02",

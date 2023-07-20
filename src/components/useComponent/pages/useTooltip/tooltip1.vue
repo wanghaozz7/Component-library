@@ -19,7 +19,7 @@
   </div>
 </template>
 
-<script setup name="">
+<script setup name="tooltip1">
 const props = defineProps({
   refreshTooltip: {
     type: Boolean,

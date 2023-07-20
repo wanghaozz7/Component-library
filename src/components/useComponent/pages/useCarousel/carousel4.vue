@@ -1,6 +1,6 @@
 <template>
   <div class="carousel-container">
-    <carousel>
+    <carousel showArrow="hover">
       <carousel-item v-for="item in 5" :key="item">
         <div class="carousel-item">+++++{{ item }}+++++</div>
       </carousel-item>

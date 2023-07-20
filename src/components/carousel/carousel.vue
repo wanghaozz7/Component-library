@@ -9,7 +9,12 @@
     <div class="carousel-body" :style="{ left: offset + 'px' }">
       <slot />
     </div>
-    <arrowGroup @goForward="handleGoForward" @goBack="handleGoBack" />
+    <arrowGroup
+      :showArrow="showArrow"
+      :isHover="isHover"
+      @goForward="handleGoForward"
+      @goBack="handleGoBack"
+    />
     <indicatorGroup
       :indicatorCount="itemCount"
       :activeIdx="curIdx"
@@ -32,7 +37,7 @@ const props = defineProps({
   // 是否自动滚动
   autoRolling: {
     type: Boolean,
-    default: true,
+    default: false,
   },
   // 自动滚动间隔
   interval: {
@@ -57,7 +62,7 @@ const props = defineProps({
   // 箭头显示方式 (hover,none,always)
   showArrow: {
     type: String,
-    default: "hover",
+    default: "always",
   },
   // 指示器显示方式 (inside,outside,none)
   showIndicator: {
@@ -77,6 +82,7 @@ let offset = ref(0);
 let curIdx = ref(0);
 // 是否正在滚动
 let isMoving = ref(false);
+let isHover = ref(false);
 // 轮播内容的个数
 let itemCount;
 // 轮播图的宽度
@@ -87,6 +93,7 @@ const interval = props.delay / props.frame;
 let autoRollingInterval = null;
 // 存储定时器的沙漏实现定时器的开始和暂停
 let hourglass = 0;
+
 // 上下文content
 const ctx = getCurrentInstance().ctx;
 let carousel, carousel_body, carousel_item;
@@ -203,7 +210,6 @@ const moveAnimate = (step, targetOffset, targetIdx, callBack = () => {}) => {
     (step > 0 && offset.value >= targetOffset) ||
     (step < 0 && offset.value <= targetOffset)
   ) {
-    // 执行回调
     callBack();
     return;
   }
@@ -276,9 +282,15 @@ const handleGoBack = () => renderMove(curIdx.value - 1);
 
 const handleChange = (idx) => renderMove(idx);
 
-const handleMouseEnter = () => clearAutoRollingInterval();
+const handleMouseEnter = () => {
+  isHover.value = true;
+  clearAutoRollingInterval();
+};
 
-const handleMouseLeave = () => setAutoRollingInterval();
+const handleMouseLeave = () => {
+  isHover.value = false;
+  setAutoRollingInterval();
+};
 
 const vResize = {
   mounted(el, binding) {
@@ -310,7 +322,6 @@ const vResize = {
 const onResize = (arg) => {
   const height = arg[0].contentRect.height;
   const width = arg[0].contentRect.width;
-
   if (width != 0 && height != 0) getAttr();
 };
 

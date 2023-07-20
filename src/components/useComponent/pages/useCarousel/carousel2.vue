@@ -1,6 +1,6 @@
 <template>
   <div class="carousel-container">
-    <carousel>
+    <carousel indicatorType="rectangle" showArrow="always">
       <carousel-item v-for="item in 5" :key="item">
         <div class="carousel-item">+++++{{ item }}+++++</div>
       </carousel-item>
@@ -16,7 +16,6 @@ const msg = 111;
 .carousel-container {
   height: 350px;
   margin: 50px;
-
   .carousel-item {
     width: 100%;
     height: 100%;

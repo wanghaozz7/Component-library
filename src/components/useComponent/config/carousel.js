@@ -1,67 +1,67 @@
 export default {
   title: {
     text: "Carousel 轮播图",
-    desc: "在有限空间内，循环播放同一类型的图片、文字等内容",
+    desc: "在有限空间内,展示更多的内容",
   },
   lists: [
     {
       title: "Carousel Attributes",
       listData: [
         {
-          params: "data",
-          desc: "显示的数据",
-          type: "array",
-          optional: "",
-          default: "",
-        },
-        {
-          params: "border",
-          desc: "是否带有纵向边框",
-          type: "boolean",
-          optional: "",
-          default: "false",
-        },
-        {
-          params: "cellStyle",
-          desc: "单元格样式回调,可以根据参数传回不同的样式也可以使所有单元格共享相同样式",
-          type: "function/object",
-          optional: "",
-          default: "",
-        },
-        {
-          params: "height",
-          desc: "默认高度为内容高度,设置固定高度后若内容溢出则出现滚动条并固定表头",
-          type: "Number",
-          optional: "",
-          default: "",
-        },
-        {
-          params: "showHeader",
-          desc: "是否显示表头",
+          params: "circular",
+          desc: "是否循环滚动",
           type: "boolean",
           optional: "",
           default: "true",
         },
         {
-          params: "emptyText",
-          desc: "表格没有传数据或数据长度为0时提示内容",
+          params: "autoRolling",
+          desc: "是否自动滚动",
+          type: "boolean",
+          optional: "",
+          default: "true",
+        },
+        {
+          params: "interval",
+          desc: "自动滚动间隔",
+          type: "number",
+          optional: "",
+          default: "3000",
+        },
+        {
+          params: "delay",
+          desc: "滚动一次的延迟",
+          type: "number",
+          optional: "",
+          default: "250",
+        },
+        {
+          params: "frame",
+          desc: "动画的帧数",
+          type: "number",
+          optional: "",
+          default: "50",
+        },
+        {
+          params: "trigger",
+          desc: "触发方式",
           type: "string",
-          optional: "",
-          default: "暂无内容",
+          optional: "hover/click",
+          default: "hover",
         },
         {
-          params: "cellEmptyText",
-          desc: "string",
-          type: "表格某一行的某一列无数据时显示的内容",
-          optional: "",
-          default: " ",
+          params: "showArrow",
+          desc: "箭头显示方式",
+          type: "string",
+          optional: "hover/none/always",
+          default: "hover",
         },
         {
-          params: "outsideBorder",
-          desc: "是否显示包裹表格的最外层border",
-          type: "boolean",
-          optional: "",
-          default: "true",
+          params: "indicatorType",
+          desc: "指示器类型",
+          type: "string",
+          optional: "dot/rectangle",
+          default: "dot",
         },
       ],
       type: "attributes",
@@ -75,29 +75,131 @@ export default {
         desc: "基础的轮播图展示用法。",
       },
       code: `
-      <div class="carousel-container">
-          <carousel indicatorType="rectangle" trigger="click">
-                <carousel-item v-for="item in 5" :key="item">
-                      <div class="carousel-item">
-                        +++++{{ item }}+++++
-                      </div>
-                </carousel-item>
+      <template>
+        <div class="carousel-container">
+          <carousel>
+            <carousel-item v-for="item in 5" :key="item">
+              <div class="carousel-item">+++++{{ item }}+++++</div>
+            </carousel-item>
           </carousel>
-      </div>
+        </div>
+      </template>
 
       <style scoped>
       .carousel-container {
-          height: 350px;
-          margin: 50px;
+        height: 350px;
+        margin: 50px;
       }
       .carousel-item {
-          width: 100%;
-          height: 100%;
-          font-size: 36px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          background-color: rgb(194, 249, 194);
+        width: 100%;
+        height: 100%;
+        font-size: 36px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgb(194, 249, 194);
+      }
+      </style>
+      `,
+    },
+    {
+      id: "carousel-2",
+      title: {
+        text: "指示器",
+        desc: "设置不同类型的指示器",
+      },
+      code: `
+      <template>
+        <div class="carousel-container">
+          <carousel indicatorType="rectangle">
+            <carousel-item v-for="item in 5" :key="item">
+              <div class="carousel-item">+++++{{ item }}+++++</div>
+            </carousel-item>
+          </carousel>
+        </div>
+      </template>
+
+      <style scoped>
+      .carousel-container {
+        height: 350px;
+        margin: 50px;
+      }
+      .carousel-item {
+        width: 100%;
+        height: 100%;
+        font-size: 36px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgb(194, 249, 194);
+      }
+      </style>
+      `,
+    },
+    {
+      id: "carousel-3",
+      title: {
+        text: "触发方式",
+        desc: "指示器的触发方式——默认下hover 可改为click",
+      },
+      code: `
+      <template>
+        <div class="carousel-container">
+          <carousel trigger="click">
+            <carousel-item v-for="item in 5" :key="item">
+              <div class="carousel-item">+++++{{ item }}+++++</div>
+            </carousel-item>
+          </carousel>
+        </div>
+      </template>
+
+      <style scoped>
+      .carousel-container {
+        height: 350px;
+        margin: 50px;
+      }
+      .carousel-item {
+        width: 100%;
+        height: 100%;
+        font-size: 36px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgb(194, 249, 194);
+      }
+      </style>
+      `,
+    },
+    {
+      id: "carousel-4",
+      title: {
+        text: "箭头的显示时机",
+        desc: "总是显示/总是不显示/鼠标进入轮播图时显示",
+      },
+      code: `
+      <template>
+        <div class="carousel-container">
+          <carousel showArrow="hover">
+            <carousel-item v-for="item in 5" :key="item">
+              <div class="carousel-item">+++++{{ item }}+++++</div>
+            </carousel-item>
+          </carousel>
+        </div>
+      </template>
+
+      <style scoped>
+      .carousel-container {
+        height: 350px;
+        margin: 50px;
+      }
+      .carousel-item {
+        width: 100%;
+        height: 100%;
+        font-size: 36px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgb(194, 249, 194);
       }
       </style>
       `,

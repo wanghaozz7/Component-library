@@ -1,7 +1,11 @@
 <template>
   <use-component :title="config.title" :lists="config.lists">
-    <show-component v-for="(component, index) in selectedArr" :key="index" :code="getCode(component)"
-      :title="getTitle(component)">
+    <show-component
+      v-for="(component, index) in selectedArr"
+      :key="index"
+      :code="getProp(component, 'code')"
+      :title="getProp(component, 'title')"
+    >
       <component :is="component" :refreshTooltip="refreshTooltip" />
     </show-component>
   </use-component>
@@ -45,19 +49,12 @@ const getConfig = () => {
 let refreshTooltip = ref(false);
 
 const config = getConfig();
-// console.log('config', config, props.selectedArr);
 
-const getCode = (name) => {
-  for (let child of config.children) {
-    if (child.id === name) return child.code;
-  }
-}
-const getTitle = name => {
-  for (let child of config.children) {
-    if (child.id === name) return child.title;
-  }
-}
-
+const getProp = (name, arg) => {
+  return config.children.find((x) => {
+    return x.id === name;
+  })[arg];
+};
 
 watch(
   () => props.scrollOffset,
