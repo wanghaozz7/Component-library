@@ -26,6 +26,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  position: {
+    type: String,
+    default: "",
+  },
 });
 const emit = defineEmits(["goForward", "goBack"]);
 

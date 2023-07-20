@@ -1,10 +1,21 @@
 <template>
   <div class="carousel-container">
-    <carousel trigger="click">
-      <carousel-item v-for="(url, idx) in imgList" :key="idx">
-        <div class="carousel-item"><img :src="url" /></div>
-      </carousel-item>
-    </carousel>
+    <div class="block">
+      <div class="text">使用click触发</div>
+      <carousel trigger="click">
+        <carousel-item v-for="(url, idx) in imgList" :key="idx">
+          <div class="carousel-item"><img :src="url" /></div>
+        </carousel-item>
+      </carousel>
+    </div>
+    <div class="block">
+      <div class="text">使用hover触发</div>
+      <carousel trigger="hover">
+        <carousel-item v-for="(url, idx) in imgList" :key="idx">
+          <div class="carousel-item"><img :src="url" /></div>
+        </carousel-item>
+      </carousel>
+    </div>
   </div>
 </template>
 
@@ -20,20 +31,28 @@ const imgList = [
 
 <style scoped lang="less">
 .carousel-container {
-  height: 350px;
+  height: 250px;
   margin: 50px;
-
-  .carousel-item {
-    width: 100%;
-    height: 100%;
-    font-size: 36px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: rgb(194, 249, 194);
-    img {
+  display: flex;
+  .block {
+    flex: 1;
+    margin: 15px;
+    .text {
+      font-size: 14px;
+      color: gray;
+      text-align: center;
+    }
+    .carousel-item {
       width: 100%;
       height: 100%;
+      font-size: 36px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      img {
+        width: 100%;
+        height: calc(100% - 25px);
+      }
     }
   }
 }

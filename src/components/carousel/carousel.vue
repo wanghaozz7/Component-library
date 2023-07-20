@@ -12,6 +12,7 @@
     <arrowGroup
       :showArrow="showArrow"
       :isHover="isHover"
+      :position="arrowPosition"
       @goForward="handleGoForward"
       @goBack="handleGoBack"
     />
@@ -19,6 +20,7 @@
       :indicatorCount="itemCount"
       :activeIdx="getActiveIdx"
       :trigger="trigger"
+      :position="indicatorPosition"
       :indicatorType="indicatorType"
       @change="handleChange"
     />
@@ -64,8 +66,8 @@ const props = defineProps({
     type: String,
     default: "always",
   },
-  // 指示器显示方式 (inside,outside,none)
-  showIndicator: {
+  // 箭头位置 (inside,ouside)
+  arrowPosition: {
     type: String,
     default: "inside",
   },
@@ -73,6 +75,11 @@ const props = defineProps({
   indicatorType: {
     type: String,
     default: "dot",
+  },
+  // 指示器位置 (inside,outside)
+  indicatorPosition: {
+    type: String,
+    default: "inside",
   },
 });
 
@@ -372,7 +379,6 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   overflow: hidden;
-
   .carousel-body {
     width: 100%;
     height: 100%;

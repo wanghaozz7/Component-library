@@ -29,7 +29,6 @@ const imgList = [
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgb(194, 249, 194);
     img {
       width: 100%;
       height: 100%;
