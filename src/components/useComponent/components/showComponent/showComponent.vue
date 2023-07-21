@@ -7,26 +7,11 @@
         <slot />
       </div>
     </template>
-    <div
-      class="code-area"
-      @mouseenter="handleMouseEnter"
-      @mouseleave="handleMouseLeave"
-    >
+    <div class="code-area" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
       <div class="code" :style="codeStyle" ref="code">
-        <tooltip
-          content="复制代码"
-          placement="left"
-          :refreshTooltip="refresh"
-          :openDelay="500"
-          :closeDelay="0"
-          @enter="handleTooltipShow"
-          @leave="handleTooltipClose"
-        >
-          <div
-            class="copy-button"
-            @click="copyCode"
-            :style="getCopyButtonStyle"
-          >
+        <tooltip content="复制代码" placement="left" :refreshTooltip="refresh" :openDelay="500" :closeDelay="0"
+          @enter="handleTooltipShow" @leave="handleTooltipClose">
+          <div class="copy-button" @click="copyCode" :style="getCopyButtonStyle">
             <div class="icon" />
           </div>
         </tooltip>
@@ -35,8 +20,7 @@
         <div class="button">
           <div class="icon" :style="iconStyle"></div>
           <div class="text">
-            <span v-show="!showCode">显示</span
-            ><span v-show="showCode">收起</span>代码
+            <span v-show="!showCode">显示</span><span v-show="showCode">收起</span>代码
           </div>
         </div>
       </div>
@@ -221,6 +205,7 @@ onMounted(() => {
 .card-container {
   .code-area {
     position: relative;
+
     .code {
       overflow: hidden;
       font-size: 14px;
@@ -228,6 +213,7 @@ onMounted(() => {
       transition: all 0.2s;
       background-color: #fafafa;
       position: relative;
+
       .copy-button {
         position: absolute;
         right: 15px;
@@ -240,6 +226,7 @@ onMounted(() => {
         align-items: center;
         cursor: pointer;
         transition: all 0.3s;
+
         .icon {
           width: 20px;
           height: 20px;

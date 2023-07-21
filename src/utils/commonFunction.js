@@ -27,7 +27,7 @@ const $message = (arg) => {
     const el = document.createElement("div");
     const styleArray = [
       ["padding", "8px 12px"],
-      ["border", "1px solid #ebebeb"],
+      ["border", "1px solid transparent"],
       ["border-radius", "4px"],
       ["display", "flex"],
       ["align-items", "center"],
@@ -48,8 +48,8 @@ const $message = (arg) => {
     thumb.appendChild(icon);
 
     const thumbStyleArray = [
-      ["width", "20px"],
-      ["height", "20px"],
+      ["width", "17px"],
+      ["height", "17px"],
       ["display", "flex"],
       ["align-items", "center"],
     ];
@@ -104,7 +104,10 @@ const $message = (arg) => {
   const close = () => {
     message.style.opacity = 0;
     setTimeout(() => {
-      body.removeChild(message);
+      for (let child of body.children) {
+        if (child.id.slice(8) == messageId) body.removeChild(child);
+      }
+
       clearInterval(timer);
       timer = null;
     }, 550);
@@ -124,6 +127,36 @@ const $message = (arg) => {
     $paintingStyle(message, messageStyle);
     $paintingStyle(text, textStyle);
   };
+  const getWarningStyle = () => {
+    const messageStyle = [
+      ["background-color", "#fdf6ec"],
+      ["border-color", "#faecd8"],
+    ];
+    const textStyle = [["color", "#e6a23c"]];
+    icon.children[0].src = require("../assets/icons/warning.svg");
+    $paintingStyle(message, messageStyle);
+    $paintingStyle(text, textStyle);
+  };
+  const getInfoStyle = () => {
+    const messageStyle = [
+      ["background-color", "#edf2fc"],
+      ["border-color", "#ebeef5"],
+    ];
+    const textStyle = [["color", "#909399"]];
+    icon.children[0].src = require("../assets/icons/info.svg");
+    $paintingStyle(message, messageStyle);
+    $paintingStyle(text, textStyle);
+  };
+  const getErrorStyle = () => {
+    const messageStyle = [
+      ["background-color", "#fef0f0"],
+      ["border-color", "#fde2e2"],
+    ];
+    const textStyle = [["color", "#f56c6c"]];
+    icon.children[0].src = require("../assets/icons/error.svg");
+    $paintingStyle(message, messageStyle);
+    $paintingStyle(text, textStyle);
+  };
 
   const body = document.getElementsByTagName("body")[0];
   const messageId = id++;
@@ -131,17 +164,21 @@ const $message = (arg) => {
   const icon = getMessageIcon();
   const text = getMessageText();
 
-  let timer = setInterval(() => {
-    const before = getCurMessageCount(messageId);
-    message.style.top = (before + 1) * 50 + "px";
-  }, 10);
-
   switch (type) {
     case "success":
       getSuccessStyle();
       break;
     case "warning":
+      getWarningStyle();
       break;
+    case "info":
+      getInfoStyle();
+      break;
+    case "error":
+      getErrorStyle();
+      break;
+    default:
+      getInfoStyle();
   }
 
   message.appendChild(icon);
@@ -149,6 +186,10 @@ const $message = (arg) => {
   if (showClose) message.appendChild(getCloseButton());
 
   body.appendChild(message);
+  let timer = setInterval(() => {
+    const before = getCurMessageCount(messageId);
+    message.style.top = (before + 1) * 50 + "px";
+  }, 10);
 
   closeMessage();
 
