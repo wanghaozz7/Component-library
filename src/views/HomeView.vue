@@ -7,7 +7,6 @@
           :defaultUnfoldAll="true"
           :defaultCheckedAll="false"
           :rowHeight="40"
-          @checkedNodeArrayChange="handleCheckedNodeArrayChange"
           @nodeCheckedChange="handleNodeCheckedChange"
         />
       </div>
@@ -37,8 +36,6 @@ let scrollOffset = ref(0);
 
 const sideBarData = sideBarConfig.slice();
 
-// params: array => 选中叶子节点的一维数组(按照点击顺序的逆序)
-const handleCheckedNodeArrayChange = (array) => {};
 const handleOffsetChange = (offset) => (scrollOffset.value = offset);
 
 // params: node => 变化的节点,type => 变化的类型

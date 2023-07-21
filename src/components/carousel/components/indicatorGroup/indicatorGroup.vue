@@ -52,7 +52,7 @@ const emit = defineEmits(["change"]);
 const getIndicatorGroupStyle = computed(() => {
   let bottom;
   if (props.position === "inside") bottom = "15px";
-  else bottom = "-15px";
+  else bottom = "-20px";
   return {
     bottom,
   };

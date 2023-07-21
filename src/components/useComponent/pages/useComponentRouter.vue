@@ -1,8 +1,8 @@
 <template>
   <use-component :title="config.title" :lists="config.lists">
     <show-component
-      v-for="(component, index) in selectedArr"
-      :key="index"
+      v-for="component in selectedArr"
+      :key="component"
       :code="getProp(component, 'code')"
       :title="getProp(component, 'title')"
       :refresh="refreshTooltip"

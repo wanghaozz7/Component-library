@@ -58,7 +58,7 @@ let slotOffset = ref(0),
 let slotMaxOffset, slotHeight, wrapperHeight, y;
 // 提取出动画的参数是为了修改滚动的速度(所以其他变量不能随意使用newSlotOffset)
 let step, newSlotOffset, delay;
-const ctx = getCurrentInstance().ctx;
+const { ctx } = getCurrentInstance();
 
 const getScrollBarWrapperStyle = computed(() => {
   const maxHeight = props.maxHeight;

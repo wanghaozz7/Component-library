@@ -37,12 +37,18 @@ const getArrowStyle = computed(() => {
   return (direction) => {
     let left, right;
     if (props.showArrow === "hover") {
-      if (direction === "left") left = "5px";
-      else right = "5px";
+      if (direction === "left") left = 5;
+      else right = 5;
     } else {
-      if (direction === "left") left = "15px";
-      else right = "15px";
+      if (direction === "left") left = 15;
+      else right = 15;
     }
+    if (props.position === "outside") {
+      if (direction === "left") left -= 58;
+      else right -= 59;
+    }
+    if (direction === "left") left += "px";
+    else right += "px";
     return {
       left,
       right,

@@ -1,14 +1,14 @@
 <template>
   <div class="carousel-container">
     <carousel>
-      <carousel-item v-for="(url, idx) in imgList" :key="idx">
+      <carousel-item v-for="(url, idx) in imgList" :key="url">
         <div class="carousel-item"><img :src="url" /></div>
       </carousel-item>
     </carousel>
   </div>
 </template>
 
-<script setup name="carousel1">
+<script setup>
 const imgList = [
   "https://i0.hippopx.com/photos/320/918/427/sky-clouds-sunlight-dark-thumb.jpg",
   "https://i0.hippopx.com/photos/683/318/324/wolf-wolves-snow-wolf-landscape-thumb.jpg",

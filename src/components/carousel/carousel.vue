@@ -1,5 +1,5 @@
 <template>
-  <div class="wrappergo">
+  <div class="carousel-wrapper">
     <div
       class="carousel"
       ref="carousel"
@@ -10,22 +10,22 @@
       <div class="carousel-body" :style="getCarouselBodyStyle">
         <slot />
       </div>
-      <arrowGroup
-        :showArrow="showArrow"
-        :isHover="isHover"
-        :position="arrowPosition"
-        @goForward="handleGoForward"
-        @goBack="handleGoBack"
-      />
-      <indicatorGroup
-        :indicatorCount="itemCount"
-        :activeIdx="getActiveIdx"
-        :trigger="trigger"
-        :position="indicatorPosition"
-        :indicatorType="indicatorType"
-        @change="handleChange"
-      />
     </div>
+    <arrowGroup
+      :showArrow="showArrow"
+      :isHover="isHover"
+      :position="arrowPosition"
+      @goForward="handleGoForward"
+      @goBack="handleGoBack"
+    />
+    <indicatorGroup
+      :indicatorCount="itemCount"
+      :activeIdx="getActiveIdx"
+      :trigger="trigger"
+      :position="indicatorPosition"
+      :indicatorType="indicatorType"
+      @change="handleChange"
+    />
   </div>
 </template>
 
@@ -51,7 +51,7 @@ const props = defineProps({
   // 滚动一次的延迟 (ms)
   delay: {
     type: Number,
-    default: 250,
+    default: 150,
   },
   // 动画的帧数
   frame: {
@@ -99,14 +99,13 @@ let itemCount,
   carousel_body,
   carousel_item;
 
-const ctx = getCurrentInstance().ctx,
+const { ctx } = getCurrentInstance(),
   interval = props.delay / props.frame;
 
 const getActiveIdx = computed(() => {
   if (!props.circular) return curIdx.value;
   return curIdx.value - 1;
 });
-
 const getCarouselBodyStyle = computed(() => {
   const left = offset.value + "px";
   return {
@@ -307,7 +306,7 @@ const isInViePortOfOne = (el) => {
 };
 const handleGoForward = () => renderMove(curIdx.value + 1);
 const handleGoBack = () => renderMove(curIdx.value - 1);
-const handleChange = (idx) => renderMove(idx);
+const handleChange = (idx) => renderMove(props.circular ? idx + 1 : idx);
 const handleMouseEnter = () => {
   isHover.value = true;
   clearAutoRollingInterval();
@@ -376,20 +375,21 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="less">
-.carousel {
-  position: relative;
+.carousel-wrapper {
   width: 100%;
   height: 100%;
-  overflow: hidden;
-  .carousel-body {
+  position: relative;
+  .carousel {
+    position: relative;
     width: 100%;
     height: 100%;
-    position: absolute;
-    display: flex;
+    overflow: hidden;
+    .carousel-body {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      display: flex;
+    }
   }
-}
-.wrappergo {
-  width: 100%;
-  height: 100%;
 }
 </style>

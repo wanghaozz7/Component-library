@@ -1,12 +1,21 @@
 <template>
-  <div class="table-container" :style="tableStyle" ref="table" v-resize:20="onResize">
+  <div
+    class="table-container"
+    :style="tableStyle"
+    ref="table"
+    v-resize:20="onResize"
+  >
     <div v-if="showHeader" ref="tableHeader">
       <table cellspacing="0">
         <colgroup ref="headerColgroup">
           <slot />
         </colgroup>
         <tr>
-          <th v-for="(prop, idx) in columnsProps" :key="prop.label" :style="headerCellStyle(prop.prop, idx)">
+          <th
+            v-for="(prop, idx) in columnsProps"
+            :key="prop.label"
+            :style="headerCellStyle(prop.prop, idx)"
+          >
             {{ prop.label }}
           </th>
         </tr>
@@ -17,9 +26,12 @@
         <colgroup ref="bodyColgroup">
           <slot />
         </colgroup>
-        <tr v-for="(row, rowIndex) in data" :key="rowIndex" :class="tableRowClass">
-          <td v-for="(colValue, colKey, colIndex) in row" :key="colIndex"
-            :style="tableCellStyle(row, colValue, rowIndex, colIndex)">
+        <tr v-for="(row, rowIndex) in data" :key="row" :class="tableRowClass">
+          <td
+            v-for="(colValue, colKey, colIndex) in row"
+            :key="colValue"
+            :style="tableCellStyle(row, colValue, rowIndex, colIndex)"
+          >
             {{ getLabel(row, colIndex) }}
           </td>
         </tr>
@@ -37,7 +49,6 @@ import {
   computed,
   ref,
   nextTick,
-
 } from "vue";
 
 const props = defineProps({
@@ -65,7 +76,7 @@ const props = defineProps({
   },
   outSideBorder: {
     type: Boolean,
-    default: true
+    default: true,
   },
   size: {
     type: String,
@@ -106,29 +117,31 @@ const colWidthArr = reactive([]);
 let showScrollBar = ref(false);
 let bodyHeight = ref("auto");
 
-const ctx = getCurrentInstance().ctx;
+const { ctx } = getCurrentInstance();
 const normalBorder = "1px solid #ebebeb";
 const noBorder = "0px solid transparent";
 
 const tableStyle = computed(() => {
   const height = props.height === -1 ? "auto" : props.height + "px";
   const maxHeight = props.maxHeight === -1 ? "" : props.maxHeight + "px";
-  const border = props.outSideBorder ? normalBorder : '';
+  const border = props.outSideBorder ? normalBorder : "";
   return {
     height,
     maxHeight,
-    border
+    border,
   };
 });
 const tableBodyStyle = computed(() => {
   const height = bodyHeight.value + "px";
   // 如果有border且表头被隐藏
-  const borderTop = !props.showHeader ? props.border ? normalBorder : '' : '';
+  const borderTop = !props.showHeader ? (props.border ? normalBorder : "") : "";
   const finalStyle = {
     height,
-    borderTop
+    borderTop,
   };
-  return props.data.length === 0 ? Object.assign(finalStyle, { border: noBorder }) : finalStyle
+  return props.data.length === 0
+    ? Object.assign(finalStyle, { border: noBorder })
+    : finalStyle;
 });
 const tableRowClass = computed(() => {
   return props.highlightCurrentRow ? "highlightCurrentRow" : "";
@@ -137,35 +150,40 @@ const headerCellStyle = computed(() => {
   return (prop, idx) => {
     // 默认样式
     const getDaultStyle = () => {
-      const borderLeft = props.border ? normalBorder : "", borderTop = props.border ? normalBorder : "";
-      const borderRight = props.border ? idx === columnsProps.length - 1 ? normalBorder : "" : "";
+      const borderLeft = props.border ? normalBorder : "",
+        borderTop = props.border ? normalBorder : "";
+      const borderRight = props.border
+        ? idx === columnsProps.length - 1
+          ? normalBorder
+          : ""
+        : "";
 
       const borderBottom = normalBorder;
-      const textAlign = 'center';
-      const color = '#909399'
+      const textAlign = "center";
+      const color = "#909399";
 
       let lineHeight, padding, fontSize;
 
       switch (props.size) {
-        case 'big':
-          lineHeight = '35px';
-          padding = '8px';
-          fontSize = '20px'
+        case "big":
+          lineHeight = "35px";
+          padding = "8px";
+          fontSize = "20px";
           break;
-        case 'normal':
-          lineHeight = '30px';
-          padding = '5px';
-          fontSize = '18px'
+        case "normal":
+          lineHeight = "30px";
+          padding = "5px";
+          fontSize = "18px";
           break;
-        case 'small':
-          lineHeight = '25px';
-          padding = '5px';
-          fontSize = '16px'
+        case "small":
+          lineHeight = "25px";
+          padding = "5px";
+          fontSize = "16px";
           break;
         default:
-          lineHeight = '25px';
-          padding = '5px';
-          fontSize = '16px'
+          lineHeight = "25px";
+          padding = "5px";
+          fontSize = "16px";
       }
 
       return {
@@ -177,8 +195,8 @@ const headerCellStyle = computed(() => {
         textAlign,
         lineHeight,
         fontSize,
-        color
-      }
+        color,
+      };
     };
     // 通过回调返回的样式
     const getCallBackStyle = () => {
@@ -188,9 +206,13 @@ const headerCellStyle = computed(() => {
     };
     // 优先级最高的样式(合并顺序最晚覆盖之前的样式)
     const getImportantStyle = () => {
-      return {}
+      return {};
     };
-    return Object.assign(getDaultStyle(), getCallBackStyle(), getImportantStyle());
+    return Object.assign(
+      getDaultStyle(),
+      getCallBackStyle(),
+      getImportantStyle()
+    );
   };
 });
 const tableCellStyle = computed(() => {
@@ -199,33 +221,37 @@ const tableCellStyle = computed(() => {
     // 默认样式
     const getDefaultStyle = () => {
       const borderLeft = props.border ? normalBorder : "";
-      const borderRight = props.border ? colIndex === columnsProps.length - 1 ? normalBorder : "" : "";
+      const borderRight = props.border
+        ? colIndex === columnsProps.length - 1
+          ? normalBorder
+          : ""
+        : "";
 
-      const color = '#606266'
+      const color = "#606266";
       const borderBottom = normalBorder;
-      const textAlign = 'center';
+      const textAlign = "center";
 
       let height, padding, fontSize;
       switch (props.size) {
-        case 'big':
-          height = '30px';
-          padding = '8px';
-          fontSize = '16px'
+        case "big":
+          height = "30px";
+          padding = "8px";
+          fontSize = "16px";
           break;
-        case 'normal':
-          height = '25px';
-          padding = '6px';
-          fontSize = '14px'
+        case "normal":
+          height = "25px";
+          padding = "6px";
+          fontSize = "14px";
           break;
-        case 'small':
-          height = '15px';
-          padding = '4px';
-          fontSize = '12px'
+        case "small":
+          height = "15px";
+          padding = "4px";
+          fontSize = "12px";
           break;
         default:
-          height = '25px';
-          padding = '6px';
-          fontSize = '14px'
+          height = "25px";
+          padding = "6px";
+          fontSize = "14px";
       }
       return {
         borderLeft,
@@ -235,7 +261,7 @@ const tableCellStyle = computed(() => {
         textAlign,
         height,
         fontSize,
-        color
+        color,
       };
     };
     // 通过回调返回的样式
@@ -247,29 +273,37 @@ const tableCellStyle = computed(() => {
     // 优先级最高的样式(合并顺序最晚覆盖之前的样式)
     const getImportantStyle = () => {
       // 最后一行取消底部border由bodywrapper的border代替(防止滚动下的重合)
-      const borderBottom = rowIndex === props.data.length - 1 ? noBorder : normalBorder;
+      const borderBottom =
+        rowIndex === props.data.length - 1 ? noBorder : normalBorder;
       // 斑马纹
       let backgroundColor;
       if (props.stripe) {
-        if (rowIndex % 2 === 0) backgroundColor = '#fff';
-        else backgroundColor = '#fafafa'
+        if (rowIndex % 2 === 0) backgroundColor = "#fff";
+        else backgroundColor = "#fafafa";
       }
       const finalStyle = {
         borderBottom,
-        backgroundColor
-      }
-      return props.data.length === 0 ? Object.assign(finalStyle, { border: noBorder }) : finalStyle
+        backgroundColor,
+      };
+      return props.data.length === 0
+        ? Object.assign(finalStyle, { border: noBorder })
+        : finalStyle;
     };
-    return Object.assign(getDefaultStyle(), getCallBackStyle(), getImportantStyle());
+    return Object.assign(
+      getDefaultStyle(),
+      getCallBackStyle(),
+      getImportantStyle()
+    );
   };
 });
 const getLabel = computed(() => {
   return (row, colIndex) => {
-    return row[columnsProps[colIndex]?.prop] === '' || row[columnsProps[colIndex]?.prop] === undefined
+    return row[columnsProps[colIndex]?.prop] === "" ||
+      row[columnsProps[colIndex]?.prop] === undefined
       ? props.cellEmptyText
       : row[columnsProps[colIndex]?.prop];
-  }
-})
+  };
+});
 
 const filterPx = (str) => {
   return parseInt(str.replaceAll("px"));
@@ -305,7 +339,7 @@ const vResize = {
 const onResize = (arg) => {
   const height = arg[0].contentRect.height;
   const width = arg[0].contentRect.width;
-  getColWidth()
+  getColWidth();
 };
 
 const getColWidth = () => {
@@ -357,37 +391,42 @@ const getColWidth = () => {
     const bodyColgroup = ctx.$refs.bodyColgroup.children;
     const headerColgroup = ctx.$refs.headerColgroup.children;
 
-    bodyColgroup[idx].__vueParentComponent.devtoolsRawSetupState.colWidth.value = colWidthArr[idx];
-    headerColgroup[idx].__vueParentComponent.devtoolsRawSetupState.colWidth.value = colWidthArr[idx];
-
+    bodyColgroup[
+      idx
+    ].__vueParentComponent.devtoolsRawSetupState.colWidth.value =
+      colWidthArr[idx];
+    headerColgroup[
+      idx
+    ].__vueParentComponent.devtoolsRawSetupState.colWidth.value =
+      colWidthArr[idx];
   }
-}
+};
 
 onMounted(() => {
   const bodyColgroup = ctx.$refs.bodyColgroup.children;
   // 获取表头的属性
-  for (let col of bodyColgroup) columnsProps.push(col.__vueParentComponent.props);
+  for (let col of bodyColgroup)
+    columnsProps.push(col.__vueParentComponent.props);
 
   // 判断是否出现溢出
   const table = ctx.$refs.table;
   showScrollBar.value = table.scrollHeight > table.clientHeight;
 
   // 更新列宽度
-  getColWidth()
+  getColWidth();
 
   nextTick(() => {
     // 溢出则计算高度显示滚动条
     if (showScrollBar.value) {
       let headerHeight;
-      if (props.showHeader) headerHeight = window.getComputedStyle(ctx.$refs.tableHeader).height;
-      else headerHeight = '0'
+      if (props.showHeader)
+        headerHeight = window.getComputedStyle(ctx.$refs.tableHeader).height;
+      else headerHeight = "0";
       const height = props.height !== -1 ? props.height : props.maxHeight;
       bodyHeight.value = height - 40 - filterPx(headerHeight);
     }
   });
 });
-
-
 </script>
 
 <style scoped lang="less">

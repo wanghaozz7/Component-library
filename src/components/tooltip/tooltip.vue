@@ -33,9 +33,13 @@ const props = defineProps({
     type: Number,
     default: 20,
   },
-  delay: {
+  openDelay: {
     type: Number,
-    default: 200,
+    default: 250,
+  },
+  closeDelay: {
+    type: Number,
+    default: 350,
   },
   // light/dark
   theme: {
@@ -49,17 +53,19 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(["show", "close"]);
+const emits = defineEmits(["show", "close", "enter", "leave"]);
 
 let showTooltip = ref(false);
 
-const ctx = getCurrentInstance().ctx;
 let slotWidth,
   tooltipWidth,
   slotHeight,
   tooltipHeight,
   pos,
-  winHeight = 0;
+  winHeight = 0,
+  timer;
+
+const { ctx, proxy } = getCurrentInstance();
 const innerIconColor = props.theme === "light" ? "#fff" : "#000";
 
 const contentStyle = computed(() => {
@@ -213,40 +219,38 @@ const getTooltipAttr = () => {
       innerStyleArr.push(["left", "-7px"]);
   }
 
-  for (let arr of tooltipStyleArr) {
-    const key = arr[0],
-      value = arr[1];
-    tooltip.style[key] = value;
+  proxy.$paintingStyle(tooltip, tooltipStyleArr, (key, value) => {
     if (key === "transform") content.style[key] = value;
-  }
-  for (let arr of iconStyleArr) {
-    const key = arr[0],
-      value = arr[1];
-    icon.style[key] = value;
-  }
-  for (let arr of innerStyleArr) {
-    const key = arr[0],
-      value = arr[1];
-    inner.style[key] = value;
-  }
+  });
+  proxy.$paintingStyle(icon, iconStyleArr);
+  proxy.$paintingStyle(inner, innerStyleArr);
 };
 
 const handleMouseEnter = (e) => {
+  emits("enter");
   if (showTooltip.value) return;
-  getTooltipAttr();
-  const tooltip = ctx.$refs.tooltip;
-  emits("show");
-  tooltip.style.display = "block";
-  showTooltip.value = true;
+  timer = setTimeout(() => {
+    getTooltipAttr();
+    const tooltip = ctx.$refs.tooltip;
+    emits("show");
+    tooltip.style.display = "block";
+    showTooltip.value = true;
+  }, props.openDelay);
 };
 
 const handleMouseLeave = (e) => {
-  const style = ctx.$refs.tooltip.style;
-  setTimeout(() => {
-    emits("close");
-    style.display = "none";
-    showTooltip.value = false;
-  }, props.delay);
+  emits("leave");
+  if (showTooltip.value) {
+    const style = ctx.$refs.tooltip.style;
+    setTimeout(() => {
+      emits("close");
+      style.display = "none";
+      showTooltip.value = false;
+    }, props.closeDelay);
+  } else {
+    clearTimeout(timer);
+    timer = null;
+  }
 };
 
 const handleScroll = (e) => {
@@ -258,8 +262,8 @@ onMounted(() => {
   const tooltip = ctx.$refs.tooltip;
   pos = slot.getBoundingClientRect();
 
-  slot.addEventListener("mouseenter", handleMouseEnter);
-  slot.addEventListener("mouseleave", handleMouseLeave);
+  slot && slot.addEventListener("mouseenter", handleMouseEnter);
+  slot && slot.addEventListener("mouseleave", handleMouseLeave);
 
   const body = document.getElementsByTagName("body")[0];
   body.appendChild(tooltip);
@@ -276,10 +280,8 @@ onMounted(() => {
 onUnmounted(() => {
   const slotWrapper = ctx.$refs?.slotWrapper;
   const slot = slotWrapper ? slotWrapper.children[0] : undefined;
-  if (slot) {
-    slot.removeEventListener("mouseenter", handleMouseEnter);
-    slot.removeEventListener("mouseleave", handleMouseLeave);
-  }
+  slot && slot.removeEventListener("mouseenter", handleMouseEnter);
+  slot && slot.removeEventListener("mouseleave", handleMouseLeave);
 });
 
 watch(

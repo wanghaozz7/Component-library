@@ -1,6 +1,6 @@
 <template>
   <div class="carousel-container">
-    <carousel trigger="click" indicatorPosition="outside">
+    <carousel arrowPosition="outside">
       <carousel-item v-for="(url, idx) in imgList" :key="url">
         <div class="carousel-item"><img :src="url" /></div>
       </carousel-item>

@@ -17,8 +17,10 @@
           content="复制代码"
           placement="left"
           :refreshTooltip="refresh"
-          @show="handleTooltipShow"
-          @close="handleTooltipClose"
+          :openDelay="500"
+          :closeDelay="0"
+          @enter="handleTooltipShow"
+          @leave="handleTooltipClose"
         >
           <div
             class="copy-button"
@@ -70,7 +72,7 @@ let showCode = ref(false);
 let isHover = ref(false);
 let showTooltip = ref(false);
 
-const ctx = getCurrentInstance().ctx;
+const { ctx, proxy } = getCurrentInstance();
 let maxHeight,
   minHeight = 0,
   codeRef;
@@ -189,7 +191,11 @@ const copyCode = () => {
   document.body.appendChild(input);
   input.select();
   document.execCommand("copy");
-  // alert("复制成功!");
+  proxy.$message({
+    type: "success",
+    info: "复制成功",
+    delay: 1000,
+  });
   document.body.removeChild(input);
 };
 
@@ -233,7 +239,7 @@ onMounted(() => {
         justify-content: center;
         align-items: center;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.3s;
         .icon {
           width: 20px;
           height: 20px;

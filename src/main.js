@@ -4,5 +4,11 @@ import router from "./router";
 import store from "./store";
 
 import library from "./components/library";
+import commonFunction from "./utils/commonFunction";
 
-createApp(App).use(store).use(router).use(library).mount("#app");
+createApp(App)
+  .use(store)
+  .use(router)
+  .use(library)
+  .use(commonFunction)
+  .mount("#app");

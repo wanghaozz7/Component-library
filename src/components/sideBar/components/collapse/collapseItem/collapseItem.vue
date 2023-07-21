@@ -1,7 +1,15 @@
 <template>
   <div class="collapse-item" :style="{ height: getHeight + 'px' }">
-    <div class="show-part" @click.self="handleClick" :style="{ 'line-height': rowHeight + 'px' }">
-      <div class="left-part" @click="handleClick" :style="{ 'margin-left': getLeftOffset + 'px' }">
+    <div
+      class="show-part"
+      @click.self="handleClick"
+      :style="{ 'line-height': rowHeight + 'px' }"
+    >
+      <div
+        class="left-part"
+        @click="handleClick"
+        :style="{ 'margin-left': getLeftOffset + 'px' }"
+      >
         <arrow :isFold="isFold" v-if="!isLeaf()" />
         <div class="text" :style="{ 'max-width': getMaxWidth + 'px' }">
           {{ node.label }}
@@ -10,11 +18,20 @@
       <checkBox @check="handleCheck" :checkedState="checkedState" />
     </div>
     <div ref="hiddenPart">
-      <collapse-item v-for="(children, index) in node.children" :key="children.label" :node="children"
-        :totalNode="totalNode.children[index]" :fatherCheckedState="checkedState" :offset="offset + 5"
-        :rowHeight="rowHeight" :defaultUnfoldAll="defaultUnfoldAll" @heightChange="handleHeightChange"
-        :default-checked-all="defaultCheckedAll" @childCountChange="handleChildCountChange"
-        @nodeChange="handleNodeChange" />
+      <collapse-item
+        v-for="(children, index) in node.children"
+        :key="children.label"
+        :node="children"
+        :totalNode="totalNode.children[index]"
+        :fatherCheckedState="checkedState"
+        :offset="offset + 5"
+        :rowHeight="rowHeight"
+        :defaultUnfoldAll="defaultUnfoldAll"
+        @heightChange="handleHeightChange"
+        :default-checked-all="defaultCheckedAll"
+        @childCountChange="handleChildCountChange"
+        @nodeChange="handleNodeChange"
+      />
     </div>
   </div>
 </template>
@@ -59,8 +76,8 @@ const props = defineProps({
   },
   defaultCheckedAll: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 
 const emit = defineEmits(["heightChange", "childCountChange", "nodeChange"]);
@@ -81,7 +98,7 @@ const showPartHeight = props.rowHeight;
 // 总叶子节点个数
 const total = props.totalNode.total;
 // 上下文context
-const ctx = getCurrentInstance().ctx;
+const { ctx } = getCurrentInstance();
 
 // 计算总高度
 const getHeight = computed(() => {
@@ -173,8 +190,8 @@ onMounted(() => {
   // 节点是否展开
   if (props.defaultUnfoldAll || props.node.defaultUnfold) isFold.value = false;
   if (isLeaf() && (props.node.defaultChecked || props.defaultCheckedAll)) {
-    checkedState.value = 'all';
-    handleChildCountChange(1)
+    checkedState.value = "all";
+    handleChildCountChange(1);
   }
 });
 
