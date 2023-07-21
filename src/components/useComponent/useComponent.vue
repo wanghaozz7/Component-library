@@ -13,7 +13,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup name="use-component">
 // 使用组件由以下组成 ： 1.组件名（一级标题）+ 描述  2.使用方法 (二级标题) + 描述 + showComponent (样式展示 + 代码) 3.接口列表
 
 const props = defineProps({

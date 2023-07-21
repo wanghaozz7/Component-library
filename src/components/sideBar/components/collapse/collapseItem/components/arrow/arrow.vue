@@ -1,7 +1,7 @@
 <template>
   <div class="arrow-container">
     <img
-      src="./icon/arrow_down.svg"
+      src="@/assets/icons/arrow_down.svg"
       @click="handleClick"
       :style="{ rotate: rotateAngle }"
     />

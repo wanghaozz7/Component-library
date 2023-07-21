@@ -12,7 +12,7 @@
   </use-component>
 </template>
 
-<script setup name="useComponentRouter">
+<script setup name="use-component-router">
 import { watch, ref } from "vue";
 
 import tableConfig from "../config/table";

@@ -44,7 +44,7 @@
   </card>
 </template>
 
-<script setup>
+<script setup name="show-component">
 import { ref, computed, onMounted, getCurrentInstance } from "vue";
 
 const props = defineProps({
@@ -243,7 +243,7 @@ onMounted(() => {
         .icon {
           width: 20px;
           height: 20px;
-          background: center / contain no-repeat url(./icon/copy.svg);
+          background: center / contain no-repeat url(@/assets/icons/copy.svg);
         }
       }
     }

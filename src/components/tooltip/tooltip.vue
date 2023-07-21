@@ -114,9 +114,9 @@ const getTooltipAttr = () => {
       iconStyleArr.push(["left", "50%"]);
       iconStyleArr.push(["transform", "translateX(-50%)"]);
       iconStyleArr.push(["bottom", "-15px"]);
-      iconStyleArr.push(["borderTopColor", "black"]);
+      iconStyleArr.push(["border-top-color", "black"]);
 
-      innerStyleArr.push(["borderTopColor", innerIconColor]);
+      innerStyleArr.push(["border-top-color", innerIconColor]);
       innerStyleArr.push(["bottom", "-6px"]);
       innerStyleArr.push(["left", "-7px"]);
       break;
@@ -137,9 +137,9 @@ const getTooltipAttr = () => {
       iconStyleArr.push(["left", "50%"]);
       iconStyleArr.push(["bottom", "-15px"]);
       iconStyleArr.push(["transform", "translateX(-50%)"]);
-      iconStyleArr.push(["borderTopColor", "black"]);
+      iconStyleArr.push(["border-top-color", "black"]);
 
-      innerStyleArr.push(["borderTopColor", innerIconColor]);
+      innerStyleArr.push(["border-top-color", innerIconColor]);
       innerStyleArr.push(["bottom", "-6px"]);
       innerStyleArr.push(["left", "-7px"]);
       break;
@@ -161,9 +161,9 @@ const getTooltipAttr = () => {
       iconStyleArr.push(["right", "-15px"]);
       iconStyleArr.push(["top", "50%"]);
       iconStyleArr.push(["transform", "translateY(-50%)"]);
-      iconStyleArr.push(["borderLeftColor", "black"]);
+      iconStyleArr.push(["border-left-color", "black"]);
 
-      innerStyleArr.push(["borderLeftColor", innerIconColor]);
+      innerStyleArr.push(["border-left-color", innerIconColor]);
       innerStyleArr.push(["bottom", "-7px"]);
       innerStyleArr.push(["left", "-8px"]);
       break;
@@ -186,9 +186,9 @@ const getTooltipAttr = () => {
       iconStyleArr.push(["left", "-15px"]);
       iconStyleArr.push(["top", "50%"]);
       iconStyleArr.push(["transform", "translateY(-50%)"]);
-      iconStyleArr.push(["borderRightColor", "black"]);
+      iconStyleArr.push(["border-right-color", "black"]);
 
-      innerStyleArr.push(["borderRightColor", innerIconColor]);
+      innerStyleArr.push(["border-right-color", innerIconColor]);
       innerStyleArr.push(["bottom", "-7px"]);
       innerStyleArr.push(["left", "-6px"]);
       break;
@@ -212,9 +212,9 @@ const getTooltipAttr = () => {
       iconStyleArr.push(["left", "50%"]);
       iconStyleArr.push(["transform", "translateX(-50%)"]);
       iconStyleArr.push(["bottom", "-15px"]);
-      iconStyleArr.push(["borderTopColor", "black"]);
+      iconStyleArr.push(["border-top-color", "black"]);
 
-      innerStyleArr.push(["borderTopColor", "white"]);
+      innerStyleArr.push(["border-top-color", "white"]);
       innerStyleArr.push(["bottom", "-6px"]);
       innerStyleArr.push(["left", "-7px"]);
   }

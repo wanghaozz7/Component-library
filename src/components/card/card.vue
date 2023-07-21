@@ -11,15 +11,13 @@
   </div>
 </template>
 
-<script setup>
-
+<script setup name="card">
 const props = defineProps({
   header: {
     type: String,
-    default: '我是标题'
-  }
-})
-
+    default: "我是标题",
+  },
+});
 </script>
 
 <style lang="less" scoped>
@@ -29,7 +27,8 @@ const props = defineProps({
   border-radius: 3px;
 
   &:hover {
-    box-shadow: 0 0 8px 0 rgba(232, 237, 258, .6), 0 2px 4px 0 rgba(232, 237, 250, .5);
+    box-shadow: 0 0 8px 0 rgba(232, 237, 258, 0.6),
+      0 2px 4px 0 rgba(232, 237, 250, 0.5);
   }
 
   .header {

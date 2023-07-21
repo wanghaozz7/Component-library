@@ -3,8 +3,8 @@
     <slot />
   </div>
 </template>
-<script setup name="carouselItem" >
-const msg = 11
+<script setup name="carousel-item">
+const msg = 11;
 </script>
 
 <style>

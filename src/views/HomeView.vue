@@ -29,6 +29,7 @@
 
 <script setup name="HomeView">
 import { reactive, ref } from "vue";
+
 import sideBarConfig from "@/components/useComponent/config/sideBar";
 
 const componentStack = reactive([]);
@@ -38,7 +39,6 @@ const sideBarData = sideBarConfig.slice();
 
 const handleOffsetChange = (offset) => (scrollOffset.value = offset);
 
-// params: node => 变化的节点,type => 变化的类型
 const handleNodeCheckedChange = (node, type) => {
   const component = node.id.split("-")[0];
   const id = node.id.split("-")[1];

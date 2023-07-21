@@ -4,18 +4,18 @@
     @click="handleClick('goBack')"
     :style="getArrowStyle('left')"
   >
-    <img src="./icons/arrow-left.png" :style="getIconStyle('left')" />
+    <img src="@/assets/icons/arrow-left.png" :style="getIconStyle('left')" />
   </div>
   <div
     class="arrow"
     @click="handleClick('goForward')"
     :style="getArrowStyle('right')"
   >
-    <img src="./icons/arrow-right.png" :style="getIconStyle('right')" />
+    <img src="@/assets/icons/arrow-right.png" :style="getIconStyle('right')" />
   </div>
 </template>
 
-<script setup name="arrowGroup">
+<script setup name="arrow-group">
 import { computed } from "vue";
 const props = defineProps({
   showArrow: {

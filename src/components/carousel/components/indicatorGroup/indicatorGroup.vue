@@ -17,7 +17,7 @@
   </div>
 </template>
 
-<script setup name="indicatorGroup">
+<script setup name="indicator-group">
 import { computed } from "vue";
 
 const props = defineProps({

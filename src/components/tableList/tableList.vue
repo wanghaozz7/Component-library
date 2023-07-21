@@ -41,7 +41,7 @@
   </div>
 </template>
 
-<script setup name="table">
+<script setup name="table-list">
 import {
   onMounted,
   getCurrentInstance,

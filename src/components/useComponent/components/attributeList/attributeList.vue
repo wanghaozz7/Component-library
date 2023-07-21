@@ -18,7 +18,7 @@
   </table-list>
 </template>
 
-<script setup name="attributeList">
+<script setup name="attribute-list">
 const props = defineProps({
   listData: {
     type: Array,

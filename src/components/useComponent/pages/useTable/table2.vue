@@ -6,7 +6,7 @@
   </table-list>
 </template>
 
-<script setup name="table2">
+<script setup>
 const tableData = [
   {
     date: "2016-05-02",

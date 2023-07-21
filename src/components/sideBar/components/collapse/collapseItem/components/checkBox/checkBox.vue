@@ -10,7 +10,7 @@
   </div>
 </template>
 
-<script setup name="checkBox">
+<script setup name="check-box">
 const props = defineProps({
   checkedState: {
     type: String,

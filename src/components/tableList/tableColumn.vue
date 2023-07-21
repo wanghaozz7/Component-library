@@ -28,7 +28,6 @@ const props = defineProps({
 
 // 由父节点直接修改
 let colWidth = ref(props.width !== -1 ? props.width : props.minWidth);
-
 </script>
 
 <style scoped lang="less"></style>

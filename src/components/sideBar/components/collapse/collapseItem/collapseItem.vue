@@ -36,7 +36,7 @@
   </div>
 </template>
 
-<script setup name="collapseItem">
+<script setup name="collapse-item">
 import { ref, computed, getCurrentInstance, onMounted, watch } from "vue";
 
 const props = defineProps({
