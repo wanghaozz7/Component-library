@@ -5,6 +5,7 @@
       :key="index"
       :code="getProp(component, 'code')"
       :title="getProp(component, 'title')"
+      :refresh="refreshTooltip"
     >
       <component :is="component" :refreshTooltip="refreshTooltip" />
     </show-component>

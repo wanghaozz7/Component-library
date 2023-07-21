@@ -49,6 +49,8 @@ const props = defineProps({
   },
 });
 
+const emits = defineEmits(["show", "close"]);
+
 let showTooltip = ref(false);
 
 const ctx = getCurrentInstance().ctx;
@@ -231,15 +233,17 @@ const getTooltipAttr = () => {
 
 const handleMouseEnter = (e) => {
   if (showTooltip.value) return;
-  showTooltip.value = true;
   getTooltipAttr();
   const tooltip = ctx.$refs.tooltip;
+  emits("show");
   tooltip.style.display = "block";
+  showTooltip.value = true;
 };
 
 const handleMouseLeave = (e) => {
   const style = ctx.$refs.tooltip.style;
   setTimeout(() => {
+    emits("close");
     style.display = "none";
     showTooltip.value = false;
   }, props.delay);

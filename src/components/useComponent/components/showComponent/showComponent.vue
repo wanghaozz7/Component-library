@@ -7,8 +7,28 @@
         <slot />
       </div>
     </template>
-    <div class="code-area">
-      <div class="code" :style="codeStyle" ref="code"></div>
+    <div
+      class="code-area"
+      @mouseenter="handleMouseEnter"
+      @mouseleave="handleMouseLeave"
+    >
+      <div class="code" :style="codeStyle" ref="code">
+        <tooltip
+          content="复制代码"
+          placement="left"
+          :refreshTooltip="refresh"
+          @show="handleTooltipShow"
+          @close="handleTooltipClose"
+        >
+          <div
+            class="copy-button"
+            @click="copyCode"
+            :style="getCopyButtonStyle"
+          >
+            <div class="icon" />
+          </div>
+        </tooltip>
+      </div>
       <div class="extention" @click="handleClick" :style="extentionStyle">
         <div class="button">
           <div class="icon" :style="iconStyle"></div>
@@ -40,9 +60,15 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  refresh: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 let showCode = ref(false);
+let isHover = ref(false);
+let showTooltip = ref(false);
 
 const ctx = getCurrentInstance().ctx;
 let maxHeight,
@@ -69,9 +95,35 @@ const extentionStyle = computed(() => {
     borderTop,
   };
 });
+const getCopyButtonStyle = computed(() => {
+  const opacity = isHover.value ? 1 : 0;
+  const backgroundColor = showTooltip.value
+    ? "rgba(199, 199, 199, 0.881)"
+    : "#eee";
+  return {
+    opacity,
+    backgroundColor,
+  };
+});
 
 const handleClick = () => {
   showCode.value = !showCode.value;
+};
+
+const handleMouseEnter = (e) => {
+  isHover.value = true;
+};
+
+const handleMouseLeave = (e) => {
+  isHover.value = false;
+};
+
+const handleTooltipShow = (e) => {
+  showTooltip.value = true;
+};
+
+const handleTooltipClose = (e) => {
+  showTooltip.value = false;
 };
 
 const getCodeArea = () => {
@@ -131,6 +183,16 @@ const getCodeArea = () => {
   maxHeight = arr.length * 24 + "px";
 };
 
+const copyCode = () => {
+  const input = document.createElement("input");
+  input.value = props.code;
+  document.body.appendChild(input);
+  input.select();
+  document.execCommand("copy");
+  // alert("复制成功!");
+  document.body.removeChild(input);
+};
+
 onMounted(() => {
   getCodeArea();
   if (!props.defaultShowCode) codeRef.style.height = 0;
@@ -153,13 +215,31 @@ onMounted(() => {
 .card-container {
   .code-area {
     position: relative;
-
     .code {
       overflow: hidden;
       font-size: 14px;
       white-space: pre-wrap;
       transition: all 0.2s;
       background-color: #fafafa;
+      position: relative;
+      .copy-button {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        width: 35px;
+        height: 35px;
+        border-radius: 4px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        .icon {
+          width: 20px;
+          height: 20px;
+          background: center / contain no-repeat url(./icon/copy.svg);
+        }
+      }
     }
 
     .extention {

@@ -1,29 +1,31 @@
 <template>
-  <div
-    class="carousel"
-    ref="carousel"
-    @mouseenter="handleMouseEnter"
-    @mouseleave="handleMouseLeave"
-    v-resize:20="onResize"
-  >
-    <div class="carousel-body" :style="getCarouselBodyStyle">
-      <slot />
+  <div class="wrappergo">
+    <div
+      class="carousel"
+      ref="carousel"
+      @mouseenter="handleMouseEnter"
+      @mouseleave="handleMouseLeave"
+      v-resize:20="onResize"
+    >
+      <div class="carousel-body" :style="getCarouselBodyStyle">
+        <slot />
+      </div>
+      <arrowGroup
+        :showArrow="showArrow"
+        :isHover="isHover"
+        :position="arrowPosition"
+        @goForward="handleGoForward"
+        @goBack="handleGoBack"
+      />
+      <indicatorGroup
+        :indicatorCount="itemCount"
+        :activeIdx="getActiveIdx"
+        :trigger="trigger"
+        :position="indicatorPosition"
+        :indicatorType="indicatorType"
+        @change="handleChange"
+      />
     </div>
-    <arrowGroup
-      :showArrow="showArrow"
-      :isHover="isHover"
-      :position="arrowPosition"
-      @goForward="handleGoForward"
-      @goBack="handleGoBack"
-    />
-    <indicatorGroup
-      :indicatorCount="itemCount"
-      :activeIdx="getActiveIdx"
-      :trigger="trigger"
-      :position="indicatorPosition"
-      :indicatorType="indicatorType"
-      @change="handleChange"
-    />
   </div>
 </template>
 
@@ -385,5 +387,9 @@ onUnmounted(() => {
     position: absolute;
     display: flex;
   }
+}
+.wrappergo {
+  width: 100%;
+  height: 100%;
 }
 </style>
