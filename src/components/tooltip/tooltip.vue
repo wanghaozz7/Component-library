@@ -23,7 +23,7 @@ import {
 const props = defineProps({
   placement: {
     type: String,
-    default: "bottom",
+    default: "top",
   },
   content: {
     type: String,
@@ -35,7 +35,7 @@ const props = defineProps({
   },
   openDelay: {
     type: Number,
-    default: 250,
+    default: 0,
   },
   closeDelay: {
     type: Number,
@@ -63,7 +63,8 @@ let slotWidth,
   tooltipHeight,
   pos,
   winHeight = 0,
-  timer;
+  openTimer,
+  closeTimer;
 
 const { ctx, proxy } = getCurrentInstance();
 const innerIconColor = props.theme === "light" ? "#fff" : "#000";
@@ -100,15 +101,15 @@ const getTooltipAttr = () => {
       tooltipStyleArr.push([
         "left",
         pos.left +
-          (styleFilter(slotWidth) - styleFilter(tooltipWidth)) / 2 +
-          "px",
+        (styleFilter(slotWidth) - styleFilter(tooltipWidth)) / 2 +
+        "px",
       ]);
       tooltipStyleArr.push([
         "top",
         winHeight +
-          pos.top -
-          (styleFilter(tooltipHeight) + props.offset) +
-          "px",
+        pos.top -
+        (styleFilter(tooltipHeight) + props.offset) +
+        "px",
       ]);
 
       iconStyleArr.push(["left", "50%"]);
@@ -126,8 +127,8 @@ const getTooltipAttr = () => {
       tooltipStyleArr.push([
         "left",
         pos.left +
-          (styleFilter(slotWidth) - styleFilter(tooltipWidth)) / 2 +
-          "px",
+        (styleFilter(slotWidth) - styleFilter(tooltipWidth)) / 2 +
+        "px",
       ]);
       tooltipStyleArr.push([
         "top",
@@ -153,9 +154,9 @@ const getTooltipAttr = () => {
       tooltipStyleArr.push([
         "top",
         winHeight +
-          pos.top +
-          (styleFilter(slotHeight) - styleFilter(tooltipHeight)) / 2 +
-          "px",
+        pos.top +
+        (styleFilter(slotHeight) - styleFilter(tooltipHeight)) / 2 +
+        "px",
       ]);
 
       iconStyleArr.push(["right", "-15px"]);
@@ -178,9 +179,9 @@ const getTooltipAttr = () => {
       tooltipStyleArr.push([
         "top",
         winHeight +
-          pos.top +
-          (styleFilter(slotHeight) - styleFilter(tooltipHeight)) / 2 +
-          "px",
+        pos.top +
+        (styleFilter(slotHeight) - styleFilter(tooltipHeight)) / 2 +
+        "px",
       ]);
 
       iconStyleArr.push(["left", "-15px"]);
@@ -198,15 +199,15 @@ const getTooltipAttr = () => {
       tooltipStyleArr.push([
         "left",
         pos.left +
-          (styleFilter(slotWidth) - styleFilter(tooltipWidth)) / 2 +
-          "px",
+        (styleFilter(slotWidth) - styleFilter(tooltipWidth)) / 2 +
+        "px",
       ]);
       tooltipStyleArr.push([
         "top",
         winHeight +
-          pos.top -
-          (styleFilter(tooltipHeight) + props.offset) +
-          "px",
+        pos.top -
+        (styleFilter(tooltipHeight) + props.offset) +
+        "px",
       ]);
 
       iconStyleArr.push(["left", "50%"]);
@@ -228,8 +229,10 @@ const getTooltipAttr = () => {
 
 const handleMouseEnter = (e) => {
   emits("enter");
+  clearTimeout(closeTimer);
+  closeTimer = null;
   if (showTooltip.value) return;
-  timer = setTimeout(() => {
+  openTimer = setTimeout(() => {
     getTooltipAttr();
     const tooltip = ctx.$refs.tooltip;
     emits("show");
@@ -242,14 +245,14 @@ const handleMouseLeave = (e) => {
   emits("leave");
   if (showTooltip.value) {
     const style = ctx.$refs.tooltip.style;
-    setTimeout(() => {
+    closeTimer = setTimeout(() => {
       emits("close");
       style.display = "none";
       showTooltip.value = false;
     }, props.closeDelay);
   } else {
-    clearTimeout(timer);
-    timer = null;
+    clearTimeout(openTimer);
+    openTimer = null;
   }
 };
 
@@ -295,6 +298,7 @@ watch(
 <style scoped lang="less">
 .tooltip {
   position: absolute;
+
   .content {
     padding: 6px;
     line-height: 25px;
@@ -303,12 +307,14 @@ watch(
     border-radius: 4px;
     background-color: #fff;
   }
+
   .icon {
     position: absolute;
     width: 0;
     height: 0;
     border: 8px solid transparent;
     z-index: 9999;
+
     .inner {
       position: absolute;
       width: 0;

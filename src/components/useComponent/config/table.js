@@ -106,7 +106,7 @@ export default {
     {
       id: "table-2",
       title: {
-        text: "带斑马纹表格",
+        text: "stripe 带斑马纹表格",
         desc: "使用带斑马纹的表格，可以更容易区分出不同行的数据。",
       },
       code: `
@@ -141,8 +141,43 @@ export default {
     {
       id: "table-3",
       title: {
-        text: "带边框表格",
+        text: "border 带边框表格",
         desc: "使单元格获得纵向的边框",
+      },
+      code: `
+          <table-list :data="tableData" :out-side-border="false" :stripe="true" :border="true">
+              <table-column prop="date" label="日期" :width="180" />
+              <table-column prop="name" label="姓名" :width="180" />
+              <table-column prop="address" label="地址" :min-width="180" />
+          </table-list>
+
+          <script setup>
+            const tableData = [
+                {
+                    date: '2016-05-02',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路1518弄',
+                }, {
+                    date: '2016-05-04',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路1517弄',
+                }, {
+                    date: '2016-05-01',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路1519弄',
+                }, {
+                    date: '2016-05-03',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路1516弄',
+              }]
+          <\/script>
+      `,
+    },
+    {
+      id: "table-4",
+      title: {
+        text: "height 固定高度",
+        desc: "当内容高度小于height时会留下空隙 当内容高度大于height时会固定表头",
       },
       code: `
           <table-list :data="tableData" :out-side-border="false" :stripe="true" :border="true">

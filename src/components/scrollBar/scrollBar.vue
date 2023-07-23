@@ -1,20 +1,10 @@
 <template>
-  <div
-    class="scroll-bar-wrapper"
-    :style="getScrollBarWrapperStyle"
-    @mouseenter="handleMouseEnter"
-    @mouseleave="handleMouseLeave"
-    @mousewheel="handleScroll"
-  >
+  <div class="scroll-bar-wrapper" :style="getScrollBarWrapperStyle" @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave" @mousewheel="handleScroll">
     <div ref="slot" :style="getSlotStyle" v-resize:20="onResize">
       <slot />
     </div>
-    <div
-      class="scroll-bar"
-      :style="getScrollBarStyle"
-      ref="scrollBar"
-      v-if="props.showScrollBar !== 'none'"
-    ></div>
+    <div class="scroll-bar" :style="getScrollBarStyle" ref="scrollBar" v-if="props.showScrollBar !== 'none'"></div>
   </div>
 </template>
 
@@ -206,6 +196,8 @@ const filterString = (str) => {
 
 // 滚轮滚动
 const handleScroll = (e) => {
+  console.log('e', e);
+
   if (!showScrollBar.value) return;
   const change = e.deltaY;
   const target = slotOffset.value + change;
@@ -282,6 +274,7 @@ onMounted(() => {
     cursor: pointer;
     background-color: #ebebeb;
     z-index: 99;
+
     &:hover {
       background-color: #d1d1d1;
     }

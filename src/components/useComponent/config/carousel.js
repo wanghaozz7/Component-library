@@ -121,7 +121,7 @@ export default {
     {
       id: "carousel-2",
       title: {
-        text: "指示器",
+        text: "indicatorType 指示器",
         desc: "设置不同类型的指示器",
       },
       code: `
@@ -170,8 +170,8 @@ export default {
     {
       id: "carousel-3",
       title: {
-        text: "触发方式",
-        desc: "指示器的触发方式——默认下hover 可改为click",
+        text: "trigger 触发方式",
+        desc: "指示器的触发方式 默认下hover 可改为click",
       },
       code: `
           <template>
@@ -219,7 +219,7 @@ export default {
     {
       id: "carousel-4",
       title: {
-        text: "箭头的显示时机",
+        text: "showArrow 箭头的显示时机",
         desc: "总是显示/总是不显示/鼠标进入轮播图时显示",
       },
       code: `
@@ -268,7 +268,7 @@ export default {
     {
       id: "carousel-5",
       title: {
-        text: "自动滚动",
+        text: "autoRolling 自动滚动",
         desc: "自动滚动会在元素激活(浏览器非休眠、元素可见)时触发,可以通过interval设置间隔",
       },
       code: `
@@ -319,7 +319,7 @@ export default {
     {
       id: "carousel-6",
       title: {
-        text: "循环滚动",
+        text: "circular 循环滚动",
         desc: "内容呈现环形衔接,自动滚动默认一直向右",
       },
       code: `
@@ -369,7 +369,7 @@ export default {
     {
       id: "carousel-7",
       title: {
-        text: "指示器的位置",
+        text: "indicatorPosition 指示器的位置",
         desc: "指示器可以选择放在内部或者外部",
       },
       code: `
@@ -419,7 +419,7 @@ export default {
     {
       id: "carousel-8",
       title: {
-        text: "箭头的位置",
+        text: "arrowPosition 箭头的位置",
         desc: "箭头可以选择放在内部或者外部",
       },
       code: `
