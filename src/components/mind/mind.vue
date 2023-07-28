@@ -2,7 +2,7 @@
   <div class="mind" :style="getMindStyle">
     <canvas ref="mind" />
     <input ref="nodeInput" type="text" class="input" :style="getInputStyle" @input="handleInput"
-      @change="handleInputChange" v-show="editNode.showInput">
+      @change="handleInputChange">
   </div>
 </template>
 
@@ -56,7 +56,7 @@ const input = reactive({
   width: undefined,
   height: undefined,
   fontSize: undefined,
-  value: undefined
+  show: false
 });
 const rootPreCoordinate = {
   x: undefined,
@@ -69,10 +69,9 @@ let renderTree = null;
 let animating = false;
 let requestAnimation = null;
 let hover = null;
-let editNode = reactive({
+let editNode = {
   target: null,
   showButton: false,
-  showInput: false,
   addButton: {
     label: undefined,
     id: undefined,
@@ -87,7 +86,7 @@ let editNode = reactive({
     y: undefined,
     r: undefined
   }
-});
+};
 let dragEvent = {
   target: null,
   startX: undefined,
@@ -107,8 +106,9 @@ const getInputStyle = computed(() => {
   const height = input.height + 'px';
   const fontSize = input.fontSize + 'px';
   const width = input.width + 'px';
+  const display = input.show ? 'block' : 'none';
   return {
-    top, left, height, fontSize, width
+    top, left, height, fontSize, width, display
   }
 })
 
@@ -373,8 +373,8 @@ const isCircleInclude = (circle, coordinate) => {
 }
 // 点击空白区域
 const handleInvalidClick = () => {
+  input.show = false;
   resetState();
-  editNode.showInput = false;
   render();
 }
 // 节点被单击
@@ -409,44 +409,48 @@ const handleNodeDoubleClick = (node) => {
   // 当前节点进入编辑状态
   editNode.target = node;
   editNode.showButton = false;
-  editNode.showInput = true;
   getInputAttr(node);
   render();
 }
 // 计算Input的属性
 const getInputAttr = (node) => {
-  const t = instance.$refs.nodeInput;
-  t.value = node.label;
+  const nodeInput = instance.$refs.nodeInput;
+  nodeInput.value = node.label;
   input.top = node.y + 9;
   input.left = node.x + 13;
   input.fontSize = 24;
   input.height = 30;
+  input.show = true;
 }
 // 输入变化回调
 const handleInput = (e) => {
-  const input = instance.$refs.nodeInput;
-  editNode.target.label = input.value;
-  editNode.target.id = getRandomNodeId(input.value);
+  const nodeInput = instance.$refs.nodeInput;
+  editNode.target.label = nodeInput.value;
+  // 保留id方便更新节点
+  // editNode.target.id = getRandomNodeId(nodeInput.value);
   render();
   // 动态更新输入框的长度
   input.width = editNode.target.width - 30;
 }
 // 输入完成回调
 const handleInputChange = (e) => {
-  editNode.showInput = false;
   // 输入完成后返回修改后的树
   const target = editNode.target;
   const newLabel = instance.$refs.nodeInput.value;
   const newTree = Object.assign({}, props.tree);
-
   const ergodicTree = node => {
-    if (node.id === target.id) return node.label = newLabel;
+    if (node.id === target.id) {
+      node.label = newLabel;
+      node.id = getRandomNodeId(newLabel);
+      return;
+    }
     if (node.children && node.children.length !== 0) for (let child of node.children) ergodicTree(child);
   }
-
   ergodicTree(newTree);
 
   emits('treeChange', newTree);
+  input.show = false;
+  render()
 }
 // 在一个节点的末位添加一个新节点
 const addNode = (target) => {
@@ -645,7 +649,7 @@ onMounted(() => {
     this.arcTo(x + width, y + height, x, y + height, radius);
     this.arcTo(x, y + height, x, y, radius);
     this.arcTo(x, y, x + width, y, radius);
-    if (!editNode.showInput || editNode.target.id !== id) this.fillText(label, x + 15, y + 35);
+    if (!input.show || editNode.target?.id !== id) this.fillText(label, x + 15, y + 35);
     this.closePath();
 
     return this;
