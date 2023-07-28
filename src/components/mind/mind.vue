@@ -1,0 +1,764 @@
+<template>
+  <div class="mind" :style="getMindStyle">
+    <canvas ref="mind" />
+    <input ref="nodeInput" type="text" class="input" :style="getInputStyle" @input="handleInput"
+      @change="handleInputChange" v-show="editNode.showInput">
+  </div>
+</template>
+
+<script setup name="mind">
+import { computed, getCurrentInstance, onMounted, watch, reactive } from 'vue';
+
+const emits = defineEmits(['treeChange'])
+
+const props = defineProps({
+  tree: {
+    type: Object,
+    default() {
+      return {}
+    }
+  }
+})
+
+const canvasAttrs = {
+  width: undefined,
+  height: undefined,
+  // 判定双击的最长间隔
+  doubleClickDelay: 300
+};
+const nodeAttrs = {
+  height: 50,
+  // 竖直间距
+  verticalGap: 30,
+  // 水平间距
+  horizonGap: 150,
+  // 水平内边距
+  horizonPadding: 15,
+  // 默认边框颜色
+  defaultStrokeStyle: "#FFE384",
+  // 悬浮边框颜色
+  hoverStrokeStyle: '#FF0000',
+  // 边框粗细
+  lineWidth: 2,
+  // 字体颜色
+  fillStyle: 'black',
+  // 字体样式
+  fontStyle: "normal 24px 微软雅黑",
+  // 连线粗细
+  ligatureLineWidth: 1,
+  // 连线颜色
+  ligatureStrokeStyle: 'lightblue'
+};
+
+const input = reactive({
+  top: undefined,
+  left: undefined,
+  width: undefined,
+  height: undefined,
+  fontSize: undefined,
+  value: undefined
+});
+const rootPreCoordinate = {
+  x: undefined,
+  y: undefined
+};
+const instance = getCurrentInstance().ctx;
+const searchArray = new Array();
+
+let renderTree = null;
+let animating = false;
+let requestAnimation = null;
+let hover = null;
+let editNode = reactive({
+  target: null,
+  showButton: false,
+  showInput: false,
+  addButton: {
+    label: undefined,
+    id: undefined,
+    x: undefined,
+    y: undefined,
+    r: undefined
+  },
+  deleteButton: {
+    label: undefined,
+    id: undefined,
+    x: undefined,
+    y: undefined,
+    r: undefined
+  }
+});
+let dragEvent = {
+  target: null,
+  startX: undefined,
+  startY: undefined,
+  changeX: undefined,
+  changeY: undefined,
+  parent: null
+};
+let clickEvent = {
+  target: null,
+  time: new Date()
+};
+
+const getInputStyle = computed(() => {
+  const top = input.top + 'px';
+  const left = input.left + 'px';
+  const height = input.height + 'px';
+  const fontSize = input.fontSize + 'px';
+  const width = input.width + 'px';
+  return {
+    top, left, height, fontSize, width
+  }
+})
+
+const getMindStyle = computed(() => {
+  const width = canvasAttrs.width + 15 + 'px';
+  const height = canvasAttrs.height + 15 + 'px';
+  const cursor = hover ? 'pointer' : 'default';
+  return {
+    width,
+    height,
+    cursor
+  }
+})
+
+// 渲染画布内容
+const render = () => {
+  // 清理画布
+  // 渲染树
+  // 清理事件监听器 添加事件监听器 (防止重复监听)
+  const canvas = instance.$refs.mind;
+  clearCanvas();
+  treeRender();
+  canvas.removeEventListener("click", handleCanvasClick);
+  canvas.removeEventListener('mousemove', handleCanvasMouseMove);
+  canvas.addEventListener("click", handleCanvasClick);
+  canvas.addEventListener('mousemove', handleCanvasMouseMove);
+}
+// 清空画布
+const clearCanvas = () => {
+  const canvas = instance.$refs.mind;
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+// 渲染树
+const treeRender = () => {
+  const canvas = instance.$refs.mind;
+  // 计算子树高度 
+  getSubtreeHeight(renderTree);
+  // 根据整个树的高度重新计算画布的高度
+  canvas.height = renderTree.subtreeHeight + 300;
+  canvasAttrs.height = canvas.height;
+
+  // rootPreCoordinate代表根节点拖动前的坐标 当拖动结束后会更新 这里是为他赋初值(从左开始 上下居中)
+  if (!rootPreCoordinate.x) rootPreCoordinate.x = 50;
+  if (!rootPreCoordinate.y) rootPreCoordinate.y = (renderTree.subtreeHeight + 300) / 2;
+
+  renderTree.x = rootPreCoordinate.x;
+  renderTree.y = rootPreCoordinate.y;
+
+  // 如果拖拽的是根节点 则根节点新坐标 = 拖动前坐标 + 拖拽开始后的偏移量
+  if (dragEvent.target?.id === renderTree.id) {
+    renderTree.x += dragEvent.changeX;
+    renderTree.y += dragEvent.changeY;
+  }
+
+  searchArray.length = 0;
+  searchArray.push(renderTree)
+  // 计算每个节点的坐标和宽度 并根据最右侧的节点更新画布的宽度
+  getRenderTreeAttrs(renderTree);
+  renderNodes(renderTree);
+  buttonRender();
+
+}
+// 计算每个子树的高度(横向)
+const getSubtreeHeight = (node) => {
+  // 叶子节点
+  const children = node?.children;
+  if (!children || children.length === 0) return node.subtreeHeight = nodeAttrs.height;
+  let height = 0;
+  for (let child of children) height += getSubtreeHeight(child) + nodeAttrs.verticalGap;
+  height -= nodeAttrs.verticalGap
+  return node.subtreeHeight = height;
+}
+// 计算每个节点用来渲染的属性(x,y,width)
+const getRenderTreeAttrs = (node) => {
+  const canvas = instance.$refs.mind;
+  const ctx = canvas.getContext("2d");
+  const { label, fontStyle = "normal 24px 微软雅黑" } = node;
+
+  // 根据节点的文字计算宽度
+  ctx.font = fontStyle;
+  let width = 0;
+  if (node.label) for (let char of label) width += ctx.measureText(char).width;
+  node.width = width + 2 * nodeAttrs.horizonPadding;
+
+  // 更新画布宽度
+  if (Math.ceil(node.x + node.width) + 50 > canvas.width) {
+    canvas.width = Math.ceil(node.x + node.width) + 50;
+    canvasAttrs.width = canvas.width;
+  }
+
+  // 计算子节点的x y
+  const children = node?.children;
+  if (!children || children.length === 0) return;
+  const x = node.x + node.width + nodeAttrs.horizonGap;
+  let top = node.y - node.subtreeHeight / 2;
+  for (let child of children) {
+    child.x = x;
+    child.y = top + child.subtreeHeight / 2;
+    top += child.subtreeHeight + nodeAttrs.verticalGap;
+    getRenderTreeAttrs(child);
+    searchArray.push(child)
+  }
+
+}
+// 递归渲染所有节点
+const renderNodes = (node) => {
+  const canvas = instance.$refs.mind;
+  const ctx = canvas.getContext("2d");
+
+  // 如果正在拖拽节点
+  if (dragEvent.target) {
+    resetState();
+    // 如果拖动的是根节点 拖动整棵树
+    if (dragEvent.target?.id === renderTree.id) {
+      ctx.dashedBox(renderTree).stroke();
+      ctx.setLineDash([]);
+    } else if (dragEvent.target?.id === node.id) {
+      // 如果拖动的是其他节点 则遍历到该节点时复制一个相同的节点并根据拖动偏移量计算出新位置并找到离它最近的节点模拟为新的父节点
+      const newNode = Object.assign({}, node);
+      newNode.x += dragEvent.changeX;
+      newNode.y += dragEvent.changeY;
+
+      ctx.roundRect(newNode).stroke();
+      ctx.dashedBox(node).stroke();
+      ctx.setLineDash([]);
+
+      // 找到离当前位置最近的节点作为模拟的父节点并绘制连线
+      const parent = getCloseNode(newNode);
+      dragEvent.parent = parent;
+      ctx.beginPath();
+      ctx.moveTo(parent.x + parent.width, parent.y + nodeAttrs.height / 2);
+      ctx.lineTo(newNode.x, newNode.y + nodeAttrs.height / 2);
+      ctx.stroke();
+    }
+  }
+
+  // 绘制节点 
+  ctx.roundRect(node).stroke();
+
+  const children = node?.children;
+  if (!children || children.length === 0) return;
+  for (let child of children) {
+    const start = { x: node.x + node.width, y: node.y + nodeAttrs.height / 2 };
+    const end = { x: child.x, y: child.y + nodeAttrs.height / 2 }
+    ctx.ligature({ start, end }).stroke();
+    renderNodes(child)
+  }
+}
+// 渲染按钮
+const buttonRender = () => {
+  if (!editNode.showButton) return;
+  const canvas = instance.$refs.mind;
+  const ctx = canvas.getContext("2d");
+  ctx.circle(editNode.addButton).stroke();
+  ctx.circle(editNode.deleteButton).stroke();
+}
+// 清空按钮状态
+const resetState = () => {
+  editNode = reactive({
+    target: null,
+    showButton: false,
+    showInput: false,
+    addButton: {
+      label: undefined,
+      id: undefined,
+      x: undefined,
+      y: undefined,
+      r: undefined
+    },
+    deleteButton: {
+      label: undefined,
+      id: undefined,
+      x: undefined,
+      y: undefined,
+      r: undefined
+    }
+  })
+}
+// 画布点击事件转发 (点击对象 点击类型)
+const handleCanvasClick = (e) => {
+  const x = e.offsetX;
+  const y = e.offsetY;
+  const target = searchNode(x, y);
+  const time = new Date();
+  if (target) {
+    if (target?.type) {
+      if (target.type === 'add') addNode(editNode.target);
+      else if (target.type === 'delete') deleteNode(editNode.target);
+    } else if (target.id == clickEvent.target?.id) {
+      // 如果点击的是同一个目标则根据间距判断双击事件
+      if (Math.abs(clickEvent.time - time) < canvasAttrs.doubleClickDelay) handleNodeDoubleClick(target);
+      else handleNodeClick(target);
+    } else handleNodeClick(target);
+  } else {
+    // 点击空白区域
+    handleInvalidClick();
+  }
+  // 更新上一次的点击对象
+  clickEvent = {
+    target,
+    time
+  };
+}
+// 画布鼠标悬浮事件转发
+const handleCanvasMouseMove = (e) => {
+  const x = e.offsetX;
+  const y = e.offsetY;
+  const target = searchNode(x, y);
+  if (target) hover = target;
+  else hover = null;
+  render();
+}
+// 根据坐标返回元素
+const searchNode = (x, y) => {
+  // 判断按钮
+  if (editNode.showButton) {
+    let button = editNode.addButton;
+    let circle = {
+      x: button.x,
+      y: button.y,
+      r: button.r
+    };
+    const coordinate = {
+      x,
+      y
+    }
+    if (isCircleInclude(circle, coordinate)) return button;
+    button = editNode.deleteButton;
+    circle = {
+      x: button.x,
+      y: button.y,
+      r: button.r
+    };
+    if (isCircleInclude(circle, coordinate)) return button;
+  }
+
+  // 判断节点
+  for (let node of searchArray) {
+    const area = {
+      xStart: node.x,
+      xEnd: node.x + node.width,
+      yStart: node.y,
+      yEnd: node.y + nodeAttrs.height
+    }
+    if (x >= area.xStart && x <= area.xEnd && y >= area.yStart && y <= area.yEnd) return node;
+  }
+
+  return null;
+}
+// 判断坐标是否在圆内
+const isCircleInclude = (circle, coordinate) => {
+  // 圆心坐标和半径
+  const { x, y, r } = circle;
+  //首先应该在正方形区域内
+  if (coordinate.x >= x - r && coordinate.x <= x + r && coordinate.y >= y - r && coordinate.y <= y + r) {
+    const absX = Math.abs(x - coordinate.x);
+    const absY = Math.sqrt(r * r - absX * absX);
+    if (absY <= r) return true;
+  }
+  return false
+}
+// 点击空白区域
+const handleInvalidClick = () => {
+  resetState();
+  editNode.showInput = false;
+  render();
+}
+// 节点被单击
+const handleNodeClick = (node) => {
+  const addButton = {
+    label: `${node.label}的添加按钮`,
+    id: `${node.label}的添加按钮`,
+    x: node.x + node.width + 15,
+    y: node.y + nodeAttrs.height / 2,
+    r: 8,
+    type: 'add'
+  }
+  const deleteButton = {
+    label: `${node.label}的删除按钮`,
+    id: `${node.label}的删除按钮`,
+    x: node.x - 15,
+    y: node.y + nodeAttrs.height / 2,
+    r: 8,
+    type: 'delete'
+  }
+  editNode = reactive({
+    target: node,
+    addButton,
+    deleteButton,
+    showButton: true,
+    showInput: false
+  })
+  render()
+}
+// 节点被双击
+const handleNodeDoubleClick = (node) => {
+  // 当前节点进入编辑状态
+  editNode.target = node;
+  editNode.showButton = false;
+  editNode.showInput = true;
+  getInputAttr(node);
+  render();
+}
+// 计算Input的属性
+const getInputAttr = (node) => {
+  const t = instance.$refs.nodeInput;
+  t.value = node.label;
+  input.top = node.y + 9;
+  input.left = node.x + 13;
+  input.fontSize = 24;
+  input.height = 30;
+}
+// 输入变化回调
+const handleInput = (e) => {
+  const input = instance.$refs.nodeInput;
+  editNode.target.label = input.value;
+  editNode.target.id = getRandomNodeId(input.value);
+  render();
+  // 动态更新输入框的长度
+  input.width = editNode.target.width - 30;
+}
+// 输入完成回调
+const handleInputChange = (e) => {
+  editNode.showInput = false;
+  // 输入完成后返回修改后的树
+  const target = editNode.target;
+  const newLabel = instance.$refs.nodeInput.value;
+  const newTree = Object.assign({}, props.tree);
+
+  const ergodicTree = node => {
+    if (node.id === target.id) return node.label = newLabel;
+    if (node.children && node.children.length !== 0) for (let child of node.children) ergodicTree(child);
+  }
+
+  ergodicTree(newTree);
+
+  emits('treeChange', newTree);
+}
+// 在一个节点的末位添加一个新节点
+const addNode = (target) => {
+  resetState();
+  const newNode = {
+    label: '新节点' + searchArray.length,
+    id: getRandomNodeId('新节点' + searchArray.length),
+  };
+  const ergodicTree = (node) => {
+    if (node.id === target.id) {
+      if (node.children) node.children.push(newNode)
+      else node.children = [newNode];
+      return emits('treeChange', newTree);
+    }
+    if (node.children) for (let child of node.children) ergodicTree(child)
+  }
+  const newTree = Object.assign({}, props.tree)
+  ergodicTree(newTree);
+}
+// 删除一个节点及其子节点
+const deleteNode = (target) => {
+  resetState();
+  const ergodicTree = (node) => {
+    if (!node.children || node.children.length === 0) return;
+    for (let idx in node.children) {
+      const child = node.children[idx];
+      if (child.id === target.id) {
+        node.children.splice(idx, 1);
+        return emits('treeChange', newTree);
+      }
+      ergodicTree(child)
+    }
+  }
+  const newTree = Object.assign({}, props.tree)
+  ergodicTree(newTree);
+}
+// 随机生成节点id
+const getRandomNodeId = (label) => {
+  return label + Date.now() + Math.ceil(Math.random() * 100000);
+}
+// 拖动事件
+const mouseDownAndMove = (el, callback) => {
+  el.addEventListener("mousedown", function () {
+    // 当鼠标按下时 添加鼠标移动监听
+    document.addEventListener("mousemove", callback);
+
+    // 拖拽事件的开始 
+    dragEvent.startX = -9999;
+    dragEvent.startY = -9999;
+    // 开启动画 
+    animating = true;
+    animation();
+  });
+  document.addEventListener("mouseup", function () {
+    // 当鼠标松开时 移除鼠标移动监听
+    document.removeEventListener("mousemove", callback);
+
+    // 拖拽事件的结束 
+    // 关闭动画 
+    window.cancelAnimationFrame(requestAnimation);
+    animating = false;
+
+    // 更新拖动前的根节点坐标 
+    rootPreCoordinate.x = renderTree.x;
+    rootPreCoordinate.y = renderTree.y;
+
+    // 清理被拖拽子树的状态 
+    const ergodicTreeForCleanState = node => {
+      if (!node) return;
+      node.fillStyle = undefined;
+      node.strokeStyle = undefined;
+      node.isDragNodeChild = undefined;
+      if (node.children && node.children.length !== 0) for (let child of node.children) ergodicTreeForCleanState(child)
+    }
+    ergodicTreeForCleanState(dragEvent.target)
+
+    // 更新被拖拽节点的父节点
+    if (dragEvent.parent) {
+      const newTree = Object.assign({}, props.tree);
+      // 现在原来的树中将该节点删除
+      const ergodicTreeForDelete = (node) => {
+        if (!node.children || node.children.length === 0) return;
+        for (let idx in node.children) {
+          const child = node.children[idx];
+          if (child.id === dragEvent.target.id) return node.children.splice(idx, 1);
+          ergodicTreeForDelete(child)
+        }
+      }
+      ergodicTreeForDelete(newTree);
+      // 找到父节点并在插入在合适的位置
+      const ergodicTreeForInsert = node => {
+        if (node.id === dragEvent.parent.id) {
+          // 如果父节点是叶子节点
+          if (!node.children || node.children.length === 0) node.children = [dragEvent.target];
+          else {
+            // 根据拖拽节点的位置插入
+            for (let i = node.children.length - 1; i >= 0; i--) {
+              const child = node.children[i];
+              if (child.y <= dragEvent.target.y + dragEvent.changeY) return node.children.splice(i + 1, 0, dragEvent.target);
+            }
+          }
+        }
+        if (node.children && node.children.length !== 0) for (let child of node.children) ergodicTreeForInsert(child)
+      }
+      ergodicTreeForInsert(newTree);
+      emits('treeChange', newTree)
+    }
+
+    // 清空拖动状态
+    dragEvent = {
+      target: null,
+      startX: undefined,
+      startY: undefined,
+      changeX: undefined,
+      changeY: undefined,
+      parent: null
+    }
+  });
+}
+// 拖动事件的回调
+const handleMouseDownAndMove = (e) => {
+  if (dragEvent.startX === -9999 || dragEvent.startY === -9999) {
+    dragEvent.startX = e.x;
+    dragEvent.startY = e.y;
+    const target = searchNode(e.x, e.y);
+    if (!target?.type) dragEvent.target = target;
+  }
+  if (!dragEvent.target) return;
+  dragEvent.changeX = e.x - dragEvent.startX;
+  dragEvent.changeY = e.y - dragEvent.startY;
+}
+// 开启动画
+const animation = () => {
+  const renderAnimation = (timeStamp) => {
+    render();
+    if (animating) requestAnimation = window.requestAnimationFrame(renderAnimation);
+  };
+  requestAnimation = window.requestAnimationFrame(renderAnimation);
+}
+// 获得一个子树离根节点最远的节点的右侧x坐标 (同时将被拖拽子树的样式改变)
+const getFarthestX = (node) => {
+  node.fillStyle = 'gray';
+  node.strokeStyle = 'gray';
+  node.isDragNodeChild = true;
+  if (!node.children || node.children.length === 0) return node.x + node.width;
+  let ans = 0;
+  for (let child of node.children) ans = Math.max(ans, getFarthestX(child));
+  return ans;
+}
+// 找到离目标节点最近的节点
+const getCloseNode = (target) => {
+  // 找到一个节点 他离当前节点的位置最近且不能是当前节点的子节点(包括自身)
+  const x = target.x, y = target.y + nodeAttrs.height / 2;
+  let minDis = 1e+9, ans = null;
+  for (let node of searchArray) {
+    if (node.isDragNodeChild) continue;
+
+    const coordinate = {
+      x: node.x + node.width,
+      y: node.y + nodeAttrs.height / 2
+    };
+    const subX = Math.abs(x - coordinate.x);
+    const subY = Math.abs(y - coordinate.y);
+    const distance = subX * subX + subY * subY;
+    if (distance < minDis) {
+      ans = node;
+      minDis = distance;
+    }
+
+  }
+  return ans;
+}
+
+onMounted(() => {
+  // 绘制节点
+  CanvasRenderingContext2D.prototype.roundRect = function (arg) {
+    const attrs = nodeAttrs;
+    const { id, x, y, width, label, } = arg;
+    const { fontStyle = attrs.fontStyle, fillStyle = nodeAttrs.fillStyle, strokeStyle = attrs.defaultStrokeStyle,
+      hoverStrokeStyle = attrs.hoverStrokeStyle, lineWidth = attrs.lineWidth
+    } = arg;
+
+    this.lineWidth = lineWidth;
+    if (!dragEvent.target && id === hover?.id) this.strokeStyle = hoverStrokeStyle;
+    else this.strokeStyle = strokeStyle;
+    this.font = fontStyle;
+    this.fillStyle = fillStyle
+
+    const height = nodeAttrs.height;
+    const radius = 8;
+    if (width < 2 * radius) radius = width / 2;
+    if (height < 2 * radius) radius = height / 2;
+    this.beginPath();
+    this.moveTo(x + radius, y);
+    this.arcTo(x + width, y, x + width, y + height, radius);
+    this.arcTo(x + width, y + height, x, y + height, radius);
+    this.arcTo(x, y + height, x, y, radius);
+    this.arcTo(x, y, x + width, y, radius);
+    if (!editNode.showInput || editNode.target.id !== id) this.fillText(label, x + 15, y + 35);
+    this.closePath();
+
+    return this;
+  };
+  // 绘制父子节点之间连线
+  CanvasRenderingContext2D.prototype.ligature = function (arg) {
+    const { start, end } = arg;
+
+    const middle = {
+      x: start.x + 50,
+      y: start.y
+    }
+
+    this.lineWidth = nodeAttrs.ligatureLineWidth;
+    this.strokeStyle = nodeAttrs.ligatureStrokeStyle;
+
+    this.beginPath();
+    this.moveTo(start.x, start.y);
+    this.lineTo(middle.x, middle.y);
+    this.stroke();
+
+    this.beginPath();
+    this.moveTo(middle.x, middle.y);
+    this.lineTo(middle.x, end.y);
+    this.stroke();
+
+    this.beginPath();
+    this.moveTo(middle.x, end.y);
+    this.lineTo(end.x, end.y);
+    this.stroke();
+
+    return this;
+  };
+  // 绘制按钮
+  CanvasRenderingContext2D.prototype.circle = function (arg) {
+    const { x, y, r } = arg;
+
+    this.beginPath(); //创建一个路径
+    this.moveTo(x + r, y);
+    this.arc(x, y, r, 0, 2 * Math.PI);
+    this.closePath();
+    this.fill();
+
+    return this;
+  };
+  // 绘制一个包裹着整个子树的虚线框
+  CanvasRenderingContext2D.prototype.dashedBox = function (node) {
+    const { x, y, subtreeHeight } = node;
+    const height = subtreeHeight + 30;
+    const width = getFarthestX(node) - node.x + 30;
+
+    // 虚线框左侧边的中点
+    const rawCoordinate = {
+      x: x - 15,
+      y: y + nodeAttrs.height / 2
+    }
+    // 虚线框的四角
+    const corner = [
+      {
+        x: rawCoordinate.x,
+        y: rawCoordinate.y + height / 2
+      },
+      {
+        x: rawCoordinate.x + width,
+        y: rawCoordinate.y + height / 2
+      },
+      {
+        x: rawCoordinate.x + width,
+        y: rawCoordinate.y - height / 2
+      },
+      {
+        x: rawCoordinate.x,
+        y: rawCoordinate.y - height / 2
+      }
+    ]
+    this.setLineDash([10, 10]);
+    for (let i = 0; i < corner.length; i++) {
+      const start = corner[i];
+      const end = corner[(i + 1) % 4];
+      this.beginPath();
+      this.moveTo(start.x, start.y);
+      this.lineTo(end.x, end.y);
+      this.stroke();
+    }
+
+    return this;
+  };
+
+  const canvas = instance.$refs.mind;
+  // 绑定拖动事件
+  mouseDownAndMove(canvas, handleMouseDownAndMove);
+  renderTree = Object.assign({}, props.tree);
+  render();
+})
+
+watch(
+  () => props.tree,
+  (newValue, oldValue) => {
+    renderTree = Object.assign({}, newValue);
+    render();
+  }
+);
+</script>
+
+<style scoped lang="less">
+.mind {
+  position: relative;
+
+  .input {
+    border: 0;
+    outline: none;
+    background-color: transparent;
+    position: absolute
+  }
+}
+</style>
