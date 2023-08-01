@@ -1,5 +1,5 @@
 <template>
-  <mind :tree="tree" @treeChange="handleTreeChange" :maxWidth="1014" />
+  <mind :tree="tree" @treeChange="handleTreeChange" :maxWidth="1014" ligatureType="curve" />
 </template>
 
 <script setup name="mind2">

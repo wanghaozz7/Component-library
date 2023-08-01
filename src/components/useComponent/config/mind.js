@@ -115,7 +115,7 @@ export default {
     {
       id: "mind-2",
       title: {
-        text: "attributes 修改节点的样式属性",
+        text: "ligatureType 节点之间连线的类型",
         desc: "包括节点的行高、内间距、字体样式、边框颜色、按钮颜色等",
       },
       code: `

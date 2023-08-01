@@ -22,6 +22,10 @@ const props = defineProps({
     type: Number,
     default: 800
   },
+  ligatureType: {
+    type: String,
+    default: 'straight'
+  },
   // 节点之间的竖直间距
   verticalGap: {
     type: Number,
@@ -762,15 +766,28 @@ onMounted(() => {
     this.lineTo(middle.x, middle.y);
     this.stroke();
 
-    this.beginPath();
-    this.moveTo(middle.x, middle.y);
-    this.lineTo(middle.x, end.y);
-    this.stroke();
 
-    this.beginPath();
-    this.moveTo(middle.x, end.y);
-    this.lineTo(end.x, end.y);
-    this.stroke();
+    switch (props.ligatureType) {
+      case 'straight':
+        this.beginPath();
+        this.moveTo(middle.x, middle.y);
+        this.lineTo(middle.x, end.y);
+        this.stroke();
+
+        this.beginPath();
+        this.moveTo(middle.x, end.y);
+        this.lineTo(end.x, end.y);
+        this.stroke();
+        break;
+      case 'curve':
+        this.beginPath();
+        this.moveTo(middle.x, middle.y);
+        this.quadraticCurveTo(middle.x, end.y, end.x, end.y);
+        this.stroke();
+        break
+      default:
+        break;
+    }
 
     return this;
   };
