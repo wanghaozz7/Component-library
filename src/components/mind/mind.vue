@@ -7,7 +7,7 @@
 </template>
 
 <script setup name="mind">
-import { computed, getCurrentInstance, onMounted, watch, reactive } from 'vue';
+import { computed, getCurrentInstance, onMounted, watch, reactive,ref} from 'vue';
 
 const emits = defineEmits(['treeChange'])
 
@@ -49,7 +49,6 @@ const nodeAttrs = {
   // 连线颜色
   ligatureStrokeStyle: 'lightblue'
 };
-
 const input = reactive({
   top: undefined,
   left: undefined,
@@ -65,10 +64,10 @@ const rootPreCoordinate = {
 const instance = getCurrentInstance().ctx;
 const searchArray = new Array();
 
+let hover = ref('');
 let renderTree = null;
 let animating = false;
 let requestAnimation = null;
-let hover = null;
 let editNode = {
   target: null,
   showButton: false,
@@ -115,7 +114,7 @@ const getInputStyle = computed(() => {
 const getMindStyle = computed(() => {
   const width = canvasAttrs.width + 15 + 'px';
   const height = canvasAttrs.height + 15 + 'px';
-  const cursor = hover ? 'pointer' : 'default';
+  const cursor = hover.value ? 'pointer' : 'default';
   return {
     width,
     height,
@@ -318,8 +317,8 @@ const handleCanvasMouseMove = (e) => {
   const x = e.offsetX;
   const y = e.offsetY;
   const target = searchNode(x, y);
-  if (target) hover = target;
-  else hover = null;
+  if (target) hover.value = target.id;
+  else hover.value = '';
   render();
 }
 // 根据坐标返回元素
@@ -491,88 +490,24 @@ const deleteNode = (target) => {
 const getRandomNodeId = (label) => {
   return label + Date.now() + Math.ceil(Math.random() * 100000);
 }
-// 拖动事件
+// 绑定拖动事件
 const mouseDownAndMove = (el, callback) => {
   el.addEventListener("mousedown", function () {
     // 当鼠标按下时 添加鼠标移动监听
     document.addEventListener("mousemove", callback);
-
-    // 拖拽事件的开始 
-    dragEvent.startX = -9999;
-    dragEvent.startY = -9999;
-    // 开启动画 
-    animating = true;
-    animation();
+    // 拖动事件的开始 
+    handleDragStart();
   });
   document.addEventListener("mouseup", function () {
     // 当鼠标松开时 移除鼠标移动监听
     document.removeEventListener("mousemove", callback);
-
-    // 拖拽事件的结束 
-    // 关闭动画 
-    window.cancelAnimationFrame(requestAnimation);
-    animating = false;
-
-    // 更新拖动前的根节点坐标 
-    rootPreCoordinate.x = renderTree.x;
-    rootPreCoordinate.y = renderTree.y;
-
-    // 清理被拖拽子树的状态 
-    const ergodicTreeForCleanState = node => {
-      if (!node) return;
-      node.fillStyle = undefined;
-      node.strokeStyle = undefined;
-      node.isDragNodeChild = undefined;
-      if (node.children && node.children.length !== 0) for (let child of node.children) ergodicTreeForCleanState(child)
-    }
-    ergodicTreeForCleanState(dragEvent.target)
-
-    // 更新被拖拽节点的父节点
-    if (dragEvent.parent) {
-      const newTree = Object.assign({}, props.tree);
-      // 现在原来的树中将该节点删除
-      const ergodicTreeForDelete = (node) => {
-        if (!node.children || node.children.length === 0) return;
-        for (let idx in node.children) {
-          const child = node.children[idx];
-          if (child.id === dragEvent.target.id) return node.children.splice(idx, 1);
-          ergodicTreeForDelete(child)
-        }
-      }
-      ergodicTreeForDelete(newTree);
-      // 找到父节点并在插入在合适的位置
-      const ergodicTreeForInsert = node => {
-        if (node.id === dragEvent.parent.id) {
-          // 如果父节点是叶子节点
-          if (!node.children || node.children.length === 0) node.children = [dragEvent.target];
-          else {
-            // 根据拖拽节点的位置插入
-            for (let i = node.children.length - 1; i >= 0; i--) {
-              const child = node.children[i];
-              if (child.y <= dragEvent.target.y + dragEvent.changeY) return node.children.splice(i + 1, 0, dragEvent.target);
-            }
-          }
-        }
-        if (node.children && node.children.length !== 0) for (let child of node.children) ergodicTreeForInsert(child)
-      }
-      ergodicTreeForInsert(newTree);
-      emits('treeChange', newTree)
-    }
-
-    // 清空拖动状态
-    dragEvent = {
-      target: null,
-      startX: undefined,
-      startY: undefined,
-      changeX: undefined,
-      changeY: undefined,
-      parent: null
-    }
+    // 拖动事件的结束 
+    handleDragOver();
   });
 }
 // 拖动事件的回调
 const handleMouseDownAndMove = (e) => {
-  if (dragEvent.startX === -9999 || dragEvent.startY === -9999) {
+  if (!dragEvent.startX || !dragEvent.startY ) {
     dragEvent.startX = e.x;
     dragEvent.startY = e.y;
     const target = searchNode(e.x, e.y);
@@ -581,6 +516,80 @@ const handleMouseDownAndMove = (e) => {
   if (!dragEvent.target) return;
   dragEvent.changeX = e.x - dragEvent.startX;
   dragEvent.changeY = e.y - dragEvent.startY;
+}
+// 拖动事件开始
+const handleDragStart = () => {
+  dragEvent.startX = undefined;
+  dragEvent.startY = undefined;
+  // 开启动画 
+  animating = true;
+  animation();
+}
+// 拖动事件结束
+const handleDragOver = () => {
+  // 关闭动画 
+  window.cancelAnimationFrame(requestAnimation);
+  animating = false;
+
+  // 更新拖动前的根节点坐标 
+  rootPreCoordinate.x = renderTree.x;
+  rootPreCoordinate.y = renderTree.y;
+
+  // 清理被拖拽子树的状态 
+  const ergodicTreeForCleanState = node => {
+    if (!node) return;
+    node.fillStyle = undefined;
+    node.strokeStyle = undefined;
+    node.isDragNodeChild = undefined;
+    if (node.children && node.children.length !== 0) for (let child of node.children) ergodicTreeForCleanState(child)
+  }
+
+  ergodicTreeForCleanState(dragEvent.target)
+
+  // 更新被拖拽节点的父节点
+  if (dragEvent.parent) {
+    const newTree = Object.assign({}, props.tree);
+    // 现在原来的树中将该节点删除
+    const ergodicTreeForDelete = (node) => {
+      if (!node.children || node.children.length === 0) return;
+      for (let idx in node.children) {
+        const child = node.children[idx];
+        if (child.id === dragEvent.target.id) return node.children.splice(idx, 1);
+        ergodicTreeForDelete(child)
+      }
+    }
+    ergodicTreeForDelete(newTree);
+    // 找到父节点并在插入在合适的位置
+    const ergodicTreeForInsert = node => {
+      if (node.id === dragEvent.parent.id) {
+        // 如果父节点是叶子节点
+        if (!node.children || node.children.length === 0) return node.children = [dragEvent.target];
+        else {
+          // 根据拖拽节点的位置插入
+          for (let i = node.children.length - 1; i >= 0; i--) {
+            const child = node.children[i];
+            if(i === 0) return node.children.splice(0, 0, dragEvent.target);
+             else if (child.y <= dragEvent.target.y + dragEvent.changeY ) return node.children.splice(i + 1, 0, dragEvent.target);
+          }
+        }
+      }
+      if (node.children && node.children.length !== 0) for (let child of node.children) ergodicTreeForInsert(child)
+    }
+
+    ergodicTreeForInsert(newTree);
+
+    emits('treeChange', newTree)
+  }
+
+  // 清空拖动状态
+  dragEvent = {
+    target: null,
+    startX: undefined,
+    startY: undefined,
+    changeX: undefined,
+    changeY: undefined,
+    parent: null
+  }
 }
 // 开启动画
 const animation = () => {
@@ -607,7 +616,6 @@ const getCloseNode = (target) => {
   let minDis = 1e+9, ans = null;
   for (let node of searchArray) {
     if (node.isDragNodeChild) continue;
-
     const coordinate = {
       x: node.x + node.width,
       y: node.y + nodeAttrs.height / 2
@@ -634,7 +642,7 @@ onMounted(() => {
     } = arg;
 
     this.lineWidth = lineWidth;
-    if (!dragEvent.target && id === hover?.id) this.strokeStyle = hoverStrokeStyle;
+    if (!dragEvent.target && id === hover.value) this.strokeStyle = hoverStrokeStyle;
     else this.strokeStyle = strokeStyle;
     this.font = fontStyle;
     this.fillStyle = fillStyle
