@@ -1,12 +1,7 @@
 <template>
   <use-component :title="config.title" :lists="config.lists">
-    <show-component
-      v-for="component in selectedArr"
-      :key="component"
-      :code="getProp(component, 'code')"
-      :title="getProp(component, 'title')"
-      :refresh="refreshTooltip"
-    >
+    <show-component v-for="component in selectedArr" :key="getProp(component, 'title')" :code="getProp(component, 'code')"
+      :title="getProp(component, 'title')" :refresh="refreshTooltip">
       <component :is="component" :refreshTooltip="refreshTooltip" />
     </show-component>
   </use-component>

@@ -7,7 +7,7 @@
 </template>
 
 <script setup name="mind">
-import { computed, getCurrentInstance, onMounted, watch, reactive,ref} from 'vue';
+import { computed, getCurrentInstance, onMounted, watch, reactive, ref } from 'vue';
 
 const emits = defineEmits(['treeChange'])
 
@@ -18,9 +18,79 @@ const props = defineProps({
       return {}
     }
   },
-  maxWidth:{
-    type:String,
-    default:'100vw'
+  maxWidth: {
+    type: Number,
+    default: 800
+  },
+  // 节点之间的竖直间距
+  verticalGap: {
+    type: Number,
+    default: 30
+  },
+  // 节点之间的水平间距
+  horizonGap: {
+    type: Number,
+    default: 150
+  },
+  // 水平内边距
+  horizonPadding: {
+    type: Number,
+    default: 15
+  },
+  // 默认边框颜色
+  defaultStrokeStyle: {
+    type: String,
+    default: '#FFE384'
+  },
+  // 悬浮时边框颜色
+  hoverStrokeStyle: {
+    type: String,
+    default: '#FF0000'
+  },
+  // 边框粗细
+  lineWidth: {
+    type: Number,
+    default: 2
+  },
+  // 字体颜色 
+  fillStyle: {
+    type: String,
+    default: 'black'
+  },
+  // 字体样式
+  fontStyle: {
+    type: String,
+    default: 'normal 24px 微软雅黑'
+  },
+  // 连线粗细
+  ligatureLineWidth: {
+    type: Number,
+    default: 1
+  },
+  // 连线颜色
+  ligatureStrokeStyle: {
+    type: String,
+    default: 'lightblue'
+  },
+  // 按钮的半径
+  buttonRadius: {
+    type: Number,
+    default: 12
+  },
+  // 按钮的填充色
+  buttonBackgroundColor: {
+    type: String,
+    default: 'purple'
+  },
+  // 节点被拖动时的边框色
+  nodeInDragStrokeStyle: {
+    type: String,
+    default: 'gray'
+  },
+  // 节点被拖动时的填充色
+  nodeInDragFillStyle: {
+    type: String,
+    default: 'gray'
   }
 })
 
@@ -32,34 +102,20 @@ const canvasAttrs = {
 };
 const nodeAttrs = {
   height: 50,
-  // 竖直间距
-  verticalGap: 30,
-  // 水平间距
-  horizonGap: 150,
-  // 水平内边距
-  horizonPadding: 15,
-  // 默认边框颜色
-  defaultStrokeStyle: "#FFE384",
-  // 悬浮边框颜色
-  hoverStrokeStyle: '#FF0000',
-  // 边框粗细
-  lineWidth: 2,
-  // 字体颜色
-  fillStyle: 'black',
-  // 字体样式
-  fontStyle: "normal 24px 微软雅黑",
-  // 连线粗细
-  ligatureLineWidth: 1,
-  // 连线颜色
-  ligatureStrokeStyle: 'lightblue',
-  // 按钮的半径
-  buttonRadius: 12,
-  // 按钮的填充色
-  buttonBackgroundColor:'purple',
-  // 节点被拖动时的边框色
-  nodeInDragStrokeStyle:'gray',
-  // 节点被拖动时的填充色
-  nodeInDragFillStyle: 'gray',
+  verticalGap: props.verticalGap,
+  horizonGap: props.horizonGap,
+  horizonPadding: props.horizonPadding,
+  defaultStrokeStyle: props.defaultStrokeStyle,
+  hoverStrokeStyle: props.hoverStrokeStyle,
+  lineWidth: props.lineWidth,
+  fillStyle: props.fillStyle,
+  fontStyle: props.fontStyle,
+  ligatureLineWidth: props.ligatureLineWidth,
+  ligatureStrokeStyle: props.ligatureStrokeStyle,
+  buttonRadius: props.buttonRadius,
+  buttonBackgroundColor: props.buttonBackgroundColor,
+  nodeInDragStrokeStyle: props.nodeInDragStrokeStyle,
+  nodeInDragFillStyle: props.nodeInDragFillStyle,
 };
 const input = reactive({
   top: undefined,
@@ -124,15 +180,13 @@ const getInputStyle = computed(() => {
 })
 
 const getMindStyle = computed(() => {
-  const width = canvasAttrs.width + 15 + 'px';
-  const height = canvasAttrs.height + 15 + 'px';
+  const width = props.maxWidth + 'px';
   const cursor = hover.value ? 'pointer' : 'default';
-  const maxWidth = props.maxWidth;
+  if (hover.value) console.log('true', hover.value);
+
   return {
     width,
-    height,
     cursor,
-    maxWidth
   }
 })
 
@@ -176,7 +230,7 @@ const treeRender = () => {
     renderTree.x += dragEvent.changeX;
     renderTree.y += dragEvent.changeY;
   }
-  
+
 
   searchArray.length = 0;
   searchArray.push(renderTree)
@@ -209,9 +263,11 @@ const getRenderTreeAttrs = (node) => {
   node.width = width + 2 * nodeAttrs.horizonPadding;
 
   // 更新画布宽度
-  if (Math.ceil(node.x + node.width) + 50 > canvas.width) {
-    canvas.width = Math.ceil(node.x + node.width) + 50;
-    canvasAttrs.width = canvas.width;
+  const curX = Math.max(Math.ceil(node.x + node.width) + 50, props.maxWidth);
+
+  if (curX > canvas.width) {
+    canvas.width = curX;
+    canvasAttrs.width = curX;
   }
 
   // 计算子节点的x y
@@ -333,11 +389,18 @@ const handleCanvasMouseMove = (e) => {
   const y = e.offsetY;
   const target = searchNode(x, y);
   const old = hover.value;
-  if (target) hover.value = target.id;
-  else hover.value = '';
-  
+  if (target) {
+    hover.value = target;
+    target.strokeStyle = nodeAttrs.hoverStrokeStyle
+  }
+  else {
+    if (hover.value !== '') hover.value.strokeStyle = nodeAttrs.defaultStrokeStyle
+    hover.value = '';
+  }
+
   // 指针发生变化时刷新
-  if(old !== hover.value) render();
+  if (old !== hover.value) render();
+
 }
 // 根据坐标返回元素
 const searchNode = (x, y) => {
@@ -524,7 +587,7 @@ const mouseDownAndMove = (el, callback) => {
 }
 // 拖动事件的回调
 const handleMouseDownAndMove = (e) => {
-  if (!dragEvent.startX || !dragEvent.startY ) {
+  if (!dragEvent.startX || !dragEvent.startY) {
     dragEvent.startX = e.offsetX;
     dragEvent.startY = e.offsetY;
     const target = searchNode(e.offsetX, e.offsetY);
@@ -587,8 +650,8 @@ const handleDragOver = () => {
           // 根据拖拽节点的位置插入
           for (let i = node.children.length - 1; i >= 0; i--) {
             const child = node.children[i];
-            if(i === 0) return node.children.splice(0, 0, dragEvent.target);
-             else if (child.y <= dragEvent.target.y + dragEvent.changeY ) return node.children.splice(i + 1, 0, dragEvent.target);
+            if (i === 0) return node.children.splice(0, 0, dragEvent.target);
+            else if (child.y <= dragEvent.target.y + dragEvent.changeY) return node.children.splice(i + 1, 0, dragEvent.target);
           }
         }
       }
@@ -656,13 +719,14 @@ onMounted(() => {
   CanvasRenderingContext2D.prototype.roundRect = function (arg) {
     const attrs = nodeAttrs;
     const { id, x, y, width, label, } = arg;
-    const { fontStyle = attrs.fontStyle, fillStyle = nodeAttrs.fillStyle, strokeStyle = attrs.defaultStrokeStyle,
-      hoverStrokeStyle = attrs.hoverStrokeStyle, lineWidth = attrs.lineWidth
+    const { fontStyle = attrs.fontStyle, fillStyle = nodeAttrs.fillStyle, strokeStyle = attrs.defaultStrokeStyle, lineWidth = attrs.lineWidth
     } = arg;
 
     this.lineWidth = lineWidth;
-    if (!dragEvent.target && id === hover.value) this.strokeStyle = hoverStrokeStyle;
-    else this.strokeStyle = strokeStyle;
+
+    console.log(hover.value, id);
+
+    this.strokeStyle = strokeStyle;
     this.font = fontStyle;
     this.fillStyle = fillStyle
 
@@ -712,7 +776,7 @@ onMounted(() => {
   };
   // 绘制按钮
   CanvasRenderingContext2D.prototype.button = function (arg) {
-    const { x , y , r , type , fillStyle = nodeAttrs.buttonBackgroundColor } = arg;
+    const { x, y, r, type, fillStyle = nodeAttrs.buttonBackgroundColor } = arg;
 
     this.fillStyle = fillStyle;
     this.strokeStyle = 'transparent';
@@ -722,19 +786,19 @@ onMounted(() => {
     this.moveTo(x + r, y);
     this.arc(x, y, r, 0, 2 * Math.PI);
     this.closePath();
-    
+
     this.fill();
-    
+
     const icon = {
-      r : 6
+      r: 6
     }
 
-    this.moveTo(x - icon.r,y);
-    this.lineTo(x + icon.r,y);
+    this.moveTo(x - icon.r, y);
+    this.lineTo(x + icon.r, y);
     this.strokeStyle = "white";
-    this.stroke();   
+    this.stroke();
 
-    if(type === 'add') {
+    if (type === 'add') {
       this.beginPath();
       this.moveTo(x, y + icon.r);
       this.lineTo(x, y - icon.r);
@@ -806,7 +870,9 @@ watch(
 <style scoped lang="less">
 .mind {
   position: relative;
+  height: auto;
   overflow: auto;
+
   .nodeInput {
     border: 0;
     outline: none;
