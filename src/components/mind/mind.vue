@@ -132,7 +132,7 @@ const rootPreCoordinate = {
 const instance = getCurrentInstance().ctx;
 const searchArray = new Array();
 
-let hover = ref('');
+let hoverNodeId = ref('');
 let renderTree = null;
 let animating = false;
 let requestAnimation = null;
@@ -181,8 +181,7 @@ const getInputStyle = computed(() => {
 
 const getMindStyle = computed(() => {
   const width = props.maxWidth + 'px';
-  const cursor = hover.value ? 'pointer' : 'default';
-  if (hover.value) console.log('true', hover.value);
+  const cursor = hoverNodeId.value ? 'pointer' : 'default';
 
   return {
     width,
@@ -388,18 +387,22 @@ const handleCanvasMouseMove = (e) => {
   const x = e.offsetX;
   const y = e.offsetY;
   const target = searchNode(x, y);
-  const old = hover.value;
-  if (target) {
-    hover.value = target;
-    target.strokeStyle = nodeAttrs.hoverStrokeStyle
-  }
-  else {
-    if (hover.value !== '') hover.value.strokeStyle = nodeAttrs.defaultStrokeStyle
-    hover.value = '';
-  }
+  const old = hoverNodeId.value;
 
-  // 指针发生变化时刷新
-  if (old !== hover.value) render();
+  if (target) hoverNodeId.value = target.id;
+  else hoverNodeId.value = '';
+
+  // 悬浮状态发生了变化 遍历树更新节点的样式
+  if (hoverNodeId.value !== old) {
+    const ergodicTree = node => {
+      if (!node) return;
+      if (node.id === old) return node.strokeStyle = nodeAttrs.defaultStrokeStyle;
+      if (node.id === hoverNodeId.value) return node.strokeStyle = nodeAttrs.hoverStrokeStyle;
+      if (node.children) for (let child of node.children) ergodicTree(child);
+    }
+    ergodicTree(renderTree);
+    render();
+  }
 
 }
 // 根据坐标返回元素
@@ -723,9 +726,6 @@ onMounted(() => {
     } = arg;
 
     this.lineWidth = lineWidth;
-
-    console.log(hover.value, id);
-
     this.strokeStyle = strokeStyle;
     this.font = fontStyle;
     this.fillStyle = fillStyle
