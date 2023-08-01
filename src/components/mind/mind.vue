@@ -1,7 +1,7 @@
 <template>
   <div class="mind" :style="getMindStyle">
     <canvas ref="mind" />
-    <input ref="nodeInput" type="text" class="input" :style="getInputStyle" @input="handleInput"
+    <input ref="nodeInput" type="text" class="nodeInput" :style="getInputStyle" @input="handleInput"
       @change="handleInputChange">
   </div>
 </template>
@@ -47,7 +47,11 @@ const nodeAttrs = {
   // 连线粗细
   ligatureLineWidth: 1,
   // 连线颜色
-  ligatureStrokeStyle: 'lightblue'
+  ligatureStrokeStyle: 'lightblue',
+  // 按钮的半径
+  buttonRadius: 12,
+  // 按钮的填充色
+  buttonBackgroundColor:'purple'
 };
 const input = reactive({
   top: undefined,
@@ -262,8 +266,8 @@ const buttonRender = () => {
   if (!editNode.showButton) return;
   const canvas = instance.$refs.mind;
   const ctx = canvas.getContext("2d");
-  ctx.circle(editNode.addButton).stroke();
-  ctx.circle(editNode.deleteButton).stroke();
+  ctx.button(editNode.addButton).stroke();
+  ctx.button(editNode.deleteButton).stroke();
 }
 // 清空按钮状态
 const resetState = () => {
@@ -383,7 +387,7 @@ const handleNodeClick = (node) => {
     id: `${node.label}的添加按钮`,
     x: node.x + node.width + 15,
     y: node.y + nodeAttrs.height / 2,
-    r: 8,
+    r: nodeAttrs.buttonRadius,
     type: 'add'
   }
   const deleteButton = {
@@ -391,7 +395,7 @@ const handleNodeClick = (node) => {
     id: `${node.label}的删除按钮`,
     x: node.x - 15,
     y: node.y + nodeAttrs.height / 2,
-    r: 8,
+    r: nodeAttrs.buttonRadius,
     type: 'delete'
   }
   editNode = reactive({
@@ -425,7 +429,7 @@ const getInputAttr = (node) => {
 const handleInput = (e) => {
   const nodeInput = instance.$refs.nodeInput;
   editNode.target.label = nodeInput.value;
-  // 保留id方便更新节点
+  // id不能更新否则待会无法找到节点
   // editNode.target.id = getRandomNodeId(nodeInput.value);
   render();
   // 动态更新输入框的长度
@@ -558,7 +562,9 @@ const handleDragOver = () => {
         ergodicTreeForDelete(child)
       }
     }
+
     ergodicTreeForDelete(newTree);
+
     // 找到父节点并在插入在合适的位置
     const ergodicTreeForInsert = node => {
       if (node.id === dragEvent.parent.id) {
@@ -692,14 +698,40 @@ onMounted(() => {
     return this;
   };
   // 绘制按钮
-  CanvasRenderingContext2D.prototype.circle = function (arg) {
-    const { x, y, r } = arg;
+  CanvasRenderingContext2D.prototype.button = function (arg) {
+    const { x , y , r , type , fillStyle = nodeAttrs.buttonBackgroundColor } = arg;
+
+    this.fillStyle = fillStyle;
+    this.strokeStyle = 'transparent';
+    this.lineWidth = 0;
 
     this.beginPath(); //创建一个路径
     this.moveTo(x + r, y);
     this.arc(x, y, r, 0, 2 * Math.PI);
     this.closePath();
+    
     this.fill();
+    
+
+    const icon = {
+      r : 6
+    }
+
+    this.moveTo(x - icon.r,y);
+    this.lineTo(x + icon.r,y);
+    this.strokeStyle = "white";
+    this.stroke();   
+
+    if(type === 'add') {
+      this.beginPath();
+      this.moveTo(x, y + icon.r);
+      this.lineTo(x, y - icon.r);
+      this.strokeStyle = "white";
+      this.stroke();
+    }
+
+
+
 
     return this;
   };
@@ -766,7 +798,7 @@ watch(
 .mind {
   position: relative;
 
-  .input {
+  .nodeInput {
     border: 0;
     outline: none;
     background-color: transparent;
