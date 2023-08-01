@@ -18,6 +18,7 @@ import { watch, ref } from "vue";
 import tableConfig from "../config/table";
 import carouselConfig from "../config/carousel";
 import tooltipConfig from "../config/tooltip";
+import mindConfig from '../config/mind'
 
 const props = defineProps({
   selectedArr: {
@@ -44,6 +45,8 @@ const getConfig = () => {
       return tooltipConfig;
     case "carousel":
       return carouselConfig;
+    case 'mind':
+      return mindConfig;
   }
 };
 

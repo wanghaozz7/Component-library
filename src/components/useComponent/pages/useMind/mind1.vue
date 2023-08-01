@@ -1,8 +1,8 @@
 <template>
-  <mind :tree="tree" @treeChange="handleTreeChange" />
+  <mind :tree="tree" @treeChange="handleTreeChange" maxWidth="800px"/>
 </template>
 
-<script setup name="useMind">
+<script setup name="mind1">
 let tree = {
   label: '植物',
   id: '植物',
@@ -30,26 +30,6 @@ let tree = {
         {
           label: '茄子',
           id: '茄子',
-          children: [
-            {
-              label: '茄子1',
-              id: '茄子1',
-              children: [
-                {
-                  label: '茄子2',
-                  id: '茄子2',
-                },
-                {
-                  label: '茄子3',
-                  id: '茄子3',
-                },
-                {
-                  label: '茄子4',
-                  id: '茄子5',
-                }
-              ]
-            }
-          ]
         }, {
           label: '南瓜',
           id: '南瓜'

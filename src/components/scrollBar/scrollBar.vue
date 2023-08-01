@@ -196,8 +196,7 @@ const filterString = (str) => {
 
 // 滚轮滚动
 const handleScroll = (e) => {
-  console.log('e', e);
-
+  e.stopPropagation();
   if (!showScrollBar.value) return;
   const change = e.deltaY;
   const target = slotOffset.value + change;

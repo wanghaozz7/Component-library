@@ -180,7 +180,7 @@ export default {
     {
       id: "tooltip-3",
       title: {
-        text: "theme tooltip的颜色主题",
+        text: "theme 颜色主题",
         desc: "根据页面的风格选择不同的主题",
       },
       code: `
@@ -245,7 +245,7 @@ export default {
     {
       id: "tooltip-4",
       title: {
-        text: "delay 触发tooltip的延迟",
+        text: "delay 触发延迟",
         desc: "在鼠标移动频率较高的区域,频繁触发tooltip可能会造成困扰,通过设置触发延迟让他的出现次数减少",
       },
       code: `

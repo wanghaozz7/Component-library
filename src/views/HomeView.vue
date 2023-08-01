@@ -59,7 +59,7 @@ const handleNodeCheckedChange = (node, type) => {
 
 <style scoped lang="less">
 .homeViewContainer {
-  width: 1226px;
+  width: 1426px;
   margin: auto;
   display: flex;
 

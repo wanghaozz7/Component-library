@@ -17,6 +17,10 @@ const props = defineProps({
     default() {
       return {}
     }
+  },
+  maxWidth:{
+    type:String,
+    default:'100vw'
   }
 })
 
@@ -51,7 +55,11 @@ const nodeAttrs = {
   // 按钮的半径
   buttonRadius: 12,
   // 按钮的填充色
-  buttonBackgroundColor:'purple'
+  buttonBackgroundColor:'purple',
+  // 节点被拖动时的边框色
+  nodeInDragStrokeStyle:'gray',
+  // 节点被拖动时的填充色
+  nodeInDragFillStyle: 'gray',
 };
 const input = reactive({
   top: undefined,
@@ -119,10 +127,12 @@ const getMindStyle = computed(() => {
   const width = canvasAttrs.width + 15 + 'px';
   const height = canvasAttrs.height + 15 + 'px';
   const cursor = hover.value ? 'pointer' : 'default';
+  const maxWidth = props.maxWidth;
   return {
     width,
     height,
-    cursor
+    cursor,
+    maxWidth
   }
 })
 
@@ -166,6 +176,7 @@ const treeRender = () => {
     renderTree.x += dragEvent.changeX;
     renderTree.y += dragEvent.changeY;
   }
+  
 
   searchArray.length = 0;
   searchArray.push(renderTree)
@@ -321,9 +332,12 @@ const handleCanvasMouseMove = (e) => {
   const x = e.offsetX;
   const y = e.offsetY;
   const target = searchNode(x, y);
+  const old = hover.value;
   if (target) hover.value = target.id;
   else hover.value = '';
-  render();
+  
+  // 指针发生变化时刷新
+  if(old !== hover.value) render();
 }
 // 根据坐标返回元素
 const searchNode = (x, y) => {
@@ -450,7 +464,6 @@ const handleInputChange = (e) => {
     if (node.children && node.children.length !== 0) for (let child of node.children) ergodicTree(child);
   }
   ergodicTree(newTree);
-
   emits('treeChange', newTree);
   input.show = false;
   render()
@@ -512,14 +525,14 @@ const mouseDownAndMove = (el, callback) => {
 // 拖动事件的回调
 const handleMouseDownAndMove = (e) => {
   if (!dragEvent.startX || !dragEvent.startY ) {
-    dragEvent.startX = e.x;
-    dragEvent.startY = e.y;
-    const target = searchNode(e.x, e.y);
+    dragEvent.startX = e.offsetX;
+    dragEvent.startY = e.offsetY;
+    const target = searchNode(e.offsetX, e.offsetY);
     if (!target?.type) dragEvent.target = target;
   }
   if (!dragEvent.target) return;
-  dragEvent.changeX = e.x - dragEvent.startX;
-  dragEvent.changeY = e.y - dragEvent.startY;
+  dragEvent.changeX = e.offsetX - dragEvent.startX;
+  dragEvent.changeY = e.offsetY - dragEvent.startY;
 }
 // 拖动事件开始
 const handleDragStart = () => {
@@ -607,8 +620,8 @@ const animation = () => {
 }
 // 获得一个子树离根节点最远的节点的右侧x坐标 (同时将被拖拽子树的样式改变)
 const getFarthestX = (node) => {
-  node.fillStyle = 'gray';
-  node.strokeStyle = 'gray';
+  node.fillStyle = nodeAttrs.nodeInDragFillStyle;
+  node.strokeStyle = nodeAttrs.nodeInDragStrokeStyle;
   node.isDragNodeChild = true;
   if (!node.children || node.children.length === 0) return node.x + node.width;
   let ans = 0;
@@ -712,7 +725,6 @@ onMounted(() => {
     
     this.fill();
     
-
     const icon = {
       r : 6
     }
@@ -729,9 +741,6 @@ onMounted(() => {
       this.strokeStyle = "white";
       this.stroke();
     }
-
-
-
 
     return this;
   };
@@ -797,7 +806,7 @@ watch(
 <style scoped lang="less">
 .mind {
   position: relative;
-
+  overflow: auto;
   .nodeInput {
     border: 0;
     outline: none;

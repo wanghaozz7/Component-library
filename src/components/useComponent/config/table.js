@@ -31,7 +31,7 @@ export default {
         {
           params: "height",
           desc: "默认高度为内容高度,设置固定高度后若内容溢出则出现滚动条并固定表头",
-          type: "Number",
+          type: "number",
           optional: "",
           default: "",
         },
@@ -51,8 +51,8 @@ export default {
         },
         {
           params: "cellEmptyText",
-          desc: "string",
-          type: "表格某一行的某一列无数据时显示的内容",
+          desc: "表格某一行的某一列无数据时显示的内容",
+          type: "string",
           optional: "",
           default: " ",
         },

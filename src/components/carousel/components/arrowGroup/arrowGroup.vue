@@ -95,7 +95,7 @@ const handleClick = (type) => {
     width: 33px;
     height: 34px;
     border-radius: 50%;
-    border: 1px solid gray;
+    border: 1px solid rgb(189, 189, 189);
     background-color: #eee;
     transition: all 0.3s;
     cursor: pointer;
