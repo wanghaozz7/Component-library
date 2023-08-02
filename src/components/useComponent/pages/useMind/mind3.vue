@@ -1,5 +1,7 @@
 <template>
-  <mind :tree="tree" @treeChange="handleTreeChange" :maxWidth="1014" ligatureType="curve" />
+  <mind :tree="tree" @treeChange="handleTreeChange" :maxWidth="1014" ligatureType="curve" defaultStrokeStyle="#000"
+    hoverStrokeStyle="lightgreen" :ligatureLineWidth="5" ligatureStrokeStyle="pink" :buttonRadius="15"
+    buttonBackgroundColor="yellow" nodeInDragFillStyle="#eee" nodeInDragStrokeStyle="#eee" />
 </template>
 
 <script setup name="mind2">
@@ -66,4 +68,3 @@ const handleTreeChange = newTree => {
   console.log(tree);
 }
 </script>
-

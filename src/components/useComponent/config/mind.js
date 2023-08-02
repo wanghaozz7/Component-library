@@ -54,127 +54,207 @@ export default {
         desc: "鼠标悬浮在内容时立即出现文字提示",
       },
       code: `
-            <template>
-              <div style="margin-top: 50px" class="cont">
-                <tooltip placement="top" content="我悬浮在上边~">
-                  <div class="item">上</div>
-                </tooltip>
-              </div>
-              <div style="margin: 50px 0; gap: 150px" class="cont">
-                <tooltip placement="left" content="我悬浮在左边~">
-                  <div class="item">左</div>
-                </tooltip>
-                <tooltip placement="right" content="我悬浮在右边~">
-                  <div class="item">右</div>
-                </tooltip>
-              </div>
-              <div style="margin-bottom: 50px" class="cont">
-                <tooltip placement="bottom" content="我悬浮在下边~">
-                  <div class="item">下</div>
-                </tooltip>
-              </div>
-            </template>
-            <style scoped lang="less">
-            .tooltip-container {
-              height: 100px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              cursor: pointer;
-
-              .tooltip-content {
-                border: 1px solid gray;
-                border-radius: 4px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                padding: 8px;
+      <template>
+        <mind :tree="tree" @treeChange="handleTreeChange" :maxWidth="1014" />
+      </template>
+      
+      <script setup name="mind1">
+      let tree = {
+        label: '植物',
+        id: '植物',
+        children: [
+          {
+            label: '水果',
+            id: '水果',
+            children: [
+              {
+                label: '苹果 🍎',
+                id: '苹果'
+              }, {
+                label: '香蕉 🍌',
+                id: '香蕉'
+              }, {
+                label: '橙子 🍊',
+                id: '橙子'
               }
-            }
-
-            .item {
-              width: 75px;
-              height: 75px;
-              border: 1px solid gray;
-              margin: 100px auto;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              cursor: pointer;
-            }
-
-            .cont {
-              height: 75px;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-            }
-            </style>
+            ]
+          },
+          {
+            label: '蔬菜',
+            id: '蔬菜',
+            children: [
+              {
+                label: '茄子 🍆',
+                id: '茄子',
+              }, {
+                label: '南瓜',
+                id: '南瓜'
+              }
+            ]
+          }
+        ]
+      }
+      const handleTreeChange = newTree => {
+        tree = newTree;
+        console.log(tree);
+      }
+      </script>
       `,
     },
     {
       id: "mind-2",
       title: {
         text: "ligatureType 节点之间连线的类型",
-        desc: "包括节点的行高、内间距、字体样式、边框颜色、按钮颜色等",
+        desc: "包括直线、折线、曲线三种类型",
       },
       code: `
-            <template>
-              <div style="margin-top: 50px" class="cont">
-                <tooltip placement="top" content="我悬浮在上边~">
-                  <div class="item">上</div>
-                </tooltip>
-              </div>
-              <div style="margin: 50px 0; gap: 150px" class="cont">
-                <tooltip placement="left" content="我悬浮在左边~">
-                  <div class="item">左</div>
-                </tooltip>
-                <tooltip placement="right" content="我悬浮在右边~">
-                  <div class="item">右</div>
-                </tooltip>
-              </div>
-              <div style="margin-bottom: 50px" class="cont">
-                <tooltip placement="bottom" content="我悬浮在下边~">
-                  <div class="item">下</div>
-                </tooltip>
-              </div>
-            </template>
-            <style scoped lang="less">
-            .tooltip-container {
-              height: 100px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              cursor: pointer;
-
-              .tooltip-content {
-                border: 1px solid gray;
-                border-radius: 4px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                padding: 8px;
+      <template>
+        <mind :tree="tree" @treeChange="handleTreeChange" :maxWidth="1014" ligatureType="curve" />
+      </template>
+      
+      <script setup name="mind2">
+      let tree = {
+        label: '植物',
+        id: '植物',
+        children: [
+          {
+            label: '水果',
+            id: '水果',
+            children: [
+              {
+                label: '苹果 🍎',
+                id: '苹果'
+              }, {
+                label: '香蕉 🍌',
+                id: '香蕉',
+                children: [
+                  {
+                    label: '猕猴桃 🥝',
+                    id: '猕猴桃'
+                  },
+                  {
+                    label: '奇异果 🥝',
+                    id: '奇异果'
+                  }
+                ]
+              }, {
+                label: '橙子 🍊',
+                id: '橙子'
               }
-            }
-
-            .item {
-              width: 75px;
-              height: 75px;
-              border: 1px solid gray;
-              margin: 100px auto;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              cursor: pointer;
-            }
-
-            .cont {
-              height: 75px;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-            }
-            </style>
+            ]
+          },
+          {
+            label: '蔬菜',
+            id: '蔬菜',
+            children: [
+              {
+                label: '白菜',
+                id: '白菜'
+              }, {
+                label: '西红柿 🍅',
+                id: '西红柿',
+                children: [
+                  {
+                    label: '番茄',
+                    id: '番茄'
+                  },
+                  {
+                    label: '柿子',
+                    id: '柿子'
+                  }
+                ]
+              }, {
+                label: '茄子 🍆',
+                id: '茄子'
+              }
+            ]
+          },
+        ]
+      }
+      const handleTreeChange = newTree => {
+        tree = newTree;
+        console.log(tree);
+      }
+      </script>
+      `,
+    },
+    {
+      id: "mind-3",
+      title: {
+        text: "nodeAttributes 样式属性",
+        desc: "包括节点边框颜色、高亮颜色、连线颜色、字体样式、边距等",
+      },
+      code: `
+      <template>
+        <mind :tree="tree" @treeChange="handleTreeChange" :maxWidth="1014" ligatureType="curve" defaultStrokeStyle="#000"
+          hoverStrokeStyle="lightgreen" :ligatureLineWidth="5" ligatureStrokeStyle="pink" :buttonRadius="15"
+          buttonBackgroundColor="yellow" nodeInDragFillStyle="#eee" nodeInDragStrokeStyle="#eee" />
+      </template>
+      
+      <script setup name="mind2">
+      let tree = {
+        label: '植物',
+        id: '植物',
+        children: [
+          {
+            label: '水果',
+            id: '水果',
+            children: [
+              {
+                label: '苹果 🍎',
+                id: '苹果'
+              }, {
+                label: '香蕉 🍌',
+                id: '香蕉',
+                children: [
+                  {
+                    label: '猕猴桃 🥝',
+                    id: '猕猴桃'
+                  },
+                  {
+                    label: '奇异果 🥝',
+                    id: '奇异果'
+                  }
+                ]
+              }, {
+                label: '橙子 🍊',
+                id: '橙子'
+              }
+            ]
+          },
+          {
+            label: '蔬菜',
+            id: '蔬菜',
+            children: [
+              {
+                label: '白菜',
+                id: '白菜'
+              }, {
+                label: '西红柿 🍅',
+                id: '西红柿',
+                children: [
+                  {
+                    label: '番茄',
+                    id: '番茄'
+                  },
+                  {
+                    label: '柿子',
+                    id: '柿子'
+                  }
+                ]
+              }, {
+                label: '茄子 🍆',
+                id: '茄子'
+              }
+            ]
+          },
+        ]
+      }
+      const handleTreeChange = newTree => {
+        tree = newTree;
+        console.log(tree);
+      }
+      </script>
       `,
     },
   ],
