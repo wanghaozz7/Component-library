@@ -24,7 +24,7 @@ const props = defineProps({
   },
   ligatureType: {
     type: String,
-    default: 'straight'
+    default: 'fold'
   },
   // 节点之间的竖直间距
   verticalGap: {
@@ -95,6 +95,11 @@ const props = defineProps({
   nodeInDragFillStyle: {
     type: String,
     default: 'gray'
+  },
+  // 折线延长线的长度
+  foldLineLength: {
+    type: Number,
+    default: 50
   }
 })
 
@@ -120,6 +125,7 @@ const nodeAttrs = {
   buttonBackgroundColor: props.buttonBackgroundColor,
   nodeInDragStrokeStyle: props.nodeInDragStrokeStyle,
   nodeInDragFillStyle: props.nodeInDragFillStyle,
+  foldLineLength: props.foldLineLength
 };
 const input = reactive({
   top: undefined,
@@ -195,12 +201,181 @@ const getMindStyle = computed(() => {
 
 // 渲染画布内容
 const render = () => {
-  // 清理画布
-  // 渲染树
-  // 清理事件监听器 添加事件监听器 (防止重复监听)
-  const canvas = instance.$refs.mind;
+  // 1.绑定画图函数 2.清空画布 3.渲染树 4.重新绑定事件
+
+  // 绘制节点
+  CanvasRenderingContext2D.prototype.roundRect = function (arg) {
+    const attrs = nodeAttrs;
+    const { id, x, y, width, label, } = arg;
+    const { fontStyle = attrs.fontStyle, fillStyle = nodeAttrs.fillStyle, strokeStyle = attrs.defaultStrokeStyle, lineWidth = attrs.lineWidth
+    } = arg;
+
+    this.lineWidth = lineWidth;
+    this.strokeStyle = strokeStyle;
+    this.font = fontStyle;
+    this.fillStyle = fillStyle
+
+    const height = nodeAttrs.height;
+    const radius = 8;
+    if (width < 2 * radius) radius = width / 2;
+    if (height < 2 * radius) radius = height / 2;
+    this.beginPath();
+    this.moveTo(x + radius, y);
+    this.arcTo(x + width, y, x + width, y + height, radius);
+    this.arcTo(x + width, y + height, x, y + height, radius);
+    this.arcTo(x, y + height, x, y, radius);
+    this.arcTo(x, y, x + width, y, radius);
+    if (!input.show || editNode.target?.id !== id) this.fillText(label, x + 15, y + 35);
+    this.closePath();
+
+    return this;
+  };
+  // 绘制父子节点之间连线
+  CanvasRenderingContext2D.prototype.ligature = function (arg) {
+    const { start, end } = arg;
+
+    const middle = {
+      x: start.x + nodeAttrs.foldLineLength,
+      y: start.y
+    }
+
+    this.lineWidth = nodeAttrs.ligatureLineWidth;
+    this.strokeStyle = nodeAttrs.ligatureStrokeStyle;
+
+    switch (props.ligatureType) {
+      case 'straight':
+        this.beginPath();
+        this.moveTo(start.x, start.y);
+        this.lineTo(end.x, end.y);
+        this.stroke();
+        break;
+      case 'curve':
+        this.beginPath();
+        this.moveTo(start.x, start.y);
+        this.lineTo(middle.x, middle.y);
+        this.stroke();
+
+        this.beginPath();
+        this.moveTo(middle.x, middle.y);
+
+        this.quadraticCurveTo(middle.x, end.y, end.x, end.y);
+        this.stroke();
+        break;
+      case 'fold':
+        this.beginPath();
+        this.moveTo(start.x, start.y);
+        this.lineTo(middle.x, middle.y);
+        this.stroke();
+
+        this.beginPath();
+        this.moveTo(middle.x, middle.y);
+        this.lineTo(middle.x, end.y);
+        this.stroke();
+
+        this.beginPath();
+        this.moveTo(middle.x, end.y);
+        this.lineTo(end.x, end.y);
+        this.stroke();
+        break;
+      default:
+        this.beginPath();
+        this.moveTo(start.x, start.y);
+        this.lineTo(middle.x, middle.y);
+        this.stroke();
+
+        this.beginPath();
+        this.moveTo(middle.x, middle.y);
+        this.lineTo(middle.x, end.y);
+        this.stroke();
+
+        this.beginPath();
+        this.moveTo(middle.x, end.y);
+        this.lineTo(end.x, end.y);
+        this.stroke();
+    }
+
+    return this;
+  };
+  // 绘制按钮
+  CanvasRenderingContext2D.prototype.button = function (arg) {
+    const { x, y, r, type, fillStyle = nodeAttrs.buttonBackgroundColor } = arg;
+
+    this.fillStyle = fillStyle;
+    this.strokeStyle = 'transparent';
+    this.lineWidth = 0;
+
+    this.beginPath(); //创建一个路径
+    this.moveTo(x + r, y);
+    this.arc(x, y, r, 0, 2 * Math.PI);
+    this.closePath();
+
+    this.fill();
+
+    const icon = {
+      r: 6
+    }
+
+    this.moveTo(x - icon.r, y);
+    this.lineTo(x + icon.r, y);
+    this.strokeStyle = "white";
+    this.stroke();
+
+    if (type === 'add') {
+      this.beginPath();
+      this.moveTo(x, y + icon.r);
+      this.lineTo(x, y - icon.r);
+      this.strokeStyle = "white";
+      this.stroke();
+    }
+
+    return this;
+  };
+  // 绘制一个包裹着整个子树的虚线框
+  CanvasRenderingContext2D.prototype.dashedBox = function (node) {
+    const { x, y, subtreeHeight } = node;
+    const height = subtreeHeight + 30;
+    const width = getFarthestX(node) - node.x + 30;
+
+    // 虚线框左侧边的中点
+    const rawCoordinate = {
+      x: x - 15,
+      y: y + nodeAttrs.height / 2
+    }
+    // 虚线框的四角
+    const corner = [
+      {
+        x: rawCoordinate.x,
+        y: rawCoordinate.y + height / 2
+      },
+      {
+        x: rawCoordinate.x + width,
+        y: rawCoordinate.y + height / 2
+      },
+      {
+        x: rawCoordinate.x + width,
+        y: rawCoordinate.y - height / 2
+      },
+      {
+        x: rawCoordinate.x,
+        y: rawCoordinate.y - height / 2
+      }
+    ]
+    this.setLineDash([10, 10]);
+    for (let i = 0; i < corner.length; i++) {
+      const start = corner[i];
+      const end = corner[(i + 1) % 4];
+      this.beginPath();
+      this.moveTo(start.x, start.y);
+      this.lineTo(end.x, end.y);
+      this.stroke();
+    }
+
+    return this;
+  };
+
   clearCanvas();
   treeRender();
+  const canvas = instance.$refs.mind;
   canvas.removeEventListener("click", handleCanvasClick);
   canvas.removeEventListener('mousemove', handleCanvasMouseMove);
   canvas.addEventListener("click", handleCanvasClick);
@@ -722,154 +897,8 @@ const getCloseNode = (target) => {
 }
 
 onMounted(() => {
-  // 绘制节点
-  CanvasRenderingContext2D.prototype.roundRect = function (arg) {
-    const attrs = nodeAttrs;
-    const { id, x, y, width, label, } = arg;
-    const { fontStyle = attrs.fontStyle, fillStyle = nodeAttrs.fillStyle, strokeStyle = attrs.defaultStrokeStyle, lineWidth = attrs.lineWidth
-    } = arg;
-
-    this.lineWidth = lineWidth;
-    this.strokeStyle = strokeStyle;
-    this.font = fontStyle;
-    this.fillStyle = fillStyle
-
-    const height = nodeAttrs.height;
-    const radius = 8;
-    if (width < 2 * radius) radius = width / 2;
-    if (height < 2 * radius) radius = height / 2;
-    this.beginPath();
-    this.moveTo(x + radius, y);
-    this.arcTo(x + width, y, x + width, y + height, radius);
-    this.arcTo(x + width, y + height, x, y + height, radius);
-    this.arcTo(x, y + height, x, y, radius);
-    this.arcTo(x, y, x + width, y, radius);
-    if (!input.show || editNode.target?.id !== id) this.fillText(label, x + 15, y + 35);
-    this.closePath();
-
-    return this;
-  };
-  // 绘制父子节点之间连线
-  CanvasRenderingContext2D.prototype.ligature = function (arg) {
-    const { start, end } = arg;
-
-    const middle = {
-      x: start.x + 50,
-      y: start.y
-    }
-
-    this.lineWidth = nodeAttrs.ligatureLineWidth;
-    this.strokeStyle = nodeAttrs.ligatureStrokeStyle;
-
-    this.beginPath();
-    this.moveTo(start.x, start.y);
-    this.lineTo(middle.x, middle.y);
-    this.stroke();
-
-
-    switch (props.ligatureType) {
-      case 'straight':
-        this.beginPath();
-        this.moveTo(middle.x, middle.y);
-        this.lineTo(middle.x, end.y);
-        this.stroke();
-
-        this.beginPath();
-        this.moveTo(middle.x, end.y);
-        this.lineTo(end.x, end.y);
-        this.stroke();
-        break;
-      case 'curve':
-        this.beginPath();
-        this.moveTo(middle.x, middle.y);
-        this.quadraticCurveTo(middle.x, end.y, end.x, end.y);
-        this.stroke();
-        break
-      default:
-        break;
-    }
-
-    return this;
-  };
-  // 绘制按钮
-  CanvasRenderingContext2D.prototype.button = function (arg) {
-    const { x, y, r, type, fillStyle = nodeAttrs.buttonBackgroundColor } = arg;
-
-    this.fillStyle = fillStyle;
-    this.strokeStyle = 'transparent';
-    this.lineWidth = 0;
-
-    this.beginPath(); //创建一个路径
-    this.moveTo(x + r, y);
-    this.arc(x, y, r, 0, 2 * Math.PI);
-    this.closePath();
-
-    this.fill();
-
-    const icon = {
-      r: 6
-    }
-
-    this.moveTo(x - icon.r, y);
-    this.lineTo(x + icon.r, y);
-    this.strokeStyle = "white";
-    this.stroke();
-
-    if (type === 'add') {
-      this.beginPath();
-      this.moveTo(x, y + icon.r);
-      this.lineTo(x, y - icon.r);
-      this.strokeStyle = "white";
-      this.stroke();
-    }
-
-    return this;
-  };
-  // 绘制一个包裹着整个子树的虚线框
-  CanvasRenderingContext2D.prototype.dashedBox = function (node) {
-    const { x, y, subtreeHeight } = node;
-    const height = subtreeHeight + 30;
-    const width = getFarthestX(node) - node.x + 30;
-
-    // 虚线框左侧边的中点
-    const rawCoordinate = {
-      x: x - 15,
-      y: y + nodeAttrs.height / 2
-    }
-    // 虚线框的四角
-    const corner = [
-      {
-        x: rawCoordinate.x,
-        y: rawCoordinate.y + height / 2
-      },
-      {
-        x: rawCoordinate.x + width,
-        y: rawCoordinate.y + height / 2
-      },
-      {
-        x: rawCoordinate.x + width,
-        y: rawCoordinate.y - height / 2
-      },
-      {
-        x: rawCoordinate.x,
-        y: rawCoordinate.y - height / 2
-      }
-    ]
-    this.setLineDash([10, 10]);
-    for (let i = 0; i < corner.length; i++) {
-      const start = corner[i];
-      const end = corner[(i + 1) % 4];
-      this.beginPath();
-      this.moveTo(start.x, start.y);
-      this.lineTo(end.x, end.y);
-      this.stroke();
-    }
-
-    return this;
-  };
-
-  const canvas = instance.$refs.mind;
   // 绑定拖动事件
+  const canvas = instance.$refs.mind;
   mouseDownAndMove(canvas, handleMouseDownAndMove);
   renderTree = Object.assign({}, props.tree);
   render();
