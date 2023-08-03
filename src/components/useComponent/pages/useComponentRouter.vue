@@ -14,6 +14,7 @@ import tableConfig from "../config/table";
 import carouselConfig from "../config/carousel";
 import tooltipConfig from "../config/tooltip";
 import mindConfig from '../config/mind'
+import switchConfig from '../config/switch'
 
 const props = defineProps({
   selectedArr: {
@@ -42,6 +43,8 @@ const getConfig = () => {
       return carouselConfig;
     case 'mind':
       return mindConfig;
+    case 'switch':
+      return switchConfig;
   }
 };
 

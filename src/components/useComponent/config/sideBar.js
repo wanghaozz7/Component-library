@@ -2,8 +2,9 @@ import carouelConfig from "./carousel";
 import tableConfig from "./table";
 import tooltipConfig from "./tooltip";
 import mindConfig from './mind'
+import switchConfig from './switch'
 
-const arr = [ mindConfig,tableConfig, tooltipConfig, carouelConfig];
+const arr = [ mindConfig,switchConfig,tableConfig, tooltipConfig, carouelConfig];
 
 const sideBarConfig = arr.map((x) => {
   return {
