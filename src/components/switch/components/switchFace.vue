@@ -2,7 +2,7 @@
   <div class="toggle checkbox-face">
     <div class="check">
       <input id="face" type="checkbox" v-model="inputValue" @change="handleChange">
-      <label for="face"></label>
+      <label for="face" />
     </div>
   </div>
 </template>

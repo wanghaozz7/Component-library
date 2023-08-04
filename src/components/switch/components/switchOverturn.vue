@@ -4,6 +4,7 @@
     <label class="tgl-btn" data-tg-off="Nope" data-tg-on="Yeah!" for="overturn" />
   </div>
 </template>
+
 <script setup name="switch-overturn">
 const emits = defineEmits(['change'])
 

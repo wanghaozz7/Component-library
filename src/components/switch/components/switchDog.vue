@@ -120,8 +120,6 @@ label.toggle-item {
   }
 }
 
-
-
 .dog-rollover {
   label {
     &:before {

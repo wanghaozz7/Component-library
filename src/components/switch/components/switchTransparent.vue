@@ -112,4 +112,29 @@ label.toggle-item {
     transition: .3s ease;
   }
 }
+
+.transparent {
+
+  // background-color: #2e394d;
+  label {
+    background: transparent;
+    border: 3px solid #fff;
+    height: 48px;
+
+    &::before {
+      border: 3px solid #fff;
+      width: 30px;
+      height: 30px;
+      top: 3px;
+      left: 4px;
+      background: #fff;
+    }
+  }
+}
+
+#transparent:checked+label {
+  &::before {
+    transform: translateX(60px);
+  }
+}
 </style>

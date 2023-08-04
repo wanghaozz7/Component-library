@@ -119,7 +119,6 @@ label.toggle-item {
   }
 }
 
-
 .pancake-stack {
   label:before {
     content: none;

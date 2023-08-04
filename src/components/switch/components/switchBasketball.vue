@@ -78,12 +78,12 @@ body {
       }
 
       input {
+        width: 40px;
         height: 40px;
-        left: 0;
-        opacity: 0;
         position: absolute;
         top: 0;
-        width: 40px;
+        left: 0;
+        opacity: 0;
       }
     }
   }

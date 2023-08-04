@@ -1,7 +1,7 @@
 <template>
   <div class="toggle checkbox-parallelogram">
     <input class="tgl tgl-skewed" id="parallelogram" type="checkbox" v-model="inputValue" @change="handleChange" />
-    <label class="tgl-btn" data-tg-off="OFF" data-tg-on="ON" for="parallelogram"></label>
+    <label class="tgl-btn" data-tg-off="OFF" data-tg-on="ON" for="parallelogram" />
   </div>
 </template>
 

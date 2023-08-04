@@ -226,5 +226,4 @@ label.toggle-item {
   content: "Yes";
   left: 12px;
   color: #fff;
-}
-</style>
+}</style>
