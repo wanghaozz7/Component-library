@@ -1,7 +1,8 @@
 <template>
   <div>
+    <!-- <div>
     <div class="toggle normal">
-      <input id="normal" type="checkbox" />
+      <input id="normal" type="checkbox" @change="handleChange" ref="normal" v-model="inputValue" />
       <label class="toggle-item" for="normal"></label>
     </div>
     <div class="toggle transparent">
@@ -71,10 +72,12 @@
       <input class='tgl tgl-ios' id='toggle-34' type='checkbox'>
       <label class='tgl-btn' for='toggle-34'></label>
     </div>
+
     <div class="toggle checkbox-wrapper-10">
       <input class="tgl tgl-flip" id="cb5" type="checkbox" checked />
       <label class="tgl-btn" data-tg-off="Nope" data-tg-on="Yeah!" for="cb5"></label>
     </div>
+
     <div class="toggle basketball-hoop">
       <input id="hoop" type="checkbox" />
       <label class="toggle-item" for="hoop">
@@ -84,17 +87,33 @@
         <div class="hoop"></div>
       </label>
     </div>
+  </div> -->
+    <component :is="'switch-' + type" @change="handleChange" :defaulfValue="defaultValue" />
   </div>
 </template>
 
 <script setup name="switch">
+const emits = defineEmits(['update:modelValue', 'change'])
 
 const props = defineProps({
-  
+  type: {
+    type: String,
+    default: 'dog'
+  },
+  modelValue: {
+    type: Boolean,
+    default: false
+  },
+  defaultValue: {
+    type: Boolean,
+    default: true
+  }
 })
 
-const checked = false;
-
+const handleChange = e => {
+  emits('update:modelValue', e)
+  emits('change', e)
+}
 
 </script>
 
@@ -187,6 +206,8 @@ label.toggle-item {
     transition: .3s ease;
   }
 }
+
+
 
 .normal {
   label {
