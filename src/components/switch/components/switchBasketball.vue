@@ -1,6 +1,6 @@
 <template>
-  <div class="toggle basketball-hoop">
-    <input id="hoop" type="checkbox" />
+  <div class="toggle basketball-hoop" :style="getToggleStyle">
+    <input id="hoop" type="checkbox" v-model="inputValue" @change="handleChange" />
     <label class="toggle-item" for="hoop">
       <div class="ball__wrapper">
         <div class="ball" />
@@ -11,6 +11,8 @@
 </template>
 
 <script setup name="switch-basketball">
+import { computed } from 'vue'
+
 const emits = defineEmits(['change'])
 
 const props = defineProps({
@@ -21,6 +23,26 @@ const props = defineProps({
 })
 
 let inputValue = props.defaultValue;
+
+const getToggleStyle = computed(() => {
+  let transform;
+  switch (props.size) {
+    case 'mini':
+      transform = 'scale(0.5)';
+      break;
+    case 'medium':
+      transform = 'scale(1)';
+      break;
+    case 'large':
+      transform = 'scale(1.5)'
+      break;
+    default:
+      transform = 'scale(0.5)'
+  }
+  return {
+    transform
+  }
+})
 
 const handleChange = e => {
   emits('change', inputValue)

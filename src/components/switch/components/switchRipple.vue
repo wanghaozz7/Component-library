@@ -1,5 +1,5 @@
 <template>
-  <div class="toggle checkbox-ripple">
+  <div class="toggle checkbox-ripple" :style="getToggleStyle">
     <input type="checkbox" id="ripple" v-model="inputValue" @change="handleChange" />
     <label for="ripple" class="label">
       <span />
@@ -8,6 +8,8 @@
 </template>
 
 <script setup name="switch-ripple">
+import { computed } from 'vue'
+
 const emits = defineEmits(['change'])
 
 const props = defineProps({
@@ -18,6 +20,26 @@ const props = defineProps({
 })
 
 let inputValue = props.defaultValue;
+
+const getToggleStyle = computed(() => {
+  let transform;
+  switch (props.size) {
+    case 'mini':
+      transform = 'scale(0.5)';
+      break;
+    case 'medium':
+      transform = 'scale(1)';
+      break;
+    case 'large':
+      transform = 'scale(1.5)'
+      break;
+    default:
+      transform = 'scale(0.5)'
+  }
+  return {
+    transform
+  }
+})
 
 const handleChange = e => {
   emits('change', inputValue)

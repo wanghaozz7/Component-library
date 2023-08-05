@@ -2,7 +2,7 @@
   <component :is="'switch-' + type" @change="handleChange" :defaulfValue="defaultValue" />
 </template>
 
-<script setup name="switch">
+<script setup name="Switch">
 const emits = defineEmits(['update:modelValue', 'change'])
 
 const props = defineProps({
@@ -17,6 +17,10 @@ const props = defineProps({
   defaultValue: {
     type: Boolean,
     default: true
+  },
+  size: {
+    type: String,
+    default: 'mini'
   }
 })
 

@@ -1,24 +1,73 @@
 <template>
-  <div class="toggle normal">
+  <div class="toggle normal" :style="getToggleStyle">
     <input id="normal" type="checkbox" v-model="inputValue" @change="handleChange" />
-    <label class="toggle-item" for="normal" />
+    <label class="toggle-item" for="normal" :style="getLabelStyle" ref="toggle" />
   </div>
 </template>
 
 <script setup name="switch-normal">
+import { ref, computed } from 'vue'
+
 const emits = defineEmits(['change'])
 
 const props = defineProps({
   defaultValue: {
     type: Boolean,
     default: true
+  },
+  activeColor: {
+    type: String,
+    default: '#4CAF50'
+  },
+  inactiveColor: {
+    type: String,
+    default: '#AF4C4C'
+  },
+  width: {
+    type: Number,
+    default: 100
+  },
+  size: {
+    type: String,
+    default: 'mini'
   }
 })
 
-let inputValue = props.defaultValue;
+let inputValue = ref(props.defaultValue);
+
+const getLabelStyle = computed(() => {
+  const backgroundColor = inputValue.value ? props.activeColor : props.inactiveColor;
+  const width = props.width + 'px'
+  const left = props.width - 44 + 'px'
+  return {
+    backgroundColor,
+    width,
+    '--left': left
+  }
+})
+
+const getToggleStyle = computed(() => {
+  let transform;
+  switch (props.size) {
+    case 'mini':
+      transform = 'scale(0.5)';
+      break;
+    case 'medium':
+      transform = 'scale(1)';
+      break;
+    case 'large':
+      transform = 'scale(1.5)'
+      break;
+    default:
+      transform = 'scale(0.5)'
+  }
+  return {
+    transform
+  }
+})
 
 const handleChange = e => {
-  emits('change', inputValue)
+  emits('change', inputValue.value)
 }
 </script>
 
@@ -91,7 +140,6 @@ body {
 }
 
 label.toggle-item {
-  width: 111px;
   background: #2e394d;
   height: 48px;
   display: inline-block;
@@ -115,7 +163,6 @@ label.toggle-item {
 
 .normal {
   label {
-    background: #af4c4c;
     border: .5px solid rgba(117, 117, 117, 0.31);
     box-shadow: inset 0px 0px 4px 0px rgba(0, 0, 0, 0.2), 0 -3px 4px rgba(0, 0, 0, 0.15);
 
@@ -142,10 +189,8 @@ label.toggle-item {
 }
 
 #normal:checked+label {
-  background: #4caf50;
-
   &::before {
-    left: 67px;
+    left: var(--left);
   }
 }
 </style>

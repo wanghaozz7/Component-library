@@ -1,5 +1,5 @@
 <template>
-  <div class="toggle checkbox-weather">
+  <div class="toggle checkbox-weather" :style="getToggleStyle">
     <label class="switch">
       <input type="checkbox" v-model="inputValue" @change="handleChange">
       <span class="slider" />
@@ -9,6 +9,8 @@
 
 
 <script setup name="switch-weather">
+import { computed } from 'vue'
+
 const emits = defineEmits(['change'])
 
 const props = defineProps({
@@ -19,6 +21,26 @@ const props = defineProps({
 })
 
 let inputValue = props.defaultValue;
+
+const getToggleStyle = computed(() => {
+  let transform;
+  switch (props.size) {
+    case 'mini':
+      transform = 'scale(0.5)';
+      break;
+    case 'medium':
+      transform = 'scale(1)';
+      break;
+    case 'large':
+      transform = 'scale(1.5)'
+      break;
+    default:
+      transform = 'scale(0.5)'
+  }
+  return {
+    transform
+  }
+})
 
 const handleChange = e => {
   emits('change', inputValue)
