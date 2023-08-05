@@ -1,7 +1,7 @@
 <template>
-  <div class="toggle normal" :style="getToggleStyle">
-    <input id="normal" type="checkbox" v-model="inputValue" @change="handleChange" />
-    <label class="toggle-item" for="normal" :style="getLabelStyle" ref="toggle" />
+  <div class="toggle normal" :style="variable">
+    <input :id="id" type="checkbox" v-model="inputValue" @change="handleChange" />
+    <label class="toggle-item" :for="id" :style="getLabelStyle" />
   </div>
 </template>
 
@@ -17,56 +17,60 @@ const props = defineProps({
   },
   activeColor: {
     type: String,
-    default: '#4CAF50'
+    default: 'green'
   },
   inactiveColor: {
     type: String,
-    default: '#AF4C4C'
+    default: 'red'
   },
   width: {
     type: Number,
-    default: 100
+    default: 60
   },
-  size: {
-    type: String,
-    default: 'mini'
+  height: {
+    type: Number,
+    default: 30
   }
 })
 
 let inputValue = ref(props.defaultValue);
 
-const getLabelStyle = computed(() => {
-  const backgroundColor = inputValue.value ? props.activeColor : props.inactiveColor;
-  const width = props.width + 'px'
-  const left = props.width - 44 + 'px'
+const variable = computed(() => {
+  const width = props.width + 'px';
+  const left = props.width - props.height + 'px';
+  const height = props.height + 'px';
+  const button = props.height - 4 + 'px';
+  const activeColor = props.activeColor;
+  const inactiveColor = props.inactiveColor;
   return {
-    backgroundColor,
-    width,
-    '--left': left
+    '--activeColor': activeColor,
+    '--inactiveColor': inactiveColor,
+    '--width': width,
+    '--left': left,
+    '--height': height,
+    '--button': button
   }
 })
 
-const getToggleStyle = computed(() => {
-  let transform;
-  switch (props.size) {
-    case 'mini':
-      transform = 'scale(0.5)';
-      break;
-    case 'medium':
-      transform = 'scale(1)';
-      break;
-    case 'large':
-      transform = 'scale(1.5)'
-      break;
-    default:
-      transform = 'scale(0.5)'
-  }
+const getLabelStyle = computed(() => {
+  const left = !inputValue.value ? '2px' : props.width - props.height + 'px';
+  const backgroundColor = inputValue.value ? props.activeColor : props.inactiveColor;
+  console.log(left, backgroundColor);
+
   return {
-    transform
+    '--cur': left,
+    '--bgc': backgroundColor
   }
 })
+
+const getRandomNodeId = () => {
+  return Date.now() + Math.ceil(Math.random() * 100000);
+}
+
+const id = ref(getRandomNodeId());
 
 const handleChange = e => {
+  console.log(inputValue.value);
   emits('change', inputValue.value)
 }
 </script>
@@ -87,22 +91,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #bcdd96;
-
-  @media (max-width: 600px) {
-
-    .toggle {
-      border-right: none !important;
-      border-bottom: 1px solid #f5f5f5;
-    }
-
-    >div>div {
-      &:nth-child(odd) {
-        border-right: none !important;
-      }
-    }
-
-  }
 
   >div {
     width: 604px;
@@ -123,12 +111,12 @@ body {
       }
 
       input {
-        height: 40px;
+        width: 0;
+        height: 0;
         left: 0;
+        top: 0;
         opacity: 0;
         position: absolute;
-        top: 0;
-        width: 40px;
       }
     }
   }
@@ -140,23 +128,22 @@ body {
 }
 
 label.toggle-item {
-  background: #2e394d;
-  height: 48px;
+  width: var(--width);
+  height: var(--height);
   display: inline-block;
-  border-radius: 50px;
   position: relative;
   transition: all .3s ease;
   transform-origin: 20% center;
+  border-radius: 50px;
   cursor: pointer;
 
   &::before {
     display: block;
-    width: 40px;
-    height: 40px;
-    top: 3px;
-    left: 4px;
+    width: var(--button);
+    height: var(--button);
+    top: 1px;
     border-radius: 50%;
-    border: 2px solid #88cf8f;
+    border: 2px solid var(--activeColor);
     transition: .3s ease;
   }
 }
@@ -164,33 +151,29 @@ label.toggle-item {
 .normal {
   label {
     border: .5px solid rgba(117, 117, 117, 0.31);
-    box-shadow: inset 0px 0px 4px 0px rgba(0, 0, 0, 0.2), 0 -3px 4px rgba(0, 0, 0, 0.15);
 
     &::before {
-      border: none;
-      width: 40px;
-      height: 40px;
-      box-shadow: inset 0.5px -1px 1px rgba(0, 0, 0, 0.35);
       background: #fff;
-      transform: rotate(-25deg);
+      border: none;
     }
 
     &::after {
-      background: transparent;
-      height: calc(100% + 8px);
-      border-radius: 30px;
-      top: -5px;
       width: calc(100% + 8px);
+      height: calc(100% + 8px);
+      top: -5px;
       left: -4px;
+      background: transparent;
+      border-radius: 45px;
       z-index: 0;
-      box-shadow: inset 0px 2px 4px -2px rgba(0, 0, 0, 0.2), 0px 1px 2px 0px rgba(151, 151, 151, 0.2);
     }
   }
 }
 
-#normal:checked+label {
+.toggle-item {
+  background: var(--bgc);
+
   &::before {
-    left: var(--left);
+    left: var(--cur);
   }
 }
 </style>

@@ -1,5 +1,7 @@
 <template>
-  <Switch v-model="val" @change="handleChange" type="basketball" />
+  <div style="padding: 20px;">
+    <Switch v-model="val" @change="handleChange" />
+  </div>
 </template>
 
 <script setup name="swtich1">

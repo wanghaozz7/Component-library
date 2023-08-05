@@ -1,5 +1,5 @@
 <template>
-  <div class="toggle dog-rollover" :style="getToggleStyle">
+  <div class="toggle dog-rollover">
     <input id="doggo" type="checkbox" v-model="inputValue" @change="handleChange" />
     <label class="toggle-item" for="doggo">
       <div class="dog">
@@ -15,38 +15,21 @@
 </template>
 
 <script setup name="switch-dog">
-import { computed } from 'vue'
-
 const emits = defineEmits(['change'])
 
 const props = defineProps({
   defaultValue: {
     type: Boolean,
     default: true
-  }
+  },
+  size: {
+    type: String,
+    default: 'mini'
+  },
 })
 
 let inputValue = props.defaultValue;
 
-const getToggleStyle = computed(() => {
-  let transform;
-  switch (props.size) {
-    case 'mini':
-      transform = 'scale(0.5)';
-      break;
-    case 'medium':
-      transform = 'scale(1)';
-      break;
-    case 'large':
-      transform = 'scale(1.5)'
-      break;
-    default:
-      transform = 'scale(0.5)'
-  }
-  return {
-    transform
-  }
-})
 
 const handleChange = e => {
   emits('change', inputValue)
