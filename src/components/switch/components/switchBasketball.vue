@@ -1,9 +1,9 @@
 <template>
-  <div class="toggle basketball-hoop">
-    <input id="hoop" type="checkbox" v-model="inputValue" @change="handleChange" />
-    <label class="toggle-item" for="hoop">
-      <div class="ball__wrapper">
-        <div class="ball" />
+  <div class="toggle basketball-hoop" :style="variable">
+    <input :id="id" type="checkbox" v-model="inputValue" @change="handleChange" />
+    <label class="toggle-item" :for="id">
+      <div class="ball__wrapper" :class="getBallWrapperClass">
+        <div class="ball" :class="getBallClass" />
       </div>
       <div class="hoop" />
     </label>
@@ -11,19 +11,49 @@
 </template>
 
 <script setup name="switch-basketball">
+import { ref, computed } from 'vue'
 const emits = defineEmits(['change'])
 
 const props = defineProps({
   defaultValue: {
     type: Boolean,
     default: true
+  },
+  activeColor: {
+    type: String,
+    default: '#FF9800'
+  },
+  inactiveColor: {
+    type: String,
+    default: '#542583'
   }
 })
 
-let inputValue = props.defaultValue;
+let inputValue = ref(props.defaultValue);
+
+const getRandomNodeId = () => {
+  return 'hoop' + Date.now() + Math.ceil(Math.random() * 100000);
+}
+
+const id = getRandomNodeId()
+
+const variable = computed(() => {
+  const backgroundColor = inputValue.value ? props.activeColor : props.inactiveColor;
+  return {
+    '--bgc': backgroundColor
+  }
+})
+
+const getBallClass = computed(() => {
+  return inputValue.value ? 'ball-active' : ''
+})
+
+const getBallWrapperClass = computed(() => {
+  return inputValue.value ? 'ball__wrapper-active' : ''
+})
 
 const handleChange = e => {
-  emits('change', inputValue)
+  emits('change', inputValue.value)
 }
 </script>
 
@@ -96,7 +126,6 @@ body {
 
 label.toggle-item {
   width: 111px;
-  background: #2e394d;
   height: 48px;
   display: inline-block;
   border-radius: 50px;
@@ -112,7 +141,6 @@ label.toggle-item {
     top: 3px;
     left: 4px;
     border-radius: 50%;
-    border: 2px solid #88cf8f;
     transition: .3s ease;
   }
 }
@@ -120,9 +148,6 @@ label.toggle-item {
 .basketball-hoop {
   padding-top: 150px;
 
-  label {
-    background: #fdb827;
-  }
 
   label:before {
     content: none;
@@ -133,7 +158,7 @@ label.toggle-item {
     width: 36px;
     height: 36px;
     position: absolute;
-    background: #FF9800;
+    background: #EE6730;
     border: 2px solid black;
     transition: .4s ease;
     top: 4px;
@@ -179,19 +204,17 @@ label.toggle-item {
   }
 }
 
-#hoop:checked {
-  +label {
-    background: #542583;
-    transition-delay: 1.35s;
+label {
+  background: var(--bgc) !important;
+  transition-delay: 1.35s;
+}
 
-    .ball__wrapper {
-      animation: 1.5s linear ball-wrapper forwards;
-    }
+.ball__wrapper-active {
+  animation: 1.5s linear ball-wrapper forwards;
+}
 
-    .ball {
-      animation: 1.5s linear ball forwards;
-    }
-  }
+.ball-active {
+  animation: 1.5s linear ball forwards;
 }
 
 @keyframes ball {

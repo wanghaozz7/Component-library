@@ -242,5 +242,135 @@ export default {
             </style>
       `,
     },
+    {
+      id: "switch-4",
+      title: {
+        text: "text 开关状态对应的文字描述",
+        desc: "点击对应的文字描述可以单向切换至该状态",
+      },
+      code: `
+            <template>
+              <div style="margin-top: 50px" class="cont">
+                <tooltip placement="top" content="我悬浮在上边~">
+                  <div class="item">上</div>
+                </tooltip>
+              </div>
+              <div style="margin: 50px 0; gap: 150px" class="cont">
+                <tooltip placement="left" content="我悬浮在左边~">
+                  <div class="item">左</div>
+                </tooltip>
+                <tooltip placement="right" content="我悬浮在右边~">
+                  <div class="item">右</div>
+                </tooltip>
+              </div>
+              <div style="margin-bottom: 50px" class="cont">
+                <tooltip placement="bottom" content="我悬浮在下边~">
+                  <div class="item">下</div>
+                </tooltip>
+              </div>
+            </template>
+            <style scoped lang="less">
+            .tooltip-container {
+              height: 100px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              cursor: pointer;
+
+              .tooltip-content {
+                border: 1px solid gray;
+                border-radius: 4px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 8px;
+              }
+            }
+
+            .item {
+              width: 75px;
+              height: 75px;
+              border: 1px solid gray;
+              margin: 100px auto;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              cursor: pointer;
+            }
+
+            .cont {
+              height: 75px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            }
+            </style>
+      `,
+    },
+    {
+      id: "switch-5",
+      title: {
+        text: "color 开关状态对应的颜色",
+        desc: "开关状态对应的颜色",
+      },
+      code: `
+            <template>
+              <div style="margin-top: 50px" class="cont">
+                <tooltip placement="top" content="我悬浮在上边~">
+                  <div class="item">上</div>
+                </tooltip>
+              </div>
+              <div style="margin: 50px 0; gap: 150px" class="cont">
+                <tooltip placement="left" content="我悬浮在左边~">
+                  <div class="item">左</div>
+                </tooltip>
+                <tooltip placement="right" content="我悬浮在右边~">
+                  <div class="item">右</div>
+                </tooltip>
+              </div>
+              <div style="margin-bottom: 50px" class="cont">
+                <tooltip placement="bottom" content="我悬浮在下边~">
+                  <div class="item">下</div>
+                </tooltip>
+              </div>
+            </template>
+            <style scoped lang="less">
+            .tooltip-container {
+              height: 100px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              cursor: pointer;
+
+              .tooltip-content {
+                border: 1px solid gray;
+                border-radius: 4px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 8px;
+              }
+            }
+
+            .item {
+              width: 75px;
+              height: 75px;
+              border: 1px solid gray;
+              margin: 100px auto;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              cursor: pointer;
+            }
+
+            .cont {
+              height: 75px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            }
+            </style>
+      `,
+    },
   ],
 };

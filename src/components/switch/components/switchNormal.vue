@@ -1,7 +1,11 @@
 <template>
-  <div class="toggle normal" :style="variable">
-    <input :id="id" type="checkbox" v-model="inputValue" @change="handleChange" />
-    <label class="toggle-item" :for="id" :style="getLabelStyle" />
+  <div style="display: flex;align-items: center;">
+    <div :style="getTextStyle(0)" @click="handleClick(0)" v-if="inactiveText !== ''"> {{ inactiveText }} </div>
+    <div class="toggle normal" :style="variable">
+      <input :id="id" type="checkbox" v-model="inputValue" @change="handleChange" />
+      <label class="toggle-item" :for="id" :style="getLabelStyle" />
+    </div>
+    <div :style="getTextStyle(1)" @click="handleClick(1)" v-if="activeText !== ''"> {{ activeText }} </div>
   </div>
 </template>
 
@@ -22,6 +26,14 @@ const props = defineProps({
   inactiveColor: {
     type: String,
     default: 'red'
+  },
+  activeText: {
+    type: String,
+    default: ''
+  },
+  inactiveText: {
+    type: String,
+    default: ''
   },
   width: {
     type: Number,
@@ -63,16 +75,40 @@ const getLabelStyle = computed(() => {
   }
 })
 
+const getTextStyle = computed(() => {
+  return (direction) => {
+    const lineHeight = props.height + 'px';
+    const marginLeft = direction === 0 ? '' : '8px';
+    const marginRight = direction === 1 ? '' : '8px';
+    const cursor = 'pointer';
+    const color = inputValue.value ? direction === 0 ? 'black' : '#409EFF' : direction === 1 ? 'black' : '#409EFF';
+    const transition = 'all .3s ease';
+    return {
+      lineHeight,
+      marginLeft,
+      marginRight,
+      cursor,
+      color,
+      transition
+    }
+  }
+})
+
 const getRandomNodeId = () => {
-  return Date.now() + Math.ceil(Math.random() * 100000);
+  return 'normal' + Date.now() + Math.ceil(Math.random() * 100000);
 }
 
-const id = ref(getRandomNodeId());
+const id = getRandomNodeId()
 
 const handleChange = e => {
   console.log(inputValue.value);
   emits('change', inputValue.value)
 }
+
+const handleClick = flag => {
+  inputValue.value = flag === 1 ? true : false;
+}
+
 </script>
 
 

@@ -1,7 +1,7 @@
 <template>
   <div class="toggle checkbox-overturn">
-    <input class="tgl tgl-flip" id="overturn" type="checkbox" checked v-model="inputValue" @change="handleChange" />
-    <label class="tgl-btn" data-tg-off="Nope" data-tg-on="Yeah!" for="overturn" />
+    <input class="tgl tgl-flip" :id="id" type="checkbox" checked v-model="inputValue" @change="handleChange" />
+    <label class="tgl-btn" data-tg-off="Nope" data-tg-on="Yeah!" :for="id" />
   </div>
 </template>
 
@@ -26,7 +26,11 @@ const handleChange = e => {
   emits('change', inputValue)
 }
 
+const getRandomNodeId = () => {
+  return 'face' + Date.now() + Math.ceil(Math.random() * 100000);
+}
 
+const id = getRandomNodeId()
 </script>
 
 

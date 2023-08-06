@@ -1,7 +1,7 @@
 <template>
   <div class="toggle checkbox-displace">
-    <input class='tgl tgl-ios' id='displace' type='checkbox' v-model="inputValue" @change="handleChange">
-    <label class='tgl-btn' for='displace' />
+    <input class='tgl tgl-ios' :id="id" type='checkbox' v-model="inputValue" @change="handleChange">
+    <label class='tgl-btn' :for="id" />
   </div>
 </template>
 
@@ -19,11 +19,16 @@ const props = defineProps({
   },
 })
 
-let inputValue = props.defaultValue;
+let inputValue = props.defaultValue
 
 const handleChange = e => {
   emits('change', inputValue)
 }
+const getRandomNodeId = () => {
+  return 'displace' + Date.now() + Math.ceil(Math.random() * 100000);
+}
+
+const id = getRandomNodeId()
 </script>
 
 

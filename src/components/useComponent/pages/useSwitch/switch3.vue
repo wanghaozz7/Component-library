@@ -1,32 +1,33 @@
 <template>
   <div class="wrapper">
     <div class="row">
-      <Switch @change="handleChange" class="item" type="face" />
-      <Switch @change="handleChange" class="item" type="dog" />
-      <Switch @change="handleChange" class="item" type="displace" />
-      <Switch @change="handleChange" class="item" type="basketball" />
+      <Switch @change="handleChange" class="item" type="face" v-model="face" />
+      <Switch @change="handleChange" class="item" type="dog" v-model="dog" />
+      <Switch @change="handleChange" class="item" type="displace" v-model="displace" />
+      <Switch @change="handleChange" class="item" type="basketball" v-model="basketball" />
     </div>
     <div class="row">
-      <Switch @change="handleChange" class="item" type="overturn" />
-      <Switch @change="handleChange" class="item" type="parallelogram" />
-      <Switch @change="handleChange" class="item" type="ripple" />
-      <Switch @change="handleChange" class="item" type="roll" />
+      <Switch @change="handleChange" class="item" type="overturn" v-model="overturn" />
+      <Switch @change="handleChange" class="item" type="parallelogram" v-model="parallelogram" />
+      <Switch @change="handleChange" class="item" type="ripple" v-model="ripple" />
+      <Switch @change="handleChange" class="item" type="ripple" v-model="roll" />
     </div>
     <div class="row">
-      <Switch @change="handleChange" class="item" type="seesaw" />
-      <Switch @change="handleChange" class="item" type="stack" />
-      <Switch @change="handleChange" class="item" type="transparent" />
-      <Switch @change="handleChange" class="item" type="weather" />
+      <Switch @change="handleChange" class="item" type="seesaw" v-model="seesaw" />
+      <Switch @change="handleChange" class="item" type="stack" v-model="stack" />
+      <Switch @change="handleChange" class="item" type="transparent" v-model="transparent" />
+      <Switch @change="handleChange" class="item" type="weather" v-model="weather" />
     </div>
   </div>
 </template>
 
 <script setup name="swtich3">
 
-
+let face, displace, dog, basketball, overturn, parallelogram, ripple, roll, seesaw, stack, transparent, weather;
 
 const handleChange = value => {
   console.log(value);
+  console.log(face, displace, dog, basketball, overturn, parallelogram, ripple, roll, seesaw, stack, transparent, weather);
 }
 
 </script>
@@ -38,9 +39,9 @@ const handleChange = value => {
   .row {
     display: flex;
     width: 100%;
-    height: 150px;
+    box-sizing: border-box;
     align-items: center;
-    border-bottom: 1px solid #eee;
+    border-bottom: 2px solid #fff;
     background-color: rgb(187, 253, 187);
     padding: 50px;
 

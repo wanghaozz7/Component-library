@@ -1,13 +1,15 @@
 <template>
-  <div class="toggle checkbox-ripple">
-    <input type="checkbox" id="ripple" v-model="inputValue" @change="handleChange" />
-    <label for="ripple" class="label">
+  <div class="toggle checkbox-ripple" :style="variable">
+    <input type="checkbox" :id="id" v-model="inputValue" @change="handleChange" />
+    <label :for="id" class="label">
       <span />
     </label>
   </div>
 </template>
 
 <script setup name="switch-ripple">
+import { ref, computed } from 'vue'
+
 const emits = defineEmits(['change'])
 
 const props = defineProps({
@@ -19,12 +21,56 @@ const props = defineProps({
     type: String,
     default: 'mini'
   },
+  activeColor: {
+    type: String,
+    default: '#947ADA'
+  },
+  inactiveColor: {
+    type: String,
+    default: '#9A9999'
+  },
+  spanActiveColor: {
+    type: String,
+    default: '#4F2EDC'
+  },
+  spanInActiveColor: {
+    type: String,
+    default: '#fff'
+  }
 })
 
-let inputValue = props.defaultValue;
+let inputValue = ref(props.defaultValue);
+
+const getRandomNodeId = () => {
+  return 'face' + Date.now() + Math.ceil(Math.random() * 100000);
+}
+
+const id = getRandomNodeId()
+
+const variable = computed(() => {
+  const labelBackgroundColor = inputValue.value ? props.activeColor : props.inactiveColor;
+  const spanBackgroundColor = inputValue.value ? props.spanActiveColor : props.spanInActiveColor;
+  const spanTrans = inputValue.value ? 'translateX(70px)' : '';
+  const spanTransition = inputValue.value ? 'all 0.2s cubic-bezier(0.8, 0.4, 0.3, 1.25), background 0.15s ease' : 'all 0.2s ease';
+  const spanBoxShadow = inputValue.value ? '0 3px 8px rgba(79, 46, 220, 0.2)' : '0 3px 8px rgba(154, 153, 153, 0.5)';
+  const spanBeforeTrans = inputValue.value ? 'scale(1)' : 'scale(0)';
+  const spanBeforeOpacity = inputValue.value ? 0 : 1;
+  const spanBeforeTransition = inputValue.value ? 'all 0.4s ease' : '';
+  return {
+    '--label-bgc': labelBackgroundColor,
+    '--span-bgc': spanBackgroundColor,
+    '--span-transform': spanTrans,
+    '--span-transition': spanTransition,
+    '--span-box-shadow': spanBoxShadow,
+    '--span-before-transform': spanBeforeTrans,
+    '--span-before-transition': spanBeforeTransition,
+    '--span-before-opacity': spanBeforeOpacity
+  }
+})
+
 
 const handleChange = e => {
-  emits('change', inputValue)
+  emits('change', inputValue.value)
 }
 </script>
 
@@ -141,7 +187,7 @@ label.toggle-item {
   width: 111px;
   height: 40px;
   display: block;
-  background: #9A9999;
+  background: var(--label-bgc);
   border-radius: 60px;
   transition: background 0.2s ease;
 }
@@ -156,7 +202,7 @@ label.toggle-item {
   background: white;
   border-radius: 30px;
   box-shadow: 0 3px 8px rgba(154, 153, 153, 0.5);
-  transition: all 0.2s ease;
+  transition: var(--span-transition);
 }
 
 .checkbox-ripple .label span:before {
@@ -168,25 +214,25 @@ label.toggle-item {
   height: 80px;
   background: rgba(79, 46, 220, 0.5);
   border-radius: 50%;
-  transform: scale(0);
-  opacity: 1;
+  transform: var(--span-before-transform);
+  opacity: var(--span-before-opacity);
   pointer-events: none;
 }
 
-.checkbox-ripple #ripple:checked+.label:before {
-  background: #947ADA;
+.label:before {
+  background: var(--label-bgc);
 }
 
-.checkbox-ripple #ripple:checked+.label span {
-  background: #4F2EDC;
-  transform: translateX(70px);
-  transition: all 0.2s cubic-bezier(0.8, 0.4, 0.3, 1.25), background 0.15s ease;
-  box-shadow: 0 3px 8px rgba(79, 46, 220, 0.2);
+.label span {
+  background: var(--span-bgc);
+  transform: var(--span-transform);
+  transition: var(--span-transition);
+  box-shadow: var(--span-box-shadow);
 }
 
-.checkbox-ripple #ripple:checked+.label span:before {
-  transform: scale(1);
-  opacity: 0;
-  transition: all 0.4s ease;
+.label span:before {
+  transform: var(--span-before-transform);
+  opacity: var(--span-before-opacity);
+  transition: var(--span-before-transition);
 }
 </style>

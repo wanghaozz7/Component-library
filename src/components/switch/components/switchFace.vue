@@ -1,8 +1,8 @@
 <template>
   <div class="toggle checkbox-face">
     <div class="check">
-      <input id="face" type="checkbox" v-model="inputValue" @change="handleChange">
-      <label for="face" />
+      <input :id="id" type="checkbox" v-model="inputValue" @change="handleChange">
+      <label :for="id" />
     </div>
   </div>
 </template>
@@ -20,6 +20,14 @@ const props = defineProps({
     default: 'mini'
   },
 })
+
+const getRandomNodeId = () => {
+  return 'face' + Date.now() + Math.ceil(Math.random() * 100000);
+}
+
+const id = getRandomNodeId()
+
+
 let inputValue = props.defaultValue;
 
 const handleChange = e => {

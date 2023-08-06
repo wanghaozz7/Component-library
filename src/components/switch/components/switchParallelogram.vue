@@ -1,7 +1,7 @@
 <template>
   <div class="toggle checkbox-parallelogram">
-    <input class="tgl tgl-skewed" id="parallelogram" type="checkbox" v-model="inputValue" @change="handleChange" />
-    <label class="tgl-btn" data-tg-off="OFF" data-tg-on="ON" for="parallelogram" />
+    <input class="tgl tgl-skewed" :id="id" type="checkbox" v-model="inputValue" @change="handleChange" />
+    <label class="tgl-btn" data-tg-off="OFF" data-tg-on="ON" :for="id" />
   </div>
 </template>
 
@@ -20,6 +20,13 @@ const props = defineProps({
 })
 
 let inputValue = props.defaultValue;
+
+const getRandomNodeId = () => {
+  return 'face' + Date.now() + Math.ceil(Math.random() * 100000);
+}
+
+const id = getRandomNodeId()
+
 
 const handleChange = e => {
   emits('change', inputValue)
