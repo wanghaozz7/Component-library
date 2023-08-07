@@ -1,9 +1,9 @@
 <template>
-  <div class="toggle basketball-hoop" :style="variable">
+  <div class="toggle basketball-hoop">
     <input :id="id" type="checkbox" v-model="inputValue" @change="handleChange" />
     <label class="toggle-item" :for="id">
-      <div class="ball__wrapper" :class="getBallWrapperClass">
-        <div class="ball" :class="getBallClass" />
+      <div class="ball__wrapper">
+        <div class="ball" />
       </div>
       <div class="hoop" />
     </label>
@@ -11,7 +11,6 @@
 </template>
 
 <script setup name="switch-basketball">
-import { ref, computed } from 'vue'
 const emits = defineEmits(['change'])
 
 const props = defineProps({
@@ -29,31 +28,16 @@ const props = defineProps({
   }
 })
 
-let inputValue = ref(props.defaultValue);
+let inputValue = props.defaultValue;
 
 const getRandomNodeId = () => {
-  return 'hoop' + Date.now() + Math.ceil(Math.random() * 100000);
+  return 'basketball' + Date.now() + Math.ceil(Math.random() * 100000);
 }
 
 const id = getRandomNodeId()
 
-const variable = computed(() => {
-  const backgroundColor = inputValue.value ? props.activeColor : props.inactiveColor;
-  return {
-    '--bgc': backgroundColor
-  }
-})
-
-const getBallClass = computed(() => {
-  return inputValue.value ? 'ball-active' : ''
-})
-
-const getBallWrapperClass = computed(() => {
-  return inputValue.value ? 'ball__wrapper-active' : ''
-})
-
 const handleChange = e => {
-  emits('change', inputValue.value)
+  emits('change', inputValue)
 }
 </script>
 
@@ -145,9 +129,14 @@ label.toggle-item {
   }
 }
 
+
+/*--------*/
 .basketball-hoop {
   padding-top: 150px;
 
+  label {
+    background: #fdb827;
+  }
 
   label:before {
     content: none;
@@ -158,7 +147,7 @@ label.toggle-item {
     width: 36px;
     height: 36px;
     position: absolute;
-    background: #EE6730;
+    background: #FF9800;
     border: 2px solid black;
     transition: .4s ease;
     top: 4px;
@@ -204,17 +193,17 @@ label.toggle-item {
   }
 }
 
-label {
-  background: var(--bgc) !important;
+.toggle input:checked+label {
+  background: #542583;
   transition-delay: 1.35s;
-}
 
-.ball__wrapper-active {
-  animation: 1.5s linear ball-wrapper forwards;
-}
+  .ball__wrapper {
+    animation: 1.5s linear ball-wrapper forwards;
+  }
 
-.ball-active {
-  animation: 1.5s linear ball forwards;
+  .ball {
+    animation: 1.5s linear ball forwards;
+  }
 }
 
 @keyframes ball {

@@ -1,7 +1,7 @@
 <template>
   <div class="toggle transparent">
-    <input id="transparent" type="checkbox" v-model="inputValue" @change="handleChange" />
-    <label class="toggle-item" for="transparent" />
+    <input :id="id" type="checkbox" v-model="inputValue" @change="handleChange" />
+    <label class="toggle-item" :for="id" />
   </div>
 </template>
 
@@ -12,18 +12,21 @@ const props = defineProps({
   defaultValue: {
     type: Boolean,
     default: true
-  },
-  size: {
-    type: String,
-    default: 'mini'
-  },
+  }
 })
 
 let inputValue = props.defaultValue;
 
+const getRandomNodeId = () => {
+  return 'transparent' + Date.now() + Math.ceil(Math.random() * 100000);
+}
+
+const id = getRandomNodeId()
+
 const handleChange = e => {
   emits('change', inputValue)
 }
+
 </script>
 
 <style scoped lang="less">
@@ -95,7 +98,6 @@ body {
 
 label.toggle-item {
   width: 111px;
-  background: #2e394d;
   height: 48px;
   display: inline-block;
   border-radius: 50px;
@@ -111,7 +113,6 @@ label.toggle-item {
     top: 3px;
     left: 4px;
     border-radius: 50%;
-    border: 2px solid #88cf8f;
     transition: .3s ease;
   }
 }
@@ -135,7 +136,7 @@ label.toggle-item {
   }
 }
 
-#transparent:checked+label {
+.toggle input:checked+label {
   &::before {
     transform: translateX(60px);
   }

@@ -12,11 +12,7 @@ const props = defineProps({
   defaultValue: {
     type: Boolean,
     default: true
-  },
-  size: {
-    type: String,
-    default: 'mini'
-  },
+  }
 })
 
 let inputValue = props.defaultValue;
@@ -27,7 +23,7 @@ const handleChange = e => {
 }
 
 const getRandomNodeId = () => {
-  return 'face' + Date.now() + Math.ceil(Math.random() * 100000);
+  return 'overturn' + Date.now() + Math.ceil(Math.random() * 100000);
 }
 
 const id = getRandomNodeId()

@@ -15,11 +15,7 @@ const props = defineProps({
   defaultValue: {
     type: Boolean,
     default: true
-  },
-  size: {
-    type: String,
-    default: 'mini'
-  },
+  }
 })
 
 let inputValue = props.defaultValue;

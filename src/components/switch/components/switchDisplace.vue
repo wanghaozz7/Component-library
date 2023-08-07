@@ -12,11 +12,7 @@ const props = defineProps({
   defaultValue: {
     type: Boolean,
     default: true
-  },
-  size: {
-    type: String,
-    default: 'mini'
-  },
+  }
 })
 
 let inputValue = props.defaultValue
@@ -185,7 +181,7 @@ label.toggle-item {
   top: 12px;
 }
 
-.checkbox-displace .tgl:checked+.tgl-btn:after {
+.toggle input:checked+.tgl-btn:after {
   left: 61.5%;
 }
 
@@ -219,19 +215,19 @@ label.toggle-item {
   padding-right: 0.4em;
 }
 
-.checkbox-displace .tgl-ios:checked+.tgl-btn {
+.toggle input:checked+.tgl-btn {
   background: var(--blue);
 }
 
-.checkbox-displace .tgl-ios:checked+.tgl-btn:active {
+.toggle input:checked+.tgl-btn:active {
   box-shadow: inset 0 0 0 30px rgba(0, 0, 0, 0.1);
 }
 
-.checkbox-displace .tgl-ios:checked+.tgl-btn:active:after {
+.toggle input:checked+.tgl-btn:active:after {
   margin-left: -0.4em;
 }
 
-.checkbox-displace .tgl-ios:checked+.tgl-btn:before {
+.toggle input:checked+.tgl-btn:before {
   content: "Yes";
   left: 12px;
   color: #fff;

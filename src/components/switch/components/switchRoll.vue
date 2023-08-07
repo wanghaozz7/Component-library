@@ -1,7 +1,7 @@
 <template>
   <div class="toggle checkcross">
-    <input id="checkcross" type="checkbox" v-model="inputValue" @change="handleChange" />
-    <label class="toggle-item" for="checkcross">
+    <input :id="id" type="checkbox" v-model="inputValue" @change="handleChange" />
+    <label class="toggle-item" :for="id">
       <div class="check" />
     </label>
   </div>
@@ -14,14 +14,16 @@ const props = defineProps({
   defaultValue: {
     type: Boolean,
     default: true
-  },
-  size: {
-    type: String,
-    default: 'mini'
-  },
+  }
 })
 
 let inputValue = props.defaultValue;
+
+const getRandomNodeId = () => {
+  return 'roll' + Date.now() + Math.ceil(Math.random() * 100000);
+}
+
+const id = getRandomNodeId()
 
 const handleChange = e => {
   emits('change', inputValue)
@@ -157,7 +159,7 @@ label.toggle-item {
   }
 }
 
-#checkcross:checked+label {
+.toggle input:checked+label {
   .check {
     left: 68px;
     transform: rotate(360deg);

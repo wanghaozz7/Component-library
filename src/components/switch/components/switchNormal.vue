@@ -68,7 +68,6 @@ const getLabelStyle = computed(() => {
   const left = !inputValue.value ? '2px' : props.width - props.height + 'px';
   const backgroundColor = inputValue.value ? props.activeColor : props.inactiveColor;
   console.log(left, backgroundColor);
-
   return {
     '--cur': left,
     '--bgc': backgroundColor

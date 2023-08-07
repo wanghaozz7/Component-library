@@ -1,7 +1,7 @@
 <template>
   <div class="toggle pancake-stack">
-    <input id="pancake" type="checkbox" v-model="inputValue" @change="handleChange" />
-    <label class="toggle-item" for="pancake">
+    <input :id="id" type="checkbox" v-model="inputValue" @change="handleChange" />
+    <label class="toggle-item" :for="id">
       <div class="pancakes">
         <div class="pancake" />
         <div class="pancake" />
@@ -19,11 +19,7 @@ const props = defineProps({
   defaultValue: {
     type: Boolean,
     default: true
-  },
-  size: {
-    type: String,
-    default: 'mini'
-  },
+  }
 })
 
 let inputValue = props.defaultValue;
@@ -31,6 +27,11 @@ let inputValue = props.defaultValue;
 const handleChange = e => {
   emits('change', inputValue)
 }
+
+const getRandomNodeId = () => {
+  return 'pancake' + Date.now() + Math.ceil(Math.random() * 100000);
+}
+const id = getRandomNodeId()
 </script>
 
 <style scoped lang="less">
@@ -189,7 +190,7 @@ label.toggle-item {
   }
 }
 
-#pancake:checked {
+.toggle input:checked {
   +label {
     .pancakes {
       transform: translateX(70px);

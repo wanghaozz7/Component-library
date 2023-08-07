@@ -14,11 +14,7 @@ const props = defineProps({
   defaultValue: {
     type: Boolean,
     default: true
-  },
-  size: {
-    type: String,
-    default: 'mini'
-  },
+  }
 })
 
 const getRandomNodeId = () => {
@@ -26,7 +22,6 @@ const getRandomNodeId = () => {
 }
 
 const id = getRandomNodeId()
-
 
 let inputValue = props.defaultValue;
 
