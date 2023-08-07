@@ -396,16 +396,10 @@ const getColWidth = () => {
 
     // 分别给header和body的col赋值
     const bodyColgroup = ctx.$refs.bodyColgroup.children;
-    const headerColgroup = ctx.$refs.headerColgroup.children;
+    const headerColgroup = ctx.$refs.headerColgroup?.children;
 
-    bodyColgroup[
-      idx
-    ].__vueParentComponent.devtoolsRawSetupState.colWidth.value =
-      colWidthArr[idx];
-    headerColgroup[
-      idx
-    ].__vueParentComponent.devtoolsRawSetupState.colWidth.value =
-      colWidthArr[idx];
+    bodyColgroup[idx].__vueParentComponent.devtoolsRawSetupState.colWidth.value = colWidthArr[idx];
+    if (headerColgroup) headerColgroup[idx].__vueParentComponent.devtoolsRawSetupState.colWidth.value = colWidthArr[idx];
   }
 };
 
