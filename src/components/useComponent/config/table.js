@@ -208,5 +208,75 @@ export default {
           <\/script>
       `,
     },
+    {
+      id: "table-5",
+      title: {
+        text: "size 表格尺寸",
+        desc: "当内容高度小于height时会留下空隙 当内容高度大于height时会固定表头",
+      },
+      code: `
+          <table-list :data="tableData" :out-side-border="false" :stripe="true" :border="true">
+              <table-column prop="date" label="日期" :width="180" />
+              <table-column prop="name" label="姓名" :width="180" />
+              <table-column prop="address" label="地址" :min-width="180" />
+          </table-list>
+
+          <script setup>
+            const tableData = [
+                {
+                    date: '2016-05-02',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路1518弄',
+                }, {
+                    date: '2016-05-04',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路1517弄',
+                }, {
+                    date: '2016-05-01',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路1519弄',
+                }, {
+                    date: '2016-05-03',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路1516弄',
+              }]
+          <\/script>
+      `,
+    },
+        {
+      id: "table-6",
+      title: {
+        text: "rowClassName 带状态的表格",
+        desc: "当内容高度小于height时会留下空隙 当内容高度大于height时会固定表头",
+      },
+      code: `
+          <table-list :data="tableData" :out-side-border="false" :stripe="true" :border="true">
+              <table-column prop="date" label="日期" :width="180" />
+              <table-column prop="name" label="姓名" :width="180" />
+              <table-column prop="address" label="地址" :min-width="180" />
+          </table-list>
+
+          <script setup>
+            const tableData = [
+                {
+                    date: '2016-05-02',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路1518弄',
+                }, {
+                    date: '2016-05-04',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路1517弄',
+                }, {
+                    date: '2016-05-01',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路1519弄',
+                }, {
+                    date: '2016-05-03',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路1516弄',
+              }]
+          <\/script>
+      `,
+    },
   ],
 };

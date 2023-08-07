@@ -1,21 +1,12 @@
 <template>
-  <div
-    class="table-container"
-    :style="tableStyle"
-    ref="table"
-    v-resize:20="onResize"
-  >
+  <div class="table-container" :style="tableStyle" ref="table" v-resize:20="onResize">
     <div v-if="showHeader" ref="tableHeader">
       <table cellspacing="0">
         <colgroup ref="headerColgroup">
           <slot />
         </colgroup>
-        <tr>
-          <th
-            v-for="(prop, idx) in columnsProps"
-            :key="prop.label"
-            :style="headerCellStyle(prop.prop, idx)"
-          >
+        <tr :class="headerRowClass">
+          <th v-for="(prop, idx) in columnsProps" :key="prop.label" :style="headerCellStyle(prop.prop, idx)">
             {{ prop.label }}
           </th>
         </tr>
@@ -26,12 +17,9 @@
         <colgroup ref="bodyColgroup">
           <slot />
         </colgroup>
-        <tr v-for="(row, rowIndex) in data" :key="row" :class="tableRowClass">
-          <td
-            v-for="(colValue, colKey, colIndex) in row"
-            :key="colValue"
-            :style="tableCellStyle(row, colValue, rowIndex, colIndex)"
-          >
+        <tr v-for="(row, rowIndex) in data" :key="row" :class="tableRowClass(row, rowIndex)">
+          <td v-for="(colValue, colKey, colIndex) in row" :key="colValue"
+            :style="tableCellStyle(row, colValue, rowIndex, colIndex)">
             {{ getLabel(row, colIndex) }}
           </td>
         </tr>
@@ -102,6 +90,18 @@ const props = defineProps({
       return {};
     },
   },
+  rowClassName: {
+    type: [Function, String],
+    default() {
+      return '';
+    },
+  },
+  headerRowClassName: {
+    type: [Function, String],
+    default() {
+      return '';
+    },
+  },
   emptyText: {
     type: String,
     default: "暂无内容",
@@ -144,8 +144,22 @@ const tableBodyStyle = computed(() => {
     : finalStyle;
 });
 const tableRowClass = computed(() => {
-  return props.highlightCurrentRow ? "highlightCurrentRow" : "";
+  return (row, rowIndex) => {
+    const getCallBackClassName = () => {
+      return typeof props.rowClassName === 'function' ? props.rowClassName(row, rowIndex) : props.rowClassName;
+    }
+    const getDefaultClassName = () => {
+      return {
+        "highlightCurrentRow": props.highlightCurrentRow,
+        'stripe': rowIndex % 2 !== 0 && props.stripe
+      };
+    }
+    return Object.assign(getDefaultClassName(), getCallBackClassName());
+  }
 });
+const headerRowClass = computed(() => {
+  return typeof props.headerRowClassName === 'function' ? props.headerRowClassName() : props.headerRowClassName;
+})
 const headerCellStyle = computed(() => {
   return (prop, idx) => {
     // 默认样式
@@ -275,15 +289,8 @@ const tableCellStyle = computed(() => {
       // 最后一行取消底部border由bodywrapper的border代替(防止滚动下的重合)
       const borderBottom =
         rowIndex === props.data.length - 1 ? noBorder : normalBorder;
-      // 斑马纹
-      let backgroundColor;
-      if (props.stripe) {
-        if (rowIndex % 2 === 0) backgroundColor = "#fff";
-        else backgroundColor = "#fafafa";
-      }
       const finalStyle = {
         borderBottom,
-        backgroundColor,
       };
       return props.data.length === 0
         ? Object.assign(finalStyle, { border: noBorder })
@@ -461,5 +468,9 @@ onMounted(() => {
     font-size: 18px;
     color: gray;
   }
+}
+
+.stripe {
+  background-color: #eee;
 }
 </style>
