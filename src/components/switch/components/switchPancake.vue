@@ -12,7 +12,7 @@
   </div>
 </template>
 
-<script setup name="switch-stack">
+<script setup name="switch-pancake">
 const emits = defineEmits(['change'])
 
 const props = defineProps({

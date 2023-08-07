@@ -1,5 +1,5 @@
 <template>
-  <div class="toggle checkbox-parallelogram">
+  <div class="toggle checkbox-parallelogram" :style="{ '--activeColor': activeColor, '--inactiveColor': inactiveColor }">
     <input class="tgl tgl-skewed" :id="id" type="checkbox" v-model="inputValue" @change="handleChange" />
     <label class="tgl-btn" data-tg-off="OFF" data-tg-on="ON" :for="id" />
   </div>
@@ -12,7 +12,15 @@ const props = defineProps({
   defaultValue: {
     type: Boolean,
     default: true
-  }
+  },
+  activeColor: {
+    type: String,
+    default: '#2e394d'
+  },
+  inactiveColor: {
+    type: String,
+    default: 'orange'
+  },
 })
 
 let inputValue = props.defaultValue;
@@ -114,7 +122,7 @@ label.toggle-item {
     top: 3px;
     left: 4px;
     border-radius: 50%;
-    border: 2px solid #88cf8f;
+    // border: 2px solid #88cf8f;
     transition: .3s ease;
   }
 }
@@ -187,17 +195,18 @@ label.toggle-item {
 
 .checkbox-parallelogram .tgl-skewed+.tgl-btn {
   overflow: hidden;
-  transform: skew(-10deg);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
+  transform: skew(-45deg);
+  // -webkit-backface-visibility: hidden;
+  // backface-visibility: hidden;
   transition: all 0.2s ease;
   font-family: sans-serif;
   background: #888;
+  border: 0px solid transparent;
 }
 
 .checkbox-parallelogram .tgl-skewed+.tgl-btn:after,
 .checkbox-parallelogram .tgl-skewed+.tgl-btn:before {
-  transform: skew(10deg);
+  transform: skew(45deg);
   display: inline-block;
   transition: all 0.2s ease;
   width: 100%;
@@ -220,7 +229,7 @@ label.toggle-item {
 }
 
 .checkbox-parallelogram .tgl-skewed+.tgl-btn:active {
-  background: #888;
+  background: var(--activeColor);
 }
 
 .checkbox-parallelogram .tgl-skewed+.tgl-btn:active:before {
@@ -228,7 +237,7 @@ label.toggle-item {
 }
 
 .checkbox-parallelogram .tgl-skewed:checked+.tgl-btn {
-  background: #86d993;
+  background: var(--inactiveColor);
 }
 
 .checkbox-parallelogram .tgl-skewed:checked+.tgl-btn:before {
