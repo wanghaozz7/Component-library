@@ -1,20 +1,8 @@
 <template>
   <h2 class="title">{{ title }}</h2>
-  <table-list
-    :data="listData"
-    :out-side-border="false"
-    :header-cell-style="getHeaderCellStyle"
-    :cell-style="getCellStyle"
-    :highlight-current-row="false"
-    cell-empty-text="—"
-    size="big"
-  >
-    <table-column
-      v-for="col in columnList"
-      :key="col"
-      :label="col.label"
-      :prop="col.prop"
-    />
+  <table-list :data="listData" :out-side-border="false" :header-cell-style="getHeaderCellStyle" :cell-style="getCellStyle"
+    :highlight-current-row="false" cell-empty-text="—" size="big">
+    <table-column v-for="col in columnList" :key="col" :label="col.label" :prop="col.prop" />
   </table-list>
 </template>
 
@@ -51,7 +39,7 @@ const getAttributesColumnList = () => {
 const getEventsColumnList = () => {
   return [
     {
-      label: "方法名",
+      label: "事件名",
       prop: "method",
     },
     {
@@ -59,7 +47,7 @@ const getEventsColumnList = () => {
       prop: "desc",
     },
     {
-      label: "参数",
+      label: "回调参数",
       prop: "params",
     },
   ];

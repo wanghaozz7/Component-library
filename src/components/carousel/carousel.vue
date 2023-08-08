@@ -15,6 +15,8 @@
 <script setup name="carousel">
 import { ref, onMounted, onUnmounted, getCurrentInstance, computed } from "vue";
 
+const emits = defineEmits(['change', 'changeAfterAnimation'])
+
 const props = defineProps({
   // 是否循环滚动
   circular: {
@@ -203,6 +205,15 @@ const renderMove = (targetIdx) => {
     };
     moveAnimate(fitstStep, firstOffset, firstIdx, callBack);
   }
+  let pre, cur;
+  if (props.circular) {
+    pre = curIdx.value - 1;
+    cur = targetIdx - 1 === itemCount ? 0 : targetIdx - 1 === -1 ? itemCount - 1 : targetIdx - 1;
+  } else {
+    pre = curIdx.value;
+    cur = targetIdx;
+  }
+  emits('change', pre, cur)
 };
 const moveAnimate = (step, targetOffset, targetIdx, callBack = () => { }) => {
   offset.value += step;
@@ -211,6 +222,16 @@ const moveAnimate = (step, targetOffset, targetIdx, callBack = () => { }) => {
     (step > 0 && offset.value >= targetOffset) ||
     (step < 0 && offset.value <= targetOffset)
   ) {
+    let pre, cur;
+    if (props.circular) {
+      pre = curIdx.value - 1;
+      cur = targetIdx - 1 === itemCount ? 0 : targetIdx - 1 === -1 ? itemCount - 1 : targetIdx - 1;
+    } else {
+      pre = curIdx.value;
+      cur = targetIdx;
+    }
+    emits('changeAfterAnimation', pre, cur)
+
     callBack();
     return;
   }

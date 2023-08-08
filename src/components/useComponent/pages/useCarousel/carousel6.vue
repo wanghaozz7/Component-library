@@ -1,6 +1,7 @@
 <template>
   <div class="carousel-container">
-    <carousel :circular="true" :autoRolling="true" showArrow="hover">
+    <carousel :circular="true" :autoRolling="true" showArrow="hover" @change="handleChange"
+      @changeAfterAnimation="handleChangeAfterAnimation">
       <carousel-item v-for="(url, idx) in imgList" :key="url">
         <div class="carousel-item"><img :src="url" /></div>
       </carousel-item>
@@ -16,6 +17,14 @@ const imgList = [
   "https://i0.hippopx.com/photos/969/496/921/woman-girl-dom-happy-thumb.jpg",
   "https://i0.hippopx.com/photos/856/151/610/panorama-sunrise-dawn-bled-thumb.jpg",
 ];
+
+const handleChange = (preIdx, curIdx) => {
+  console.log(preIdx, curIdx)
+}
+
+const handleChangeAfterAnimation = (pre, cur) => {
+  console.log(pre, cur);
+}
 </script>
 
 <style scoped lang="less">
@@ -30,6 +39,7 @@ const imgList = [
     display: flex;
     justify-content: center;
     align-items: center;
+
     img {
       width: 100%;
       height: 100%;
