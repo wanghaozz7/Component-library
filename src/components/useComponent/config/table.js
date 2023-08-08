@@ -9,7 +9,7 @@ export default {
       listData: [
         {
           params: "data",
-          desc: "显示的数据",
+          desc: "表格的数据",
           type: "Array",
           optional: "",
           default: "",

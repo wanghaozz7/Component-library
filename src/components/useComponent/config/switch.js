@@ -45,6 +45,27 @@ export default {
       ],
       type: "attributes",
     },
+    {
+      title: "Switch Events",
+      type: "events",
+      listData: [
+        {
+          method: "change",
+          desc: "开关状态变化时的回调",
+          params: "当前状态",
+        },
+        {
+          method: "active",
+          desc: "开关激活时的回调",
+          params: "true",
+        },
+        {
+          method: "inactive",
+          desc: "开关未激活时的回调",
+          params: "false",
+        },
+      ],
+    },
   ],
   children: [
     {

@@ -1,6 +1,6 @@
 <template>
   <div style="padding: 20px;">
-    <Switch v-model="val" @change="handleChange" />
+    <Switch v-model="val" @change="handleChange" @active="handleActive" @inactive="handleInactive" />
   </div>
 </template>
 
@@ -12,6 +12,14 @@ const handleChange = value => {
   console.log('val', val, value);
 }
 
+const handleActive = e => {
+  console.log('active', val, e);
+}
+
+const handleInactive = e => {
+  console.log('inactive', val, e);
+
+}
 </script>
 
 <style scoped lang="less"></style>

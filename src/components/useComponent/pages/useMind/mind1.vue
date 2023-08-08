@@ -1,15 +1,7 @@
 <template>
-  <mind
-    :tree="tree"
-    @treeChange="handleTreeChange"
-    :maxWidth="1014"
-    @nodeClick="handleNodeClick"
-    @nodeEdit="handleNodeEdit"
-    @addNode="handleAddNode"
-    @deleteNode="handleDeleteNode"
-    @dragNodeStart="handleDragStart"
-    @dragNodeEnd="handleDragEnd"
-  />
+  <mind :tree="tree" @treeChange="handleTreeChange" :maxWidth="1014" @nodeClick="handleNodeClick"
+    @nodeEdit="handleNodeEdit" @addNode="handleAddNode" @deleteNode="handleDeleteNode" @dragNodeStart="handleDragStart"
+    @dragNodeEnd="handleDragEnd" />
 </template>
 
 <script setup name="mind1">
@@ -53,7 +45,7 @@ let tree = {
 };
 const handleTreeChange = (newTree) => {
   tree = newTree;
-  console.log(tree);
+  console.log('treeChange', tree);
 };
 const handleNodeClick = (node) => {
   console.log("click", node);

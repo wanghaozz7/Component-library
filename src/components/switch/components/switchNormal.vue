@@ -12,7 +12,7 @@
 <script setup name="switch-normal">
 import { ref, computed } from 'vue'
 
-const emits = defineEmits(['change'])
+const emits = defineEmits(['change', 'active', 'inactive'])
 
 const props = defineProps({
   defaultValue: {
@@ -99,8 +99,9 @@ const getRandomNodeId = () => {
 const id = getRandomNodeId()
 
 const handleChange = e => {
-  console.log(inputValue.value);
   emits('change', inputValue.value)
+  if (inputValue.value) emits('active', true);
+  else emits('inactive', false);
 }
 
 const handleClick = flag => {
