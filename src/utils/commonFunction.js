@@ -32,10 +32,11 @@ const $message = (arg) => {
       ["display", "flex"],
       ["align-items", "center"],
       ["position", "fixed"],
-      ["top", `${(getCurMessageCount(messageId) + 1) * 50}px`],
+      ["top", `${(getCurMessageCount(messageId)) * 50}px`],
       ["left", "50%"],
       ["transform", "translateX(-50%)"],
-      ["transition", "all 0.5s"],
+      ["transition", "all 0.3s ease"],
+      ["opacity",0]
     ];
     $paintingStyle(el, styleArray);
     el.id = `message-${messageId}`;
@@ -107,7 +108,6 @@ const $message = (arg) => {
       for (let child of body.children) {
         if (child.id.slice(8) == messageId) body.removeChild(child);
       }
-
       clearInterval(timer);
       timer = null;
     }, 550);
@@ -190,6 +190,15 @@ const $message = (arg) => {
     const before = getCurMessageCount(messageId);
     message.style.top = (before + 1) * 50 + "px";
   }, 10);
+
+  setTimeout(() => {
+    for (let child of body.children) {
+        if (child.id.slice(8) == messageId) {
+          child.style.top = getCurMessageCount(messageId) * 50 + 'px';
+          child.style.opacity = 1;
+        }
+    }
+  }, 50);
 
   closeMessage();
 

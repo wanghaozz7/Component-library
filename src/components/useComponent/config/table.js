@@ -71,7 +71,7 @@ export default {
     {
       id: "table-1",
       title: {
-        text: "基础表格",
+        text: "基础用法",
         desc: "基础的表格展示用法。",
       },
       code: `

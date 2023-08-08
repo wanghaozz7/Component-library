@@ -15,6 +15,7 @@ import carouselConfig from "../config/carousel";
 import tooltipConfig from "../config/tooltip";
 import mindConfig from '../config/mind'
 import switchConfig from '../config/switch'
+import messageConfig from '../config/message'
 
 const props = defineProps({
   selectedArr: {
@@ -45,6 +46,8 @@ const getConfig = () => {
       return mindConfig;
     case 'switch':
       return switchConfig;
+    case 'message':
+      return messageConfig;
   }
 };
 
