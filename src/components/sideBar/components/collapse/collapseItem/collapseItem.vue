@@ -1,36 +1,38 @@
 <template>
   <div class="collapse-item" :style="{ height: getHeight + 'px' }">
-    <div
-      class="show-part"
-      @click.self="handleClick"
-      :style="{ 'line-height': rowHeight + 'px' }"
-    >
+    <div class="show-part" @click.self="handleClick" :style="getShowPartStyle">
       <div
         class="left-part"
         @click="handleClick"
         :style="{ 'margin-left': getLeftOffset + 'px' }"
       >
         <arrow :isFold="isFold" v-if="!isLeaf()" />
-        <div class="text" :style="{ 'max-width': getMaxWidth + 'px' }">
+        <div class="text" :style="getTextStyle">
           {{ node.label }}
         </div>
       </div>
-      <checkBox @check="handleCheck" :checkedState="checkedState" />
+      <checkBox
+        @check="handleCheck"
+        :checkedState="checkedState"
+        v-if="showCheckBox"
+      />
     </div>
     <div ref="hiddenPart">
       <collapse-item
         v-for="(children, index) in node.children"
-        :key="children.label"
+        :key="children.id"
         :node="children"
         :totalNode="totalNode.children[index]"
         :fatherCheckedState="checkedState"
         :offset="offset + 5"
         :rowHeight="rowHeight"
         :defaultUnfoldAll="defaultUnfoldAll"
-        @heightChange="handleHeightChange"
         :default-checked-all="defaultCheckedAll"
+        :last-click-node-id="lastClickNodeId"
+        :showCheckBox="showCheckBox"
         @childCountChange="handleChildCountChange"
         @nodeChange="handleNodeChange"
+        @heightChange="handleHeightChange"
       />
     </div>
   </div>
@@ -69,14 +71,25 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
-  // 默认展开全部节点
+  // 默认展开所有节点
   defaultUnfoldAll: {
     type: Boolean,
     default: true,
   },
+  // 默认选中所有节点
   defaultCheckedAll: {
     type: Boolean,
     default: false,
+  },
+  // 最后一次被点击的节点的id
+  lastClickNodeId: {
+    type: String,
+    default: "",
+  },
+  // 是否显示勾选框
+  showCheckBox: {
+    type: Boolean,
+    default: true,
   },
 });
 
@@ -112,9 +125,29 @@ const getLeftOffset = computed(() => {
   return props.offset + (isLeaf() ? 15 : 0);
 });
 
-// 获取文本最大宽度
-const getMaxWidth = computed(() => {
-  return rowWidth.value - 69 - getLeftOffset.value + (isLeaf() ? 15 : 0);
+const getTextStyle = computed(() => {
+  const maxWidth =
+    rowWidth.value -
+    (props.showCheckBox ? 69 : 40) -
+    getLeftOffset.value +
+    (isLeaf() ? 15 : 0) +
+    "px";
+  return {
+    maxWidth,
+  };
+});
+
+const getShowPartStyle = computed(() => {
+  const lineHeight = props.rowHeight + "px";
+  const backgroundColor = props.showCheckBox
+    ? ""
+    : props.lastClickNodeId === props.node.id
+    ? "rgba(173,216,230,0.3)"
+    : "";
+  return {
+    lineHeight,
+    backgroundColor,
+  };
 });
 
 // 当前节点被点击
@@ -259,6 +292,7 @@ export default { name: "collapseItem" };
 
       .text {
         font-size: 14px;
+        font-family: "微软雅黑";
         margin-left: 5px;
         overflow: hidden;
         white-space: nowrap;

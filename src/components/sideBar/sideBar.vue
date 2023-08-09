@@ -4,6 +4,7 @@
       :checkedCount="count"
       :checkedState="checkedState"
       @rootStateChange="handleRootStateChange"
+      v-if="showCheckBox"
     />
     <collapse
       :collapseData="tree"
@@ -12,6 +13,7 @@
       :defaultUnfoldAll="defaultUnfoldAll"
       :defaultCheckedAll="defaultCheckedAll"
       :rowHeight="rowHeight"
+      :showCheckBox="showCheckBox"
       @collapseCountChange="handleCollapseCountChange"
       @collapseStateChange="handleCollapseStateChange"
       @nodeChange="handleNodeChange"
@@ -30,17 +32,23 @@ const props = defineProps({
       return [];
     },
   },
-  // 默认展开全部节点
-  defaultUnfoldAll: {
-    type: Boolean,
-    default: true,
-  },
   // 每一行的高度
   rowHeight: {
     tpye: Number,
     default: 32,
   },
+  // 默认全选
   defaultCheckedAll: {
+    type: Boolean,
+    default: false,
+  },
+  // 默认展开全部节点
+  defaultUnfoldAll: {
+    type: Boolean,
+    default: true,
+  },
+  // 是否显示勾选框
+  showCheckBox: {
     type: Boolean,
     default: false,
   },
@@ -101,7 +109,7 @@ const handleCollapseStateChange = (state) => {
   checkedState.value = state;
 };
 
-// top中点击选中根节点
+// 选中根节点
 const handleRootStateChange = (state) => {
   checkedState.value = state;
   if (state === "all") count.value = total;
@@ -125,7 +133,7 @@ const handleNodeChange = (node, type) => {
     checkedNodeArray.splice(index, 1);
   }
 
-  emit("checkedNodeArrayChange", checkedNodeArray);
+  if (props.showCheckBox) emit("checkedNodeArrayChange", checkedNodeArray);
 };
 </script>
 
@@ -133,5 +141,6 @@ const handleNodeChange = (node, type) => {
 .sideBar-container {
   padding: 15px;
   border-right: 1px solid #e6e7eb;
+  // border-left: 1px solid #e6e7eb;
 }
 </style>

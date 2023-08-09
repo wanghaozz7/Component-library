@@ -1,7 +1,12 @@
 <template>
   <use-component :title="config.title" :lists="config.lists">
-    <show-component v-for="component in selectedArr" :key="getProp(component, 'title')" :code="getProp(component, 'code')"
-      :title="getProp(component, 'title')" :refresh="refreshTooltip">
+    <show-component
+      v-for="component in selectedArr"
+      :key="getProp(component, 'title')"
+      :code="getProp(component, 'code')"
+      :title="getProp(component, 'title')"
+      :refresh="refreshTooltip"
+    >
       <component :is="component" :refreshTooltip="refreshTooltip" />
     </show-component>
   </use-component>
@@ -13,9 +18,10 @@ import { watch, ref } from "vue";
 import tableConfig from "../config/table";
 import carouselConfig from "../config/carousel";
 import tooltipConfig from "../config/tooltip";
-import mindConfig from '../config/mind'
-import switchConfig from '../config/switch'
-import messageConfig from '../config/message'
+import mindConfig from "../config/mind";
+import switchConfig from "../config/switch";
+import messageConfig from "../config/message";
+import sideBarConfig from "../config/sidebar";
 
 const props = defineProps({
   selectedArr: {
@@ -42,12 +48,14 @@ const getConfig = () => {
       return tooltipConfig;
     case "carousel":
       return carouselConfig;
-    case 'mind':
+    case "mind":
       return mindConfig;
-    case 'switch':
+    case "switch":
       return switchConfig;
-    case 'message':
+    case "message":
       return messageConfig;
+    case "sidebar":
+      return sideBarConfig;
   }
 };
 

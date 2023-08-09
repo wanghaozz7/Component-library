@@ -1,8 +1,19 @@
 <template>
   <div class="collapse">
-    <collapse-item v-for="(node, idx) in collapseData" :key="node.label" :node="node" :totalNode="totalTree.children[idx]"
-      :fatherCheckedState="checkedState" :defaultUnfoldAll="defaultUnfoldAll" :defaultCheckedAll="defaultCheckedAll"
-      :rowHeight="rowHeight" @childCountChange="handleChildCountChange" @nodeChange="handleNodeChange" />
+    <collapse-item
+      v-for="(node, idx) in collapseData"
+      :key="node.label"
+      :node="node"
+      :totalNode="totalTree.children[idx]"
+      :fatherCheckedState="checkedState"
+      :defaultUnfoldAll="defaultUnfoldAll"
+      :defaultCheckedAll="defaultCheckedAll"
+      :rowHeight="rowHeight"
+      :last-click-node-id="lastClickNodeId"
+      :showCheckBox="showCheckBox"
+      @childCountChange="handleChildCountChange"
+      @nodeChange="handleNodeChange"
+    />
   </div>
 </template>
 
@@ -15,6 +26,10 @@ const props = defineProps({
     default() {
       return [];
     },
+  },
+  rowHeight: {
+    tpye: Number,
+    default: 32,
   },
   totalTree: {
     type: Object,
@@ -30,14 +45,14 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-  rowHeight: {
-    tpye: Number,
-    default: 32,
-  },
   defaultCheckedAll: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
+  showCheckBox: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const emit = defineEmits([
@@ -53,6 +68,8 @@ let count = ref(0);
 // 叶子节点总数
 const total = props.totalTree.total;
 
+let lastClickNodeId = ref("");
+
 // 收集每个子节点的变化并更新
 const handleChildCountChange = (change) => {
   count.value += change;
@@ -67,6 +84,7 @@ const handleChildCountChange = (change) => {
 // 叶子节点选中变化
 const handleNodeChange = (node, type) => {
   emit("nodeChange", node, type);
+  lastClickNodeId.value = node.id;
 };
 
 // 监听父节点的全选状态(单向向下)
