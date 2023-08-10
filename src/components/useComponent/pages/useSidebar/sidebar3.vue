@@ -1,13 +1,15 @@
 <template>
-  <div style="width: 240px; margin: 10px auto">
-    <side-bar
-      :sideBarData="treeData"
-      @nodeCheckedChange="handleNodeCheckedChange"
-    />
-  </div>
+  <side-bar
+    :sideBarData="treeData"
+    :showCheckBox="true"
+    :defaultUnfoldAll="false"
+    :defaultCheckedAll="true"
+    @nodeCheckedChange="handleNodeCheckedChange"
+    @checkedNodeArrayChange="handleCheckedNodeArrayChange"
+  />
 </template>
 
-<script setup name="sidebar1">
+<script setup name="sidebar3">
 const treeData = [
   {
     label: "动物动物动物动物动物动物动物动物",
@@ -176,7 +178,14 @@ const treeData = [
     ],
   },
 ];
+
 const handleNodeCheckedChange = (node) => {
   console.log("nodeCheckedChange", node);
 };
+
+const handleCheckedNodeArrayChange = (arr) => {
+  console.log("handleCheckedNodeArrayChange", arr);
+};
 </script>
+
+<style scoped lang="less"></style>

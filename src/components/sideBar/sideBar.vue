@@ -11,8 +11,9 @@
       :totalTree="totalTree"
       :checkedState="checkedState"
       :defaultUnfoldAll="defaultUnfoldAll"
-      :defaultCheckedAll="defaultCheckedAll"
+      :defaultCheckedAll="defaultCheckedAll && showCheckBox"
       :rowHeight="rowHeight"
+      :nodeStyle="nodeStyle"
       :showCheckBox="showCheckBox"
       @collapseCountChange="handleCollapseCountChange"
       @collapseStateChange="handleCollapseStateChange"
@@ -36,6 +37,13 @@ const props = defineProps({
   rowHeight: {
     tpye: Number,
     default: 32,
+  },
+  // 节点样式
+  nodeStyle: {
+    type: Object,
+    default() {
+      return {};
+    },
   },
   // 默认全选
   defaultCheckedAll: {

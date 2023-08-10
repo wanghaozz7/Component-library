@@ -9,6 +9,7 @@
       :defaultUnfoldAll="defaultUnfoldAll"
       :defaultCheckedAll="defaultCheckedAll"
       :rowHeight="rowHeight"
+      :nodeStyle="nodeStyle"
       :last-click-node-id="lastClickNodeId"
       :showCheckBox="showCheckBox"
       @childCountChange="handleChildCountChange"
@@ -30,6 +31,12 @@ const props = defineProps({
   rowHeight: {
     tpye: Number,
     default: 32,
+  },
+  nodeStyle: {
+    type: Object,
+    default() {
+      return {};
+    },
   },
   totalTree: {
     type: Object,

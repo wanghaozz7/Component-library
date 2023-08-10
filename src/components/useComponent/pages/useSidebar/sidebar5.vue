@@ -1,17 +1,19 @@
 <template>
-  <div style="width: 240px; margin: 10px auto">
-    <side-bar
-      :sideBarData="treeData"
-      @nodeCheckedChange="handleNodeCheckedChange"
-    />
-  </div>
+  <side-bar
+    :sideBarData="treeData"
+    :showCheckBox="true"
+    :defaultUnfoldAll="false"
+    @nodeCheckedChange="handleNodeCheckedChange"
+    @checkedNodeArrayChange="handleCheckedNodeArrayChange"
+  />
 </template>
 
-<script setup name="sidebar1">
+<script setup name="sidebar5">
 const treeData = [
   {
     label: "动物动物动物动物动物动物动物动物",
     id: "动物",
+    defaultUnfold: true,
     children: [
       {
         label: "高等动物高等动物高等动物高等动物高等动物",
@@ -27,14 +29,17 @@ const treeData = [
       {
         label: "低等动物",
         id: "低等动物",
+        defaultUnfold: true,
         children: [
           {
             label: "猛禽",
             id: "猛禽",
+            defaultUnfold: true,
             children: [
               {
                 label: "游隼",
                 id: "游隼",
+                defaultChecked: true,
                 children: [],
               },
               {
@@ -45,6 +50,7 @@ const treeData = [
               {
                 label: "虎头雕",
                 id: "虎头雕",
+                defaultChecked: true,
               },
               {
                 label: "角雕",
@@ -53,6 +59,7 @@ const treeData = [
               {
                 label: "食猿雕",
                 id: "食猿雕",
+                defaultChecked: true,
               },
             ],
           },
@@ -176,7 +183,14 @@ const treeData = [
     ],
   },
 ];
+
 const handleNodeCheckedChange = (node) => {
   console.log("nodeCheckedChange", node);
 };
+
+const handleCheckedNodeArrayChange = (arr) => {
+  console.log("handleCheckedNodeArrayChange", arr);
+};
 </script>
+
+<style scoped lang="less"></style>

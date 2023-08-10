@@ -26,6 +26,7 @@
         :fatherCheckedState="checkedState"
         :offset="offset + 5"
         :rowHeight="rowHeight"
+        :node-style="nodeStyle"
         :defaultUnfoldAll="defaultUnfoldAll"
         :default-checked-all="defaultCheckedAll"
         :last-click-node-id="lastClickNodeId"
@@ -65,6 +66,13 @@ const props = defineProps({
   rowHeight: {
     type: Number,
     default: 32,
+  },
+  // 节点样式
+  nodeStyle: {
+    type: Object,
+    default() {
+      return {};
+    },
   },
   // 父节点偏移量
   offset: {
@@ -126,26 +134,26 @@ const getLeftOffset = computed(() => {
 });
 
 const getTextStyle = computed(() => {
+  const lineHeight = props.rowHeight + "px";
   const maxWidth =
     rowWidth.value -
     (props.showCheckBox ? 69 : 40) -
     getLeftOffset.value +
     (isLeaf() ? 15 : 0) +
     "px";
-  return {
+  return Object.assign(props.nodeStyle, {
+    lineHeight,
     maxWidth,
-  };
+  });
 });
 
 const getShowPartStyle = computed(() => {
-  const lineHeight = props.rowHeight + "px";
   const backgroundColor = props.showCheckBox
     ? ""
     : props.lastClickNodeId === props.node.id
     ? "rgba(173,216,230,0.3)"
     : "";
   return {
-    lineHeight,
     backgroundColor,
   };
 });
@@ -220,11 +228,25 @@ onMounted(() => {
   hiddenPartHeight.value = ctx.$refs.hiddenPart.offsetHeight;
   // 获取行宽
   rowWidth.value = ctx.$refs.hiddenPart.offsetWidth;
-  // 节点是否展开
-  if (props.defaultUnfoldAll || props.node.defaultUnfold) isFold.value = false;
-  if (isLeaf() && (props.node.defaultChecked || props.defaultCheckedAll)) {
-    checkedState.value = "all";
-    handleChildCountChange(1);
+
+  // 节点是否展开 (就近原则:在节点中声明了的状态大于全局状态)
+  if (props.node.defaultUnfold === undefined) {
+    isFold.value = !props.defaultUnfoldAll;
+  } else {
+    isFold.value = !props.node.defaultUnfold;
+  }
+
+  // 节点是否选中 (就近原则:在节点中声明了的状态大于全局状态)
+  if (props.node.defaultChecked === undefined) {
+    if (isLeaf() && props.defaultCheckedAll) {
+      checkedState.value = "all";
+      handleChildCountChange(1);
+    }
+  } else {
+    if (isLeaf() && props.node.defaultChecked) {
+      checkedState.value = "all";
+      handleChildCountChange(1);
+    }
   }
 });
 
@@ -289,10 +311,8 @@ export default { name: "collapseItem" };
     .left-part {
       display: flex;
       align-items: center;
-
       .text {
-        font-size: 14px;
-        font-family: "微软雅黑";
+        font: normal 14px 微软雅黑;
         margin-left: 5px;
         overflow: hidden;
         white-space: nowrap;
