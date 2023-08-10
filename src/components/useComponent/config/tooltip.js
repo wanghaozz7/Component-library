@@ -54,62 +54,35 @@ export default {
         desc: "鼠标悬浮在内容时立即出现文字提示",
       },
       code: `
-            <template>
-              <div style="margin-top: 50px" class="cont">
-                <tooltip placement="top" content="我悬浮在上边~">
-                  <div class="item">上</div>
-                </tooltip>
-              </div>
-              <div style="margin: 50px 0; gap: 150px" class="cont">
-                <tooltip placement="left" content="我悬浮在左边~">
-                  <div class="item">左</div>
-                </tooltip>
-                <tooltip placement="right" content="我悬浮在右边~">
-                  <div class="item">右</div>
-                </tooltip>
-              </div>
-              <div style="margin-bottom: 50px" class="cont">
-                <tooltip placement="bottom" content="我悬浮在下边~">
-                  <div class="item">下</div>
-                </tooltip>
-              </div>
-            </template>
-            <style scoped lang="less">
-            .tooltip-container {
-              height: 100px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              cursor: pointer;
+          <template>
+            <tooltip content="我是文字提示~" :refreshTooltip="refreshTooltip">
+              <div class="item">我是文字内容</div>
+            </tooltip>
+          </template>
 
-              .tooltip-content {
-                border: 1px solid gray;
-                border-radius: 4px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                padding: 8px;
-              }
-            }
+          <script setup>
+          const props = defineProps({
+            refreshTooltip: {
+              type: Boolean,
+              default: false,
+            },
+          });
+          </script>
 
-            .item {
-              width: 75px;
-              height: 75px;
-              border: 1px solid gray;
-              margin: 100px auto;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              cursor: pointer;
-            }
+          <style scoped>
+          .item {
+            width: 150px;
+            height: 100px;
+            margin: 70px auto;
+            border: 1px solid #ebebeb;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+          }
+          </style>
 
-            .cont {
-              height: 75px;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-            }
-            </style>
       `,
     },
     {
@@ -119,62 +92,89 @@ export default {
         desc: "通过placement字段选择tooltip出现的位置",
       },
       code: `
-            <template>
-              <div style="margin-top: 50px" class="cont">
-                <tooltip placement="top" content="我悬浮在上边~">
-                  <div class="item">上</div>
-                </tooltip>
-              </div>
-              <div style="margin: 50px 0; gap: 150px" class="cont">
-                <tooltip placement="left" content="我悬浮在左边~">
-                  <div class="item">左</div>
-                </tooltip>
-                <tooltip placement="right" content="我悬浮在右边~">
-                  <div class="item">右</div>
-                </tooltip>
-              </div>
-              <div style="margin-bottom: 50px" class="cont">
-                <tooltip placement="bottom" content="我悬浮在下边~">
-                  <div class="item">下</div>
-                </tooltip>
-              </div>
-            </template>
-            <style scoped lang="less">
-            .tooltip-container {
-              height: 100px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              cursor: pointer;
+          <template>
+            <div style="margin-top: 50px" class="cont">
+              <tooltip
+                placement="top"
+                content="我悬浮在上边~"
+                :refreshTooltip="refreshTooltip"
+              >
+                <div class="item">上</div>
+              </tooltip>
+            </div>
+            <div style="margin: 50px 0; gap: 150px" class="cont">
+              <tooltip
+                placement="left"
+                content="我悬浮在左边~"
+                :refreshTooltip="refreshTooltip"
+              >
+                <div class="item">左</div>
+              </tooltip>
+              <tooltip
+                placement="right"
+                content="我悬浮在右边~"
+                :refreshTooltip="refreshTooltip"
+              >
+                <div class="item">右</div>
+              </tooltip>
+            </div>
+            <div style="margin-bottom: 50px" class="cont">
+              <tooltip
+                placement="bottom"
+                content="我悬浮在下边~"
+                :refreshTooltip="refreshTooltip"
+              >
+                <div class="item">下</div>
+              </tooltip>
+            </div>
+          </template>
 
-              .tooltip-content {
-                border: 1px solid gray;
-                border-radius: 4px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                padding: 8px;
-              }
-            }
+          <script setup>
+          const props = defineProps({
+            refreshTooltip: {
+              type: Boolean,
+              default: false,
+            },
+          });
+          </script>
 
-            .item {
-              width: 75px;
-              height: 75px;
+          <style scoped lang="less">
+          .tooltip-container {
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+
+            .tooltip-content {
               border: 1px solid gray;
-              margin: 100px auto;
+              border-radius: 4px;
               display: flex;
               justify-content: center;
               align-items: center;
-              cursor: pointer;
+              padding: 8px;
             }
+          }
 
-            .cont {
-              height: 75px;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-            }
-            </style>
+          .item {
+            width: 75px;
+            height: 75px;
+            border: 1px solid gray;
+            margin: 100px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+          }
+
+          .cont {
+            height: 75px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+          </style>
+
       `,
     },
     {
@@ -184,62 +184,72 @@ export default {
         desc: "根据页面的风格选择不同的主题",
       },
       code: `
-            <template>
-              <div style="margin-top: 50px" class="cont">
-                <tooltip placement="top" content="我悬浮在上边~">
-                  <div class="item">上</div>
+          <template>
+            <div class="wrapper">
+              <div class="block">
+                <div class="text">light</div>
+                <tooltip
+                  content="我是文字提示~"
+                  :refreshTooltip="refreshTooltip"
+                  theme="light"
+                  :offset="40"
+                >
+                  <div class="item">我是文字内容</div>
                 </tooltip>
               </div>
-              <div style="margin: 50px 0; gap: 150px" class="cont">
-                <tooltip placement="left" content="我悬浮在左边~">
-                  <div class="item">左</div>
-                </tooltip>
-                <tooltip placement="right" content="我悬浮在右边~">
-                  <div class="item">右</div>
-                </tooltip>
-              </div>
-              <div style="margin-bottom: 50px" class="cont">
-                <tooltip placement="bottom" content="我悬浮在下边~">
-                  <div class="item">下</div>
+              <div class="block">
+                <div class="text">dark</div>
+                <tooltip
+                  content="我是文字提示~"
+                  :refreshTooltip="refreshTooltip"
+                  theme="dark"
+                  :offset="40"
+                >
+                  <div class="item">我是文字内容</div>
                 </tooltip>
               </div>
-            </template>
-            <style scoped lang="less">
-            .tooltip-container {
-              height: 100px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              cursor: pointer;
+            </div>
+          </template>
 
-              .tooltip-content {
-                border: 1px solid gray;
-                border-radius: 4px;
+          <script setup>
+          const props = defineProps({
+            refreshTooltip: {
+              type: Boolean,
+              default: false,
+            },
+          });
+          </script>
+
+          <style lang="less" scoped>
+          .wrapper {
+            display: flex;
+
+            .block {
+              flex: 1;
+              margin: 50px 120px;
+
+              .text {
+                width: 100%;
+                font-size: 14px;
+                color: gray;
+                text-align: center;
+                margin-bottom: 15px;
+              }
+
+              .item {
+                width: 100%;
+                height: 100px;
                 display: flex;
-                justify-content: center;
                 align-items: center;
-                padding: 8px;
+                justify-content: center;
+                cursor: pointer;
+                border: 1px solid #ebebeb;
+                border-radius: 2px;
               }
             }
+          }
+          </style>
 
-            .item {
-              width: 75px;
-              height: 75px;
-              border: 1px solid gray;
-              margin: 100px auto;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              cursor: pointer;
-            }
-
-            .cont {
-              height: 75px;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-            }
-            </style>
       `,
     },
     {
@@ -249,62 +259,39 @@ export default {
         desc: "在鼠标移动频率较高的区域,频繁触发tooltip可能会造成困扰,通过设置触发延迟让他的出现次数减少",
       },
       code: `
-            <template>
-              <div style="margin-top: 50px" class="cont">
-                <tooltip placement="top" content="我悬浮在上边~">
-                  <div class="item">上</div>
-                </tooltip>
-              </div>
-              <div style="margin: 50px 0; gap: 150px" class="cont">
-                <tooltip placement="left" content="我悬浮在左边~">
-                  <div class="item">左</div>
-                </tooltip>
-                <tooltip placement="right" content="我悬浮在右边~">
-                  <div class="item">右</div>
-                </tooltip>
-              </div>
-              <div style="margin-bottom: 50px" class="cont">
-                <tooltip placement="bottom" content="我悬浮在下边~">
-                  <div class="item">下</div>
-                </tooltip>
-              </div>
-            </template>
-            <style scoped lang="less">
-            .tooltip-container {
-              height: 100px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              cursor: pointer;
+          <template>
+            <tooltip
+              content="我是文字提示~"
+              :refreshTooltip="refreshTooltip"
+              :openDelay="450"
+            >
+              <div class="item">我是文字内容</div>
+            </tooltip>
+          </template>
 
-              .tooltip-content {
-                border: 1px solid gray;
-                border-radius: 4px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                padding: 8px;
-              }
-            }
+          <script setup>
+          const props = defineProps({
+            refreshTooltip: {
+              type: Boolean,
+              default: false,
+            },
+          });
+          </script>
 
-            .item {
-              width: 75px;
-              height: 75px;
-              border: 1px solid gray;
-              margin: 100px auto;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              cursor: pointer;
-            }
+          <style scoped>
+          .item {
+            width: 150px;
+            height: 100px;
+            margin: 70px auto;
+            border: 1px solid #ebebeb;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+          }
+          </style>
 
-            .cont {
-              height: 75px;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-            }
-            </style>
       `,
     },
     {
@@ -314,62 +301,52 @@ export default {
         desc: "三角形尖端到绑定元素的垂直距离,默认值为20(px)",
       },
       code: `
-            <template>
-              <div style="margin-top: 50px" class="cont">
-                <tooltip placement="top" content="我悬浮在上边~">
-                  <div class="item">上</div>
+          <template>
+            <div class="wrapper">
+              <div class="block" v-for="val in arr" :key="val">
+                <tooltip
+                  content="我是文字提示~"
+                  :refreshTooltip="refreshTooltip"
+                  :offset="val"
+                >
+                  <div class="item">{{ val }}</div>
                 </tooltip>
               </div>
-              <div style="margin: 50px 0; gap: 150px" class="cont">
-                <tooltip placement="left" content="我悬浮在左边~">
-                  <div class="item">左</div>
-                </tooltip>
-                <tooltip placement="right" content="我悬浮在右边~">
-                  <div class="item">右</div>
-                </tooltip>
-              </div>
-              <div style="margin-bottom: 50px" class="cont">
-                <tooltip placement="bottom" content="我悬浮在下边~">
-                  <div class="item">下</div>
-                </tooltip>
-              </div>
-            </template>
-            <style scoped lang="less">
-            .tooltip-container {
-              height: 100px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              cursor: pointer;
+            </div>
+          </template>
 
-              .tooltip-content {
-                border: 1px solid gray;
-                border-radius: 4px;
+          <script setup>
+          const props = defineProps({
+            refreshTooltip: {
+              type: Boolean,
+              default: false,
+            },
+          });
+          const arr = [20, 30, 40, 50, 60, 70, 80];
+          </script>
+
+          <style lang="less" scoped>
+          .wrapper {
+            display: flex;
+
+            .block {
+              flex: 1;
+              margin: 120px 20px 50px 20px;
+
+              .item {
+                width: 100%;
+                height: 50px;
                 display: flex;
-                justify-content: center;
                 align-items: center;
-                padding: 8px;
+                justify-content: center;
+                cursor: pointer;
+                border: 1px solid #ebebeb;
+                border-radius: 2px;
               }
             }
+          }
+          </style>
 
-            .item {
-              width: 75px;
-              height: 75px;
-              border: 1px solid gray;
-              margin: 100px auto;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              cursor: pointer;
-            }
-
-            .cont {
-              height: 75px;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-            }
-            </style>
       `,
     },
   ],

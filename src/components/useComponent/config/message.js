@@ -53,17 +53,16 @@ export default {
             </div>
           </template>
 
-          <script setup name="message1">
-          import { getCurrentInstance } from 'vue'
+          <script setup>
+          import { getCurrentInstance } from "vue";
 
           const { proxy } = getCurrentInstance();
 
-          const handleClick = e => {
+          const handleClick = (e) => {
             proxy.$message({
-              info: '这是一段默认的消息提示'
-            })
-          }
-
+              info: "这是一段默认的消息提示",
+            });
+          };
           </script>
 
           <style scoped lang="less">
@@ -88,7 +87,6 @@ export default {
           }
           </style>
 
-
       `,
     },
     {
@@ -100,24 +98,25 @@ export default {
       code: `
           <template>
             <div class="wrapper">
-              <div class="btn" @click="handleClick(item)" v-for="item in arr" :key="item">{{ item }}</div>
+              <div class="btn" @click="handleClick(item)" v-for="item in arr" :key="item">
+                {{ item }}
+              </div>
             </div>
           </template>
 
-          <script setup name="message2">
-          import { getCurrentInstance } from 'vue'
+          <script setup>
+          import { getCurrentInstance } from "vue";
 
           const { proxy } = getCurrentInstance();
 
-          const handleClick = type => {
+          const handleClick = (type) => {
             proxy.$message({
-              info: '消息提示',
-              type
-            })
-          }
+              info: "消息提示",
+              type,
+            });
+          };
 
-          const arr = ['success', 'error', 'warning', 'info']
-
+          const arr = ["success", "error", "warning", "info"];
           </script>
 
           <style scoped lang="less">
@@ -142,6 +141,7 @@ export default {
             }
           }
           </style>
+
       `,
     },
     {
@@ -157,17 +157,19 @@ export default {
             </div>
           </template>
 
-          <script setup name="message1">
-          import { getCurrentInstance } from 'vue'
+          <script setup>
+          import { getCurrentInstance } from "vue";
 
           const { proxy } = getCurrentInstance();
 
-          const handleClick = e => {
+          const handleClick = (e) => {
             proxy.$message({
-              info: '这是一段默认的消息提示'
-            })
-          }
-
+              info: "这是一段的消息提示",
+              type: "success",
+              showClose: true,
+              delay: 15000,
+            });
+          };
           </script>
 
           <style scoped lang="less">
@@ -191,7 +193,6 @@ export default {
             }
           }
           </style>
-
 
       `,
     },

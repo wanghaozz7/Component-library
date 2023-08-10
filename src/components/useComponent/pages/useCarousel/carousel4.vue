@@ -1,8 +1,7 @@
 <template>
   <div class="carousel-container">
     <carousel showArrow="hover">
-      <carousel-item v-for="(url, idx) in imgList" :key="url
-      ">
+      <carousel-item v-for="(url, idx) in imgList" :key="url">
         <div class="carousel-item"><img :src="url" /></div>
       </carousel-item>
     </carousel>

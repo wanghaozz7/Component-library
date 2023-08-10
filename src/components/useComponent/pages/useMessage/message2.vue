@@ -1,23 +1,24 @@
 <template>
   <div class="wrapper">
-    <div class="btn" @click="handleClick(item)" v-for="item in arr" :key="item">{{ item }}</div>
+    <div class="btn" @click="handleClick(item)" v-for="item in arr" :key="item">
+      {{ item }}
+    </div>
   </div>
 </template>
 
-<script setup name="message2">
-import { getCurrentInstance } from 'vue'
+<script setup>
+import { getCurrentInstance } from "vue";
 
 const { proxy } = getCurrentInstance();
 
-const handleClick = type => {
+const handleClick = (type) => {
   proxy.$message({
-    info: `消息提示`,
-    type
-  })
-}
+    info: "消息提示",
+    type,
+  });
+};
 
-const arr = ['success', 'error', 'warning', 'info']
-
+const arr = ["success", "error", "warning", "info"];
 </script>
 
 <style scoped lang="less">

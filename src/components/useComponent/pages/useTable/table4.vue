@@ -1,11 +1,22 @@
 <template>
-  <div style="padding: 15px;">
-    <table-list :data="tableData1" :out-side-border="true" :border="true" :height="250" style="margin-bottom: 25px;">
+  <div style="padding: 15px">
+    <table-list
+      :data="tableData1"
+      :out-side-border="true"
+      :border="true"
+      :height="250"
+      style="margin-bottom: 25px"
+    >
       <table-column prop="name" label="姓名" />
       <table-column prop="age" label="年龄" />
       <table-column prop="address" label="地址" />
     </table-list>
-    <table-list :data="tableData2" :out-side-border="true" :border="true" :height="250">
+    <table-list
+      :data="tableData2"
+      :out-side-border="true"
+      :border="true"
+      :height="250"
+    >
       <table-column prop="name" label="姓名" />
       <table-column prop="age" label="年龄" />
       <table-column prop="address" label="地址" />
@@ -98,7 +109,4 @@ const tableData2 = [
     address: "上海市静安区彭浦镇",
   },
 ];
-
 </script>
-
-<style scoped lang="less"></style>

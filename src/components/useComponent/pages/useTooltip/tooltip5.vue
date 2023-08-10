@@ -1,7 +1,11 @@
 <template>
   <div class="wrapper">
     <div class="block" v-for="val in arr" :key="val">
-      <tooltip content="我是文字提示~" :refreshTooltip="refreshTooltip" :offset="val">
+      <tooltip
+        content="我是文字提示~"
+        :refreshTooltip="refreshTooltip"
+        :offset="val"
+      >
         <div class="item">{{ val }}</div>
       </tooltip>
     </div>
@@ -15,11 +19,11 @@ const props = defineProps({
     default: false,
   },
 });
-const arr = [20, 30, 40, 50, 60, 70, 80]
+const arr = [20, 30, 40, 50, 60, 70, 80];
 </script>
 
-<style scoped>
-.wrapper {  
+<style lang="less" scoped>
+.wrapper {
   display: flex;
 
   .block {
@@ -37,7 +41,5 @@ const arr = [20, 30, 40, 50, 60, 70, 80]
       border-radius: 2px;
     }
   }
-
-
 }
 </style>

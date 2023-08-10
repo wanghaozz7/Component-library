@@ -1,10 +1,18 @@
 <template>
-  <mind :tree="tree" @treeChange="handleTreeChange" :maxWidth="1014" @nodeClick="handleNodeClick"
-    @nodeEdit="handleNodeEdit" @addNode="handleAddNode" @deleteNode="handleDeleteNode" @dragNodeStart="handleDragStart"
-    @dragNodeEnd="handleDragEnd" />
+  <mind
+    :tree="tree"
+    @treeChange="handleTreeChange"
+    :maxWidth="1014"
+    @nodeClick="handleNodeClick"
+    @nodeEdit="handleNodeEdit"
+    @addNode="handleAddNode"
+    @deleteNode="handleDeleteNode"
+    @dragNodeStart="handleDragStart"
+    @dragNodeEnd="handleDragEnd"
+  />
 </template>
 
-<script setup name="mind1">
+<script setup>
 let tree = {
   label: "植物",
   id: "植物",
@@ -45,7 +53,7 @@ let tree = {
 };
 const handleTreeChange = (newTree) => {
   tree = newTree;
-  console.log('treeChange', tree);
+  console.log("treeChange", tree);
 };
 const handleNodeClick = (node) => {
   console.log("click", node);

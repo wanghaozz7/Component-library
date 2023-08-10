@@ -30,5 +30,3 @@ const tableData = [
   },
 ];
 </script>
-
-<style scoped lang="less"></style>

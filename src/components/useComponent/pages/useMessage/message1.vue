@@ -4,17 +4,16 @@
   </div>
 </template>
 
-<script setup name="message1">
-import { getCurrentInstance } from 'vue'
+<script setup>
+import { getCurrentInstance } from "vue";
 
 const { proxy } = getCurrentInstance();
 
-const handleClick = e => {
+const handleClick = (e) => {
   proxy.$message({
-    info: '这是一段默认的消息提示'
-  })
-}
-
+    info: "这是一段默认的消息提示",
+  });
+};
 </script>
 
 <style scoped lang="less">

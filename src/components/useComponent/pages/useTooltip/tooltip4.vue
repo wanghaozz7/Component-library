@@ -1,5 +1,9 @@
 <template>
-  <tooltip content="我是文字提示~" :refreshTooltip="refreshTooltip" :openDelay="450">
+  <tooltip
+    content="我是文字提示~"
+    :refreshTooltip="refreshTooltip"
+    :openDelay="450"
+  >
     <div class="item">我是文字内容</div>
   </tooltip>
 </template>

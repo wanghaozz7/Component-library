@@ -7,7 +7,7 @@
   />
 </template>
 
-<script setup name="sidebar2">
+<script setup>
 const treeData = [
   {
     label: "动物动物动物动物动物动物动物动物",
@@ -185,5 +185,3 @@ const handleCheckedNodeArrayChange = (arr) => {
   console.log("handleCheckedNodeArrayChange", arr);
 };
 </script>
-
-<style scoped lang="less"></style>

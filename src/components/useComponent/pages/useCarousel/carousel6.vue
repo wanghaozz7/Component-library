@@ -1,7 +1,12 @@
 <template>
   <div class="carousel-container">
-    <carousel :circular="true" :autoRolling="true" showArrow="hover" @change="handleChange"
-      @changeAfterAnimation="handleChangeAfterAnimation">
+    <carousel
+      :circular="true"
+      :autoRolling="true"
+      showArrow="hover"
+      @change="handleChange"
+      @changeAfterAnimation="handleChangeAfterAnimation"
+    >
       <carousel-item v-for="(url, idx) in imgList" :key="url">
         <div class="carousel-item"><img :src="url" /></div>
       </carousel-item>
@@ -19,12 +24,12 @@ const imgList = [
 ];
 
 const handleChange = (preIdx, curIdx) => {
-  console.log(preIdx, curIdx)
-}
+  console.log(preIdx, curIdx);
+};
 
 const handleChangeAfterAnimation = (pre, cur) => {
   console.log(pre, cur);
-}
+};
 </script>
 
 <style scoped lang="less">

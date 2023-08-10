@@ -2,14 +2,24 @@
   <div>
     <div class="row">
       <div class="col">
-        <table-list :data="tableData" :out-side-border="false" size="small" :border="true">
+        <table-list
+          :data="tableData"
+          :out-side-border="false"
+          size="small"
+          :border="true"
+        >
           <table-column prop="name" label="姓名" />
           <table-column prop="age" label="年龄" />
           <table-column prop="address" label="地址" />
         </table-list>
       </div>
       <div class="col">
-        <table-list :data="tableData" :out-side-border="false" size="medium" :border="true">
+        <table-list
+          :data="tableData"
+          :out-side-border="false"
+          size="medium"
+          :border="true"
+        >
           <table-column prop="name" label="姓名" />
           <table-column prop="age" label="年龄" />
           <table-column prop="address" label="地址" />
@@ -17,7 +27,12 @@
       </div>
     </div>
     <div>
-      <table-list :data="tableData" :out-side-border="false" size="big" :border="true">
+      <table-list
+        :data="tableData"
+        :out-side-border="false"
+        size="big"
+        :border="true"
+      >
         <table-column prop="name" label="姓名" />
         <table-column prop="age" label="年龄" />
         <table-column prop="address" label="地址" />

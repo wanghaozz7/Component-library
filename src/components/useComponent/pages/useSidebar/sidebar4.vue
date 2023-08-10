@@ -9,7 +9,7 @@
   />
 </template>
 
-<script setup name="sidebar4">
+<script setup>
 const treeData = [
   {
     label: "Animal",
@@ -196,5 +196,3 @@ const nodeStyle = {
   paddingRight: "5px",
 };
 </script>
-
-<style scoped lang="less"></style>

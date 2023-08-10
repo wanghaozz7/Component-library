@@ -7,7 +7,7 @@
   </div>
 </template>
 
-<script setup name="sidebar1">
+<script setup>
 const treeData = [
   {
     label: "动物动物动物动物动物动物动物动物",

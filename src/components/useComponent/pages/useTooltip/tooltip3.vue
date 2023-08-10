@@ -2,13 +2,23 @@
   <div class="wrapper">
     <div class="block">
       <div class="text">light</div>
-      <tooltip content="我是文字提示~" :refreshTooltip="refreshTooltip" theme="light" :offset="40">
+      <tooltip
+        content="我是文字提示~"
+        :refreshTooltip="refreshTooltip"
+        theme="light"
+        :offset="40"
+      >
         <div class="item">我是文字内容</div>
       </tooltip>
     </div>
     <div class="block">
       <div class="text">dark</div>
-      <tooltip content="我是文字提示~" :refreshTooltip="refreshTooltip" theme="dark" :offset="40">
+      <tooltip
+        content="我是文字提示~"
+        :refreshTooltip="refreshTooltip"
+        theme="dark"
+        :offset="40"
+      >
         <div class="item">我是文字内容</div>
       </tooltip>
     </div>
@@ -24,7 +34,7 @@ const props = defineProps({
 });
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .wrapper {
   display: flex;
 
@@ -51,7 +61,5 @@ const props = defineProps({
       border-radius: 2px;
     }
   }
-
-
 }
 </style>

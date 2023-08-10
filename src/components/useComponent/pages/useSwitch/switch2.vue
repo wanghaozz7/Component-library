@@ -1,7 +1,6 @@
 <template>
   <div class="wrapper">
     <div class="row">
-
       <Switch @change="handleChange" class="item" />
       <Switch @change="handleChange" :width="120" :height="40" class="item" />
       <Switch @change="handleChange" :width="150" :height="50" class="item" />
@@ -9,14 +8,10 @@
   </div>
 </template>
 
-<script setup name="swtich2">
-
-
-
-const handleChange = value => {
+<script setup>
+const handleChange = (value) => {
   console.log(value);
-}
-
+};
 </script>
 
 <style scoped lang="less">
