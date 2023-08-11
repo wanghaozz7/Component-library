@@ -178,10 +178,10 @@ const treeData = [
 ];
 
 const handleNodeCheckedChange = (node) => {
-  console.log("nodeCheckedChange", node);
+  // console.log("nodeCheckedChange", node);
 };
 
 const handleCheckedNodeArrayChange = (arr) => {
-  console.log("handleCheckedNodeArrayChange", arr);
+  // console.log("handleCheckedNodeArrayChange", arr);
 };
 </script>

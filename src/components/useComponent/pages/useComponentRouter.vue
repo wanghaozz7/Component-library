@@ -1,14 +1,16 @@
 <template>
   <use-component :title="config.title" :lists="config.lists">
-    <show-component
-      v-for="component in selectedArr"
-      :key="getProp(component, 'title')"
-      :code="getProp(component, 'code')"
-      :title="getProp(component, 'title')"
-      :refresh="refreshTooltip"
-    >
-      <component :is="component" :refreshTooltip="refreshTooltip" />
-    </show-component>
+    <transition-group name="box" @enter="onEnter">
+      <show-component
+        v-for="component in selectedArr"
+        :key="getProp(component, 'title')"
+        :code="getProp(component, 'code')"
+        :title="getProp(component, 'title')"
+        :refresh="refreshTooltip"
+      >
+        <component :is="component" :refreshTooltip="refreshTooltip" />
+      </show-component>
+    </transition-group>
   </use-component>
 </template>
 
@@ -69,6 +71,10 @@ const getProp = (name, arg) => {
   })[arg];
 };
 
+const onEnter = (e) => {
+  console.log("e", e);
+};
+
 watch(
   () => props.scrollOffset,
   (newValue, oldValue) => {
@@ -76,3 +82,36 @@ watch(
   }
 );
 </script>
+
+<style>
+.box {
+  width: 100px;
+  height: 100px;
+  background-color: blue;
+}
+
+.box-enter-from {
+  opacity: 0;
+  transform: translateX(15px);
+}
+
+.box-enter-active {
+  transition: all 0.3s ease;
+}
+
+.box-enter-to {
+  opacity: 1;
+}
+
+.box-leave-from {
+}
+
+.box-leave-active {
+  transition: all 0.3s ease;
+}
+
+.box-leave-to {
+  opacity: 0;
+  transform: translateX(15px);
+}
+</style>

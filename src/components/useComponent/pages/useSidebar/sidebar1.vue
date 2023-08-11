@@ -177,6 +177,6 @@ const treeData = [
   },
 ];
 const handleNodeCheckedChange = (node) => {
-  console.log("nodeCheckedChange", node);
+  // console.log("nodeCheckedChange", node);
 };
 </script>

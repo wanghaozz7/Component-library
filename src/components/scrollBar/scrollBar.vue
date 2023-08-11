@@ -261,66 +261,7 @@ const scrollAnimate = (change) => {
   }
 };
 
-// const preventScroll = (dom) => {
-//   if (dom.jquery) {
-//     dom = dom.get(0);
-//   }
-//   if (navigator.userAgent.indexOf("Firefox") >= 0) {
-//     //firefox
-
-//     dom.addEventListener(
-//       "DOMMouseScroll",
-//       function (e) {
-//         // dom.scrollTop += e.detail > 0 ? 60 : -60;
-
-//         e.preventDefault();
-//       },
-//       false
-//     );
-//   } else {
-//     dom.onmousewheel = function (e) {
-//       e = e || window.event;
-//       // dom.scrollTop += e.wheelDelta > 0 ? -60 : 60;
-//       return false;
-//     };
-//   }
-// };
-
-// const removeScroll = (dom) => {
-//   // const dom = document.getElementById(idValue);
-//   let eventType = "mousewheel";
-//   if (document.mozFullScreen !== undefined) {
-//     eventType = "DOMMouseScroll";
-//   }
-//   if (dom) {
-//     dom.addEventListener(eventType, function (event) {
-//       if (event) {
-//         let scrollTop = this.scrollTop,
-//           scrollHeight = this.scrollHeight,
-//           height = this.clientHeight;
-
-//         const delta = event.wheelDelta
-//           ? event.wheelDelta
-//           : -(event.detail || 0);
-
-//         if (
-//           (delta > 0 && scrollTop <= delta) ||
-//           (delta < 0 && scrollHeight - height - scrollTop <= -1 * delta)
-//         ) {
-//           // IE浏览器下滚动会跨越边界直接影响父级滚动，因此，临界时候手动边界滚动定位
-//           this.scrollTop = delta > 0 ? 0 : scrollHeight;
-//           // 向上滚 || 向下滚
-//           event.preventDefault();
-//         }
-//       }
-//     });
-//   }
-// };
-
 onMounted(() => {
-  // const scroll = ctx.$refs.scroll;
-  // preventScroll(scroll);
-  // removeScroll(scroll);
   if (props.showScrollBar !== "none") {
     const scrollBar = ctx.$refs.scrollBar;
     mouseDownAndMove(scrollBar, handleMouseDownAndMove);

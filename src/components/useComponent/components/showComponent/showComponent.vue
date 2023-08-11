@@ -1,31 +1,49 @@
 <template>
-  <div class="title">{{ title.text }}</div>
-  <div class="desc">{{ title.desc }}</div>
-  <card class="card-container">
-    <template v-slot:header>
-      <div class="header">
-        <slot />
-      </div>
-    </template>
-    <div class="code-area" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
-      <div class="code" :style="codeStyle" ref="code">
-        <tooltip content="复制代码" placement="left" :refreshTooltip="refresh" :openDelay="500" :closeDelay="0"
-          @enter="handleTooltipShow" @leave="handleTooltipClose">
-          <div class="copy-button" @click="copyCode" :style="getCopyButtonStyle">
-            <div class="icon" />
-          </div>
-        </tooltip>
-      </div>
-      <div class="extention" @click="handleClick" :style="extentionStyle">
-        <div class="button">
-          <div class="icon" :style="iconStyle"></div>
-          <div class="text">
-            <span v-show="!showCode">显示</span><span v-show="showCode">收起</span>代码
+  <div>
+    <div class="title">{{ title.text }}</div>
+    <div class="desc">{{ title.desc }}</div>
+    <card class="card-container">
+      <template v-slot:header>
+        <div class="header">
+          <slot />
+        </div>
+      </template>
+      <div
+        class="code-area"
+        @mouseenter="handleMouseEnter"
+        @mouseleave="handleMouseLeave"
+      >
+        <div class="code" :style="codeStyle" ref="code">
+          <tooltip
+            content="复制代码"
+            placement="left"
+            :refreshTooltip="refresh"
+            :openDelay="500"
+            :closeDelay="0"
+            @enter="handleTooltipShow"
+            @leave="handleTooltipClose"
+          >
+            <div
+              class="copy-button"
+              @click="copyCode"
+              :style="getCopyButtonStyle"
+            >
+              <div class="icon" />
+            </div>
+          </tooltip>
+        </div>
+        <div class="extention" @click="handleClick" :style="extentionStyle">
+          <div class="button">
+            <div class="icon" :style="iconStyle"></div>
+            <div class="text">
+              <span v-show="!showCode">显示</span
+              ><span v-show="showCode">收起</span>代码
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </card>
+    </card>
+  </div>
 </template>
 
 <script setup name="show-component">
