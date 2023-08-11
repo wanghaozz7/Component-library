@@ -2,27 +2,16 @@
   <div class="homeViewContainer">
     <scroll-bar showScrollBar="hover">
       <div class="sideBar">
-        <side-bar
-          :sideBarData="sideBarData"
-          :defaultUnfoldAll="true"
-          :defaultCheckedAll="false"
-          :rowHeight="40"
-          :showCheckBox="true"
-          @nodeCheckedChange="handleNodeCheckedChange"
-        />
+        <side-bar :sideBarData="sideBarData" :defaultUnfoldAll="true" :defaultCheckedAll="false" :rowHeight="40"
+          :showCheckBox="true" @nodeCheckedChange="handleNodeCheckedChange" />
       </div>
     </scroll-bar>
     <div class="mainContent">
       <scroll-bar showScrollBar="hover" @offsetChange="handleOffsetChange">
         <div class="block">
-          <transition-group name="box" appear>
-            <use-component-router
-              v-for="component in componentStack"
-              :key="component"
-              :selectedArr="component.arr"
-              :scrollOffset="scrollOffset"
-              :componentName="component.name"
-            />
+          <transition-group name="translate-right-down" appear>
+            <use-component-router v-for="component in componentStack" :key="component" :selectedArr="component.arr"
+              :scrollOffset="scrollOffset" :componentName="component.name" />
           </transition-group>
         </div>
       </scroll-bar>

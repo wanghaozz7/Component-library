@@ -1,13 +1,8 @@
 <template>
   <use-component :title="config.title" :lists="config.lists">
-    <transition-group name="box" @enter="onEnter">
-      <show-component
-        v-for="component in selectedArr"
-        :key="getProp(component, 'title')"
-        :code="getProp(component, 'code')"
-        :title="getProp(component, 'title')"
-        :refresh="refreshTooltip"
-      >
+    <transition-group name="translate-right-down">
+      <show-component v-for="component in selectedArr" :key="getProp(component, 'title')"
+        :code="getProp(component, 'code')" :title="getProp(component, 'title')" :refresh="refreshTooltip">
         <component :is="component" :refreshTooltip="refreshTooltip" />
       </show-component>
     </transition-group>
@@ -24,6 +19,7 @@ import mindConfig from "../config/mind";
 import switchConfig from "../config/switch";
 import messageConfig from "../config/message";
 import sideBarConfig from "../config/sidebar";
+import transitionConfig from "../config/transition";
 
 const props = defineProps({
   selectedArr: {
@@ -58,6 +54,8 @@ const getConfig = () => {
       return messageConfig;
     case "sidebar":
       return sideBarConfig;
+    case 'transition':
+      return transitionConfig;
   }
 };
 
@@ -71,9 +69,6 @@ const getProp = (name, arg) => {
   })[arg];
 };
 
-const onEnter = (e) => {
-  console.log("e", e);
-};
 
 watch(
   () => props.scrollOffset,
@@ -83,35 +78,3 @@ watch(
 );
 </script>
 
-<style>
-.box {
-  width: 100px;
-  height: 100px;
-  background-color: blue;
-}
-
-.box-enter-from {
-  opacity: 0;
-  transform: translateX(15px);
-}
-
-.box-enter-active {
-  transition: all 0.3s ease;
-}
-
-.box-enter-to {
-  opacity: 1;
-}
-
-.box-leave-from {
-}
-
-.box-leave-active {
-  transition: all 0.3s ease;
-}
-
-.box-leave-to {
-  opacity: 0;
-  transform: translateX(15px);
-}
-</style>

@@ -5,8 +5,10 @@ import mindConfig from "./mind";
 import switchConfig from "./switch";
 import messageConfig from "./message";
 import sidebarConfig from "./sidebar";
+import transitionConfig from "./transition";
 
 const arr = [
+  transitionConfig,
   sidebarConfig,
   mindConfig,
   messageConfig,
