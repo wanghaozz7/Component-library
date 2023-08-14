@@ -15,19 +15,28 @@
       >
         <div class="code" :style="codeStyle" ref="code">
           <i-tooltip
-            content="复制代码"
-            placement="left"
+            content="收起代码"
+            placement="bottom"
             :refreshTooltip="refresh"
             :openDelay="500"
             :closeDelay="0"
-            @enter="handleTooltipShow"
-            @leave="handleTooltipClose"
           >
             <div
-              class="copy-button"
-              @click="copyCode"
-              :style="getCopyButtonStyle"
+              class="unfold button"
+              @click="handleClick"
+              :style="getButtonStyle"
             >
+              <div class="icon" />
+            </div>
+          </i-tooltip>
+          <i-tooltip
+            content="复制代码"
+            placement="bottom"
+            :refreshTooltip="refresh"
+            :openDelay="500"
+            :closeDelay="0"
+          >
+            <div class="copy button" @click="copyCode" :style="getButtonStyle">
               <div class="icon" />
             </div>
           </i-tooltip>
@@ -72,7 +81,6 @@ const props = defineProps({
 
 let showCode = ref(false);
 let isHover = ref(false);
-let showTooltip = ref(false);
 
 const { ctx, proxy } = getCurrentInstance();
 let maxHeight,
@@ -99,14 +107,10 @@ const extentionStyle = computed(() => {
     borderTop,
   };
 });
-const getCopyButtonStyle = computed(() => {
+const getButtonStyle = computed(() => {
   const opacity = isHover.value ? 1 : 0;
-  const backgroundColor = showTooltip.value
-    ? "rgba(199, 199, 199, 0.881)"
-    : "#eee";
   return {
     opacity,
-    backgroundColor,
   };
 });
 
@@ -120,14 +124,6 @@ const handleMouseEnter = (e) => {
 
 const handleMouseLeave = (e) => {
   isHover.value = false;
-};
-
-const handleTooltipShow = (e) => {
-  showTooltip.value = true;
-};
-
-const handleTooltipClose = (e) => {
-  showTooltip.value = false;
 };
 
 const getCodeArea = () => {
@@ -232,9 +228,8 @@ onMounted(() => {
       background-color: #fafafa;
       position: relative;
 
-      .copy-button {
+      .button {
         position: absolute;
-        right: 15px;
         top: 15px;
         width: 35px;
         height: 35px;
@@ -244,11 +239,26 @@ onMounted(() => {
         align-items: center;
         cursor: pointer;
         transition: all 0.3s;
-
+        background-color: #eee;
+        &:hover {
+          background-color: rgba(199, 199, 199, 0.881);
+        }
         .icon {
           width: 20px;
           height: 20px;
+        }
+      }
+
+      .copy {
+        right: 15px;
+        .icon {
           background: center / contain no-repeat url(@/assets/icons/copy.svg);
+        }
+      }
+      .unfold {
+        right: 60px;
+        .icon {
+          background: center / contain no-repeat url(@/assets/icons/unfold.svg);
         }
       }
     }
@@ -299,21 +309,5 @@ onMounted(() => {
       }
     }
   }
-}
-</style>
-
-<style>
-.normalCode {
-  height: 14px;
-  padding: 5px;
-  color: #409eff;
-}
-
-.word-key {
-  color: #606266;
-}
-
-.word-string {
-  color: #756bb1;
 }
 </style>

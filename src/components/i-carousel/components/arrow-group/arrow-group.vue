@@ -4,14 +4,14 @@
     @click="handleClick('goBack')"
     :style="getArrowStyle('left')"
   >
-    <img src="@/assets/icons/arrow-left.png" :style="getIconStyle('left')" />
+    <img src="@/assets/icons/arrow-left.svg" :style="getIconStyle('left')" />
   </div>
   <div
     class="arrow"
     @click="handleClick('goForward')"
     :style="getArrowStyle('right')"
   >
-    <img src="@/assets/icons/arrow-right.png" :style="getIconStyle('right')" />
+    <img src="@/assets/icons/arrow-right.svg" :style="getIconStyle('right')" />
   </div>
 </template>
 

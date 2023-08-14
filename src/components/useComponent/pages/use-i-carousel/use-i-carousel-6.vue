@@ -1,8 +1,8 @@
 <template>
   <div class="carousel-container">
     <i-carousel
-      :circular="true"
-      :autoRolling="true"
+      circular
+      autoRolling
       showArrow="hover"
       @change="handleChange"
       @changeAfterAnimation="handleChangeAfterAnimation"

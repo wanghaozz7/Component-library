@@ -72,7 +72,7 @@ export default {
   ],
   children: [
     {
-      id: "use-i-sidebar-1",
+      id: "use-i-side-bar-1",
       title: {
         text: "基础用法",
         desc: "侧边导航栏的基础用法 默认会展开所有节点",
@@ -264,7 +264,7 @@ export default {
       `,
     },
     {
-      id: "use-i-sidebar-2",
+      id: "use-i-side-bar-2",
       title: {
         text: "showCheckBox 显示勾选框",
         desc: "该字段为true情况下 侧边栏变成了一个树形结构多选框 可以以追加的方式监听所有被选择的叶子节点",
@@ -461,7 +461,7 @@ export default {
       `,
     },
     {
-      id: "use-i-sidebar-3",
+      id: "use-i-side-bar-3",
       title: {
         text: "defaultUnfold(Checked) 默认状态",
         desc: "为所有节点选择统一的状态(非叶子节点是否展开 勾选框状态下是否全选)",
@@ -660,7 +660,7 @@ export default {
       `,
     },
     {
-      id: "use-i-sidebar-4",
+      id: "use-i-side-bar-4",
       title: {
         text: "nodeStyle 节点样式",
         desc: "更改节点的默认样式",
@@ -868,7 +868,7 @@ export default {
       `,
     },
     {
-      id: "use-i-sidebar-5",
+      id: "use-i-side-bar-5",
       title: {
         text: "nodeAttrs 节点状态",
         desc: "为了单个节点设置状态(是否默认展开、选中)",

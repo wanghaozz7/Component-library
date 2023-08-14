@@ -7,7 +7,7 @@
       :data="tableData"
       :out-side-border="false"
       :row-class-name="getRowClassName"
-      :border="true"
+      border
     >
       <table-column prop="name" label="姓名" :width="180" />
       <table-column prop="age" label="年龄" :width="180" />
@@ -20,7 +20,7 @@
       :data="tableData"
       :out-side-border="false"
       :row-class-name="getStripeClass"
-      :border="true"
+      border
     >
       <table-column prop="name" label="姓名" :width="180" />
       <table-column prop="age" label="年龄" :width="180" />

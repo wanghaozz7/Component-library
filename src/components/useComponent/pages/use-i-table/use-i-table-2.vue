@@ -1,5 +1,5 @@
 <template>
-  <i-table :data="tableData" :out-side-border="false" :stripe="true">
+  <i-table :data="tableData" :out-side-border="false" stripe>
     <table-column prop="name" label="姓名" />
     <table-column prop="age" label="年龄" />
     <table-column prop="address" label="地址" />

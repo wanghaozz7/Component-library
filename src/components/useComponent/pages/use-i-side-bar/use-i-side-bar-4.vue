@@ -1,9 +1,9 @@
 <template>
   <i-side-bar
     :sideBarData="treeData"
-    :showCheckBox="true"
     :nodeStyle="nodeStyle"
     :rowHeight="40"
+    showCheckBox
     @nodeCheckedChange="handleNodeCheckedChange"
     @checkedNodeArrayChange="handleCheckedNodeArrayChange"
   />

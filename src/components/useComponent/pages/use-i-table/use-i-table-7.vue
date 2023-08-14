@@ -2,9 +2,9 @@
   <i-table
     :data="tableData"
     :out-side-border="false"
-    :border="true"
     :cell-style="getCellStyle"
     :showHeader="false"
+    border
   >
     <table-column prop="color1" label="color1" />
     <table-column prop="color2" label="color2" />

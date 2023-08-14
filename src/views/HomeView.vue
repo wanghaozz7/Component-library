@@ -4,10 +4,10 @@
       <div class="sideBar">
         <i-side-bar
           :sideBarData="sideBarData"
-          :defaultUnfoldAll="true"
           :defaultCheckedAll="false"
           :rowHeight="40"
-          :showCheckBox="true"
+          defaultUnfoldAll
+          showCheckBox
           @nodeCheckedChange="handleNodeCheckedChange"
         />
       </div>

@@ -58,7 +58,7 @@ const getConfig = () => {
       return switchConfig;
     case "use-i-message":
       return messageConfig;
-    case "use-i-sidebar":
+    case "use-i-side-bar":
       return sideBarConfig;
     case "use-i-transition":
       return transitionConfig;

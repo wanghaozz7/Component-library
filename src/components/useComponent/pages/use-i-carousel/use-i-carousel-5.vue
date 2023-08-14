@@ -1,6 +1,6 @@
 <template>
   <div class="carousel-container">
-    <i-carousel :autoRolling="true" :interval="2500" showArrow="hover">
+    <i-carousel autoRolling :interval="2500" showArrow="hover">
       <carousel-item v-for="(url, idx) in imgList" :key="url">
         <div class="carousel-item">
           <img :src="url" />
