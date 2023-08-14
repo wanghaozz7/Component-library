@@ -1,7 +1,12 @@
 <template>
-  <div class="wrapper">
+  <div>
     <div class="row">
-      <i-switch @change="handleChange" class="item" type="face" v-model="face" />
+      <i-switch
+        @change="handleChange"
+        class="item"
+        type="face"
+        v-model="face"
+      />
       <i-switch @change="handleChange" class="item" type="dog" v-model="dog" />
       <i-switch
         @change="handleChange"
@@ -35,7 +40,12 @@
         type="ripple"
         v-model="ripple"
       />
-      <i-switch @change="handleChange" class="item" type="roll" v-model="roll" />
+      <i-switch
+        @change="handleChange"
+        class="item"
+        type="roll"
+        v-model="roll"
+      />
     </div>
     <div class="row">
       <i-switch
@@ -100,21 +110,19 @@ const handleChange = (value) => {
 </script>
 
 <style scoped lang="less">
-.wrapper {
-  padding: 20px;
-
-  .row {
-    display: flex;
-    width: 100%;
-    box-sizing: border-box;
-    align-items: center;
-    border-bottom: 2px solid #fff;
-    background-color: rgb(187, 253, 187);
-    padding: 50px;
-
-    .item {
-      flex: 1;
-    }
+.row {
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  align-items: center;
+  border-bottom: 2px solid #fff;
+  background-color: rgb(187, 253, 187);
+  padding: 50px;
+  &:last-child {
+    border-bottom: 0px solid transparent;
+  }
+  .item {
+    flex: 1;
   }
 }
 </style>

@@ -26,6 +26,7 @@ import messageConfig from "../config/i-message";
 import sideBarConfig from "../config/i-side-bar";
 import transitionConfig from "../config/i-transition";
 import buttonConfig from "../config/i-button";
+import selectConfig from "../config/i-select";
 
 const props = defineProps({
   selectedArr: {
@@ -64,6 +65,8 @@ const getConfig = () => {
       return transitionConfig;
     case "use-i-button":
       return buttonConfig;
+    case "use-i-select":
+      return selectConfig;
   }
 };
 

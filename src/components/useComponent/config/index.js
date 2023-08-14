@@ -7,8 +7,10 @@ import messageConfig from "./i-message";
 import sidebarConfig from "./i-side-bar";
 import transitionConfig from "./i-transition";
 import buttonConfig from "./i-button";
+import selectConfig from "./i-select";
 
 const arr = [
+  selectConfig,
   buttonConfig,
   transitionConfig,
   sidebarConfig,
