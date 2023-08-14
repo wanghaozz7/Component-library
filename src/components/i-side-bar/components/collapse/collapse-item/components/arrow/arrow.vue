@@ -1,10 +1,6 @@
 <template>
   <div class="arrow-container">
-    <img
-      src="@/assets/icons/arrow-down.svg"
-      @click="handleClick"
-      :style="{ rotate: rotateAngle }"
-    />
+    <img src="@/assets/icons/arrow-down.svg" @click="handleClick" :style="{ rotate: rotateAngle }" />
   </div>
 </template>
 
@@ -38,8 +34,8 @@ const handleClick = () => emit("fold", !props.isFold);
   img {
     width: 100%;
     height: 100%;
-    cursor: pointer;
     transition: all 0.3s;
+    cursor: pointer;
   }
 }
 </style>

@@ -143,7 +143,6 @@
 .shrink-in-top-enter-to {
   transform: scaleY(1);
   transform-origin: top center;
-
 }
 
 .shrink-in-top-leave-from {

@@ -316,7 +316,7 @@ watch(
     z-index: 9999;
 
     .inner {
-      position: absolute;
+      position: absolute; 
       width: 0;
       height: 0;
       border: 7.5px solid transparent;
