@@ -1,20 +1,31 @@
 <template>
   <div class="homeViewContainer">
-    <scroll-bar showScrollBar="hover">
+    <i-scroll-bar showScrollBar="hover">
       <div class="sideBar">
-        <side-bar :sideBarData="sideBarData" :defaultUnfoldAll="true" :defaultCheckedAll="false" :rowHeight="40"
-          :showCheckBox="true" @nodeCheckedChange="handleNodeCheckedChange" />
+        <i-side-bar
+          :sideBarData="sideBarData"
+          :defaultUnfoldAll="true"
+          :defaultCheckedAll="false"
+          :rowHeight="40"
+          :showCheckBox="true"
+          @nodeCheckedChange="handleNodeCheckedChange"
+        />
       </div>
-    </scroll-bar>
+    </i-scroll-bar>
     <div class="mainContent">
-      <scroll-bar showScrollBar="hover" @offsetChange="handleOffsetChange">
+      <i-scroll-bar showScrollBar="hover" @offsetChange="handleOffsetChange">
         <div class="block">
           <transition-group name="translate-right-down" appear>
-            <use-component-router v-for="component in componentStack" :key="component" :selectedArr="component.arr"
-              :scrollOffset="scrollOffset" :componentName="component.name" />
+            <use-component-router
+              v-for="component in componentStack"
+              :key="component"
+              :selectedArr="component.arr"
+              :scrollOffset="scrollOffset"
+              :componentName="component.name"
+            />
           </transition-group>
         </div>
-      </scroll-bar>
+      </i-scroll-bar>
     </div>
   </div>
 </template>
@@ -22,7 +33,7 @@
 <script setup name="HomeView">
 import { reactive, ref } from "vue";
 
-import sideBarConfig from "@/components/useComponent/config/sideBarData";
+import sideBarConfig from "@/components/useComponent/config/index.js";
 
 const componentStack = reactive([]);
 let scrollOffset = ref(0);
@@ -32,9 +43,7 @@ const sideBarData = sideBarConfig.slice();
 const handleOffsetChange = (offset) => (scrollOffset.value = offset);
 
 const handleNodeCheckedChange = (node, type) => {
-  const component = node.id.split("-")[0];
-  const id = node.id.split("-")[1];
-
+  const component = node.id.slice(0, node.id.lastIndexOf("-"));
   let idx = componentStack.indexOf(
     componentStack.find((x) => {
       return x.name === component;

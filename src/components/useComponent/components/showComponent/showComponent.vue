@@ -2,7 +2,7 @@
   <div>
     <div class="title">{{ title.text }}</div>
     <div class="desc">{{ title.desc }}</div>
-    <card class="card-container">
+    <i-card class="card-container">
       <template v-slot:header>
         <div class="header">
           <slot />
@@ -14,7 +14,7 @@
         @mouseleave="handleMouseLeave"
       >
         <div class="code" :style="codeStyle" ref="code">
-          <tooltip
+          <i-tooltip
             content="复制代码"
             placement="left"
             :refreshTooltip="refresh"
@@ -30,7 +30,7 @@
             >
               <div class="icon" />
             </div>
-          </tooltip>
+          </i-tooltip>
         </div>
         <div class="extention" @click="handleClick" :style="extentionStyle">
           <div class="button">
@@ -42,7 +42,7 @@
           </div>
         </div>
       </div>
-    </card>
+    </i-card>
   </div>
 </template>
 

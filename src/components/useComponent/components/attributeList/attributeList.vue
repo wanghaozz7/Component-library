@@ -1,9 +1,21 @@
 <template>
   <h2 class="title">{{ title }}</h2>
-  <table-list :data="listData" :out-side-border="false" :header-cell-style="getHeaderCellStyle" :cell-style="getCellStyle"
-    :highlight-current-row="false" cell-empty-text="—" size="big">
-    <table-column v-for="col in columnList" :key="col" :label="col.label" :prop="col.prop" />
-  </table-list>
+  <i-table
+    :data="listData"
+    :out-side-border="false"
+    :header-cell-style="getHeaderCellStyle"
+    :cell-style="getCellStyle"
+    :highlight-current-row="false"
+    cell-empty-text="—"
+    size="big"
+  >
+    <table-column
+      v-for="col in columnList"
+      :key="col"
+      :label="col.label"
+      :prop="col.prop"
+    />
+  </i-table>
 </template>
 
 <script setup name="attribute-list">

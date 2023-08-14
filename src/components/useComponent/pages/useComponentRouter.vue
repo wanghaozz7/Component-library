@@ -1,8 +1,13 @@
 <template>
   <use-component :title="config.title" :lists="config.lists">
     <transition-group name="translate-right-down">
-      <show-component v-for="component in selectedArr" :key="getProp(component, 'title')"
-        :code="getProp(component, 'code')" :title="getProp(component, 'title')" :refresh="refreshTooltip">
+      <show-component
+        v-for="component in selectedArr"
+        :key="getProp(component, 'title')"
+        :code="getProp(component, 'code')"
+        :title="getProp(component, 'title')"
+        :refresh="refreshTooltip"
+      >
         <component :is="component" :refreshTooltip="refreshTooltip" />
       </show-component>
     </transition-group>
@@ -12,14 +17,15 @@
 <script setup name="use-component-router">
 import { watch, ref } from "vue";
 
-import tableConfig from "../config/table";
-import carouselConfig from "../config/carousel";
-import tooltipConfig from "../config/tooltip";
-import mindConfig from "../config/mind";
-import switchConfig from "../config/switch";
-import messageConfig from "../config/message";
-import sideBarConfig from "../config/sidebar";
-import transitionConfig from "../config/transition";
+import tableConfig from "../config/i-table";
+import carouselConfig from "../config/i-carousel";
+import tooltipConfig from "../config/i-tooltip";
+import mindConfig from "../config/i-mind";
+import switchConfig from "../config/i-switch";
+import messageConfig from "../config/i-message";
+import sideBarConfig from "../config/i-side-bar";
+import transitionConfig from "../config/i-transition";
+import buttonConfig from "../config/i-button";
 
 const props = defineProps({
   selectedArr: {
@@ -40,22 +46,24 @@ const props = defineProps({
 
 const getConfig = () => {
   switch (props.componentName) {
-    case "table":
+    case "use-i-table":
       return tableConfig;
-    case "tooltip":
+    case "use-i-tooltip":
       return tooltipConfig;
-    case "carousel":
+    case "use-i-carousel":
       return carouselConfig;
-    case "mind":
+    case "use-i-mind":
       return mindConfig;
-    case "switch":
+    case "use-i-switch":
       return switchConfig;
-    case "message":
+    case "use-i-message":
       return messageConfig;
-    case "sidebar":
+    case "use-i-sidebar":
       return sideBarConfig;
-    case 'transition':
+    case "use-i-transition":
       return transitionConfig;
+    case "use-i-button":
+      return buttonConfig;
   }
 };
 
@@ -69,7 +77,6 @@ const getProp = (name, arg) => {
   })[arg];
 };
 
-
 watch(
   () => props.scrollOffset,
   (newValue, oldValue) => {
@@ -77,4 +84,3 @@ watch(
   }
 );
 </script>
-
