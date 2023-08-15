@@ -4,7 +4,7 @@
     :style="getScrollBarWrapperStyle"
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
-    @mousewheel="handleScroll"
+    @mousewheel.passive="handleScroll"
     ref="scroll"
   >
     <div ref="slot" :style="getSlotStyle" v-resize:20="onResize">
@@ -207,8 +207,7 @@ const filterString = (str) => {
 
 // 滚轮滚动
 const handleScroll = (e) => {
-  e.stopPropagation();
-  if (!showScrollBar.value) return;
+  if (!showScrollBar.value) return false;
   const change = e.deltaY;
   const target = slotOffset.value + change;
   if (target >= 0 && target <= slotMaxOffset) scrollAnimate(change);
@@ -216,6 +215,7 @@ const handleScroll = (e) => {
     if (change >= 0) scrollAnimate(slotMaxOffset - slotOffset.value);
     else scrollAnimate(-slotOffset.value);
   }
+  return false;
 };
 
 // 鼠标拖拽

@@ -1,11 +1,15 @@
 <template>
   <div style="padding: 20px">
-    <i-select />
+    <i-select v-model="value" @select="handleSelect" />
   </div>
 </template>
 
 <script setup>
-const value = ";";
+let value = undefined;
+
+const handleSelect = (val) => {
+  console.log("handleSelect", val, value);
+};
 </script>
 
 <style scoped lang="less"></style>

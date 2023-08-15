@@ -59,6 +59,11 @@ const handleNodeCheckedChange = (node, type) => {
       idx = 0;
     }
     componentStack[idx].arr.unshift(node.id);
+    // 添加后最新的内容在上面
+    [componentStack[idx], componentStack[0]] = [
+      componentStack[0],
+      componentStack[idx],
+    ];
   } else {
     const arr = componentStack[idx].arr;
     let index = arr.indexOf(node.id);

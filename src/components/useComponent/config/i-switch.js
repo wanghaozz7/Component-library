@@ -8,6 +8,13 @@ export default {
       title: "Switch Attributes",
       listData: [
         {
+          params: "v-model",
+          desc: "绑定值",
+          type: "Boolean",
+          optional: "",
+          default: "",
+        },
+        {
           params: "placement",
           desc: "悬浮的位置",
           type: "String",
