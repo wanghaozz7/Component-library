@@ -1,6 +1,6 @@
 <template>
   <div style="padding: 20px">
-    <i-select v-model="value" @select="handleSelect" :option="option" />
+    <i-select v-model="value" @select="handleSelect" @change="handleChange" :option="option" />
   </div>
 </template>
 
@@ -32,6 +32,10 @@ const option = [
 
 const handleSelect = (val) => {
   console.log("handleSelect", val, value);
+};
+
+const handleChange = (val) => {
+  console.log("handleChange", val, value);
 };
 </script>
 

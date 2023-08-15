@@ -1,11 +1,6 @@
 <template>
   <div class="select-container" :style="getVariable">
-    <div
-      class="select-input"
-      :style="getInputStyle"
-      @click="handleClickInput"
-      v-click-outside="handleClickOutside"
-    >
+    <div class="select-input" :style="getInputStyle" @click="handleClickInput" v-click-outside="handleClickOutside">
       <input type="text" readonly :placeholder="placeholder" ref="input" />
       <div class="arrow">
         <arrow :isFold="visible" />
@@ -17,12 +12,7 @@
           <div class="inner-triangle"></div>
         </div>
         <div class="dropdown-body">
-          <div
-            class="row"
-            v-for="(obj, idx) in selectOption"
-            :key="obj"
-            @click="rowClick(obj, idx)"
-          >
+          <div class="row" v-for="(obj, idx) in selectOption" :key="obj" @click="rowClick(obj, idx)">
             {{ obj.label }}
           </div>
         </div>
@@ -70,6 +60,10 @@ const props = defineProps({
   height: {
     type: Number,
     default: 35,
+  },
+  size: {
+    type: String,
+    default: 'medium'
   },
   placeholder: {
     type: String,
@@ -177,6 +171,7 @@ const vClickOutside = {
 <style scoped lang="less">
 .select-container {
   position: relative;
+  font-size: 14px;
 
   .select-input {
     width: var(--width);
@@ -192,9 +187,9 @@ const vClickOutside = {
       padding-left: 15px;
       border: 0;
       border-radius: 4px;
-      font-size: 16px;
       outline: none;
       box-sizing: border-box;
+      color: #281f1d;
       cursor: pointer;
     }
 
@@ -210,18 +205,21 @@ const vClickOutside = {
       border-color: #d3d3d3;
     }
   }
+
   .select-dropdown {
     position: absolute;
     left: -1px;
     bottom: var(--bottom);
     width: var(--width);
     background-color: #fff;
+    color: #281f1d;
     border: 1px solid #eee;
     border-radius: 4px;
     box-shadow: 0 0 8px 0 rgba(232, 237, 258, 0.6),
       0 2px 4px 0 rgba(232, 237, 250, 0.5);
     cursor: pointer;
     z-index: 999;
+
     .dropdown-triangle {
       position: absolute;
       top: -16px;
@@ -232,6 +230,7 @@ const vClickOutside = {
       border-bottom-color: #dedede;
       transform: translateX(-50%);
       z-index: 999;
+
       .inner-triangle {
         position: absolute;
         top: -6px;
@@ -249,13 +248,15 @@ const vClickOutside = {
         height: var(--height);
         padding-left: 15px;
         text-align: left;
-        border-top: 1px solid #eee;
+        border-top: 1px solid #f5f5f5;
         display: flex;
         align-items: center;
         box-sizing: border-box;
+
         &:first-child {
           border-color: #fff;
         }
+
         &:hover {
           background-color: #f0ffff;
         }
