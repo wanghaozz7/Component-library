@@ -1,35 +1,29 @@
 <template>
-  <div style="position: relative">
+  <div class="select-container" :style="getVariable">
     <div
-      class="select"
-      :style="getSelectStyle"
+      class="select-input"
+      :style="getInputStyle"
       @click="handleClickInput"
       v-click-outside="handleClickOutside"
     >
-      <input
-        type="text"
-        style="width: 210px; height: 100%"
-        ref="input"
-        readonly
-        placeholder="请选择"
-      />
-      <div class="icon">
-        <arrow :isFold="actived" />
+      <input type="text" readonly :placeholder="placeholder" ref="input" />
+      <div class="arrow">
+        <arrow :isFold="visible" />
       </div>
     </div>
     <transition name="shrink-in-top">
-      <div class="dropdown" v-show="actived" :style="getDropdownStyle">
-        <div class="triangle">
-          <div class="inner-triangle" />
+      <div class="select-dropdown" v-show="visible">
+        <div class="dropdown-triangle">
+          <div class="inner-triangle"></div>
         </div>
-        <div class="body">
+        <div class="dropdown-body">
           <div
             class="row"
-            v-for="(item, idx) in option"
-            :key="item"
-            @click="selectRow(item, idx)"
+            v-for="(obj, idx) in selectOption"
+            :key="obj"
+            @click="rowClick(obj, idx)"
           >
-            {{ item.label }}
+            {{ obj.label }}
           </div>
         </div>
       </div>
@@ -37,78 +31,128 @@
   </div>
 </template>
 
-<script setup name="select">
+<script setup name="">
 import { ref, computed, getCurrentInstance } from "vue";
 
-const emits = defineEmits(["update:modelValue", "select"]);
+const emits = defineEmits([
+  "update:modelValue",
+  "select",
+  "change",
+  "visibleChange",
+  "claer",
+  "focus",
+  "blur",
+]);
 
 const props = defineProps({
   modelValue: {
     type: String,
     default: "",
   },
+  option: {
+    type: Array,
+    default() {
+      return [];
+    },
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+  clearable: {
+    type: Boolean,
+    default: false,
+  },
+  width: {
+    type: Number,
+    default: 240,
+  },
+  height: {
+    type: Number,
+    default: 35,
+  },
+  placeholder: {
+    type: String,
+    default: "请选择",
+  },
 });
 
+// 输入框是否聚焦
+let focus = ref(false);
+// 下拉框是否可见
+let visible = ref(false);
 const { ctx } = getCurrentInstance();
-let actived = ref(false);
 
-const option = [
-  {
-    label: "桃子",
-    value: "桃子",
-  },
-  {
-    label: "香蕉",
-    value: "香蕉",
-  },
-  {
-    label: "苹果",
-    value: "苹果",
-  },
-  {
-    label: "橙子",
-    value: "橙子",
-  },
-  {
-    label: "葡萄",
-    value: "葡萄",
-  },
-];
+const getEmptyOption = () => {
+  return [
+    {
+      label: "",
+      value: "",
+    },
+    {
+      label: "",
+      value: "",
+    },
+    {
+      label: "",
+      value: "",
+    },
+    {
+      label: "",
+      value: "",
+    },
+    {
+      label: "",
+      value: "",
+    },
+  ];
+};
 
-const getSelectStyle = computed(() => {
-  const borderColor = actived.value ? "#43CD80" : "";
+const selectOption =
+  props.option && props.option.length !== 0
+    ? props.option.slice()
+    : getEmptyOption();
+
+const getInputStyle = computed(() => {
+  const borderColor = focus.value ? "#43CD80" : "";
   return {
     borderColor,
   };
 });
 
-const handleClickOutside = (e) => {
-  actived.value = false;
-};
-
-const handleClickInput = (e) => {
-  actived.value = !actived.value;
-  if (actived.value) {
-    const input = ctx.$refs.input;
-    input.focus();
-  }
-};
-
-const selectRow = (row, idx) => {
-  const input = ctx.$refs.input;
-  input.value = row.label;
-  emits("update:modelValue", row.value);
-  emits("select", row);
-  actived.value = false;
-};
-
-const getDropdownStyle = computed(() => {
-  const bottom = -1 * (15 + option.length * 35) + "px";
+const getVariable = computed(() => {
+  const height = props.height + "px";
+  const width = props.width + "px";
+  const inputWidth = props.width - 30 + "px";
+  const bottom = -1 * (15 + selectOption.length * props.height) + "px";
   return {
-    bottom,
-    "--rowHeight": "35px",
+    "--height": height,
+    "--width": width,
+    "--input-width": inputWidth,
+    "--bottom": bottom,
   };
 });
+
+const handleClickInput = (e) => {
+  focus.value = true;
+  visible.value = !visible.value;
+  const input = ctx.$refs.input;
+  input.focus();
+};
+
+const handleClickOutside = (e) => {
+  focus.value = false;
+  visible.value = false;
+};
+
+const rowClick = (obj, idx) => {
+  const input = ctx.$refs.input;
+  if (input.value !== obj.value) emits("change", obj);
+  input.value = obj.value ? obj.value : "";
+  emits("update:modelValue", obj.value);
+  emits("select", obj);
+  visible.value = false;
+};
 
 const vClickOutside = {
   mounted(el, binding) {
@@ -131,86 +175,90 @@ const vClickOutside = {
 </script>
 
 <style scoped lang="less">
-input[type="text"] {
-  border: 0;
-  outline: none;
-  box-sizing: border-box;
-  border-radius: 4px;
-  padding-left: 15px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.select {
-  width: 240px;
-  height: 35px;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  display: flex;
+.select-container {
   position: relative;
-  cursor: pointer;
 
-  &:hover {
-    border-color: #d3d3d3;
-  }
-
-  .icon {
-    width: 30px;
-    height: 100%;
+  .select-input {
+    width: var(--width);
+    height: var(--height);
+    border: 1px solid #eee;
+    border-radius: 4px;
     display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-}
-.dropdown {
-  position: absolute;
-  left: -1px;
-  width: 240px;
-  background-color: #fff;
-  border: 1px solid #eee;
-  box-shadow: 0 0 8px 0 rgba(232, 237, 258, 0.6),
-    0 2px 4px 0 rgba(232, 237, 250, 0.5);
-  z-index: 999;
-  border-radius: 4px;
-  cursor: pointer;
-  .triangle {
-    position: absolute;
-    width: 0;
-    height: 0;
-    border: 8px solid transparent;
-    border-bottom-color: #dedede;
-    top: -16px;
-    left: 50%;
-    z-index: 999;
-    transform: translateX(-50%);
+    cursor: pointer;
 
-    .inner-triangle {
-      position: absolute;
-      width: 0;
-      height: 0;
-      top: -6px;
-      left: -7px;
-      z-index: 999;
-      border: 7.5px solid transparent;
-      border-bottom-color: #fff;
-    }
-  }
-
-  .body {
-    gap: 5px;
-    .row {
-      text-align: left;
-      height: var(--rowHeight);
+    input[type="text"] {
+      width: var(--input-width);
+      height: 100%;
+      padding-left: 15px;
+      border: 0;
+      border-radius: 4px;
+      font-size: 16px;
+      outline: none;
       box-sizing: border-box;
-      border-top: 1px solid #eee;
+      cursor: pointer;
+    }
+
+    .arrow {
+      width: 30px;
+      height: 100%;
       display: flex;
       align-items: center;
-      padding-left: 15px;
-      &:first-child {
-        border-color: #fff;
+      justify-content: center;
+    }
+
+    &:hover {
+      border-color: #d3d3d3;
+    }
+  }
+  .select-dropdown {
+    position: absolute;
+    left: -1px;
+    bottom: var(--bottom);
+    width: var(--width);
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    box-shadow: 0 0 8px 0 rgba(232, 237, 258, 0.6),
+      0 2px 4px 0 rgba(232, 237, 250, 0.5);
+    cursor: pointer;
+    z-index: 999;
+    .dropdown-triangle {
+      position: absolute;
+      top: -16px;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border: 8px solid transparent;
+      border-bottom-color: #dedede;
+      transform: translateX(-50%);
+      z-index: 999;
+      .inner-triangle {
+        position: absolute;
+        top: -6px;
+        left: -7px;
+        width: 0;
+        height: 0;
+        border: 7.5px solid transparent;
+        border-bottom-color: #fff;
+        z-index: 999;
       }
-      &:hover {
-        background-color: #f0ffff;
+    }
+
+    .dropdown-body {
+      .row {
+        height: var(--height);
+        padding-left: 15px;
+        text-align: left;
+        border-top: 1px solid #eee;
+        display: flex;
+        align-items: center;
+        box-sizing: border-box;
+        &:first-child {
+          border-color: #fff;
+        }
+        &:hover {
+          background-color: #f0ffff;
+        }
       }
     }
   }
