@@ -1,21 +1,10 @@
 <template>
-  <div
-    class="scroll-bar-wrapper"
-    :style="getScrollBarWrapperStyle"
-    @mouseenter="handleMouseEnter"
-    @mouseleave="handleMouseLeave"
-    @mousewheel.passive="handleScroll"
-    ref="scroll"
-  >
+  <div class="scroll-bar-wrapper" :style="getScrollBarWrapperStyle" @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave" @mousewheel.passive="handleScroll" ref="scroll">
     <div ref="slot" :style="getSlotStyle" v-resize:20="onResize">
       <slot />
     </div>
-    <div
-      class="scroll-bar"
-      :style="getScrollBarStyle"
-      ref="scrollBar"
-      v-if="props.showScrollBar !== 'none'"
-    ></div>
+    <div class="scroll-bar" :style="getScrollBarStyle" ref="scrollBar" v-if="showScrollBarWhen !== 'none'"></div>
   </div>
 </template>
 
@@ -39,7 +28,7 @@ const props = defineProps({
     default: 100,
   },
   // 滚动条出现的时机
-  showScrollBar: {
+  showScrollBarWhen: {
     type: String,
     default: "hover",
   },
@@ -92,8 +81,8 @@ const getScrollBarStyle = computed(() => {
   const top = scrollBarOffset.value + "px";
   const transition = isDrag.value ? "" : "all 0.2s";
   let opacity;
-
-  switch (props.showScrollBar) {
+  const display = showScrollBar.value ? 'block' : 'none';
+  switch (props.showScrollBarWhen) {
     case "always":
       opacity = "1";
       break;
@@ -108,6 +97,7 @@ const getScrollBarStyle = computed(() => {
   }
 
   return {
+    display,
     height,
     top,
     backgroundColor,
@@ -262,7 +252,7 @@ const scrollAnimate = (change) => {
 };
 
 onMounted(() => {
-  if (props.showScrollBar !== "none") {
+  if (props.showScrollBarWhen !== "none") {
     const scrollBar = ctx.$refs.scrollBar;
     mouseDownAndMove(scrollBar, handleMouseDownAndMove);
   }

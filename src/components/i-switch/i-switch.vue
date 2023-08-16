@@ -1,11 +1,5 @@
 <template>
-  <component
-    :is="'switch-' + type"
-    @change="handleChange"
-    :defaulfValue="defaultValue"
-    :width="width"
-    :height="height"
-  />
+  <component :is="'switch-' + type" :defaulfValue="defaultValue" :width="width" :height="height" @change="handleChange" />
 </template>
 
 <script setup name="i-switch">
