@@ -4,10 +4,32 @@
     :style="getVariable"
     v-click-outside="handleClickOutside"
   >
-    <div class="select-input" :style="getInputStyle" @click="handleClickInput">
-      <input type="text" readonly :placeholder="placeholder" ref="input" />
-      <div class="arrow">
+    <div
+      class="select-input"
+      :style="getInputStyle"
+      @mouseenter="hoverInput = true"
+      @mouseleave="hoverInput = false"
+    >
+      <input
+        type="text"
+        readonly
+        :placeholder="placeholder"
+        ref="input"
+        @click="handleClickInput"
+      />
+      <div
+        class="arrow"
+        v-show="!(clearable && hoverInput && activeValue)"
+        @click="handleClickInput"
+      >
         <arrow :isFold="visible" arrow-color="gray" />
+      </div>
+      <div
+        class="close"
+        v-show="clearable && hoverInput && activeValue"
+        @click="cancelSelect"
+      >
+        <img src="../../assets//icons/close.svg" alt="" />
       </div>
     </div>
     <transition name="shrink-in-top">
@@ -33,14 +55,14 @@
 </template>
 
 <script setup name="i-select">
-import { ref, computed, getCurrentInstance } from "vue";
+import { ref, computed, getCurrentInstance, onMounted, watch } from "vue";
 
 const emits = defineEmits([
   "update:modelValue",
   "select",
   "change",
   "visibleChange",
-  "claer",
+  "clear",
   "focus",
   "blur",
 ]);
@@ -86,6 +108,10 @@ const props = defineProps({
 let focus = ref(false);
 // 下拉框是否可见
 let visible = ref(false);
+// 当前选中的值
+let activeValue = ref(undefined);
+let hoverInput = ref(false);
+
 const { ctx } = getCurrentInstance();
 
 const getVariable = computed(() => {
@@ -151,7 +177,10 @@ const getInputStyle = computed(() => {
 
 const getRowClass = computed(() => {
   return (obj, idx) => {
-    return obj.disabled ? "disabled-row" : "";
+    return [
+      obj.disabled ? "disabled-row" : "",
+      obj.value === activeValue.value && !obj.disabled ? "hight-light-row" : "",
+    ];
   };
 });
 
@@ -173,10 +202,21 @@ const rowClick = (obj, idx) => {
   if (obj.disabled) return;
   const input = ctx.$refs.input;
   if (input.value !== obj.value) emits("change", obj);
-  input.value = obj.value ? obj.value : "";
+  input.value = obj.label ? obj.label : "";
+  activeValue.value = obj.value;
   emits("update:modelValue", obj.value);
   emits("select", obj);
   visible.value = false;
+};
+
+const cancelSelect = () => {
+  const input = ctx.$refs.input;
+  activeValue.value = undefined;
+  input.value = "";
+  emits("update:modelValue", undefined);
+  emits("select", undefined);
+  emits("change", undefined);
+  emits("clear");
 };
 
 const vClickOutside = {
@@ -197,6 +237,33 @@ const vClickOutside = {
     delete el.Tag;
   },
 };
+
+onMounted(() => {
+  // 赋初值
+  if (props.modelValue) {
+    const input = ctx.$refs.input;
+    const obj = props.option.find((x) => {
+      return x.value === props.modelValue;
+    });
+    input.value = obj?.label ? obj?.label : "";
+    activeValue.value = props.modelValue;
+  }
+});
+
+watch(
+  () => visible.value,
+  (newVal, oldVal) => {
+    emits("visibleChange", newVal);
+  }
+);
+
+watch(
+  () => focus.value,
+  (newVal, oldVal) => {
+    if (newVal) emits("focus");
+    else emits("blur");
+  }
+);
 </script>
 
 <style scoped lang="less">
@@ -213,6 +280,7 @@ const vClickOutside = {
     border-radius: 4px;
     user-select: var(--input-user-select);
     box-sizing: border-box;
+    align-items: center;
     cursor: var(--input-cursor);
     input[type="text"] {
       width: var(--input-width);
@@ -233,6 +301,21 @@ const vClickOutside = {
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+    .close {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid #979797;
+      box-sizing: border-box;
+      margin-left: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      img {
+        width: 8px;
+        height: 8px;
+      }
     }
 
     &:hover {
@@ -298,6 +381,11 @@ const vClickOutside = {
       .disabled-row {
         background-color: #eee !important;
         cursor: not-allowed;
+      }
+      .hight-light-row {
+        color: #8470ff;
+        font-weight: bold;
+        font-size: 18px;
       }
     }
     .empty-body {

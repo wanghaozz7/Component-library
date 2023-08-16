@@ -9,130 +9,60 @@ export default {
       type: "attributes",
       listData: [
         {
-          params: "tree",
-          desc: "树形数据",
-          type: "Object",
+          params: "v-model",
+          desc: "绑定值",
+          type: "String/Boolean/Number",
           optional: "",
           default: "",
         },
         {
-          params: "maxWidth",
-          desc: "画布的最大宽度",
+          params: "option",
+          desc: "下拉框的配置项",
+          type: "Array",
+          optional: "",
+          default: "",
+        },
+        {
+          params: "disabled",
+          desc: "是否禁用",
+          type: "Boolean",
+          optional: "",
+          default: "false",
+        },
+        {
+          params: "clearable",
+          desc: "是否可以清除状态",
+          type: "Boolean",
+          optional: "",
+          default: "false",
+        },
+        {
+          params: "width",
+          desc: "选择器的宽度",
           type: "Number",
           optional: "",
-          default: "800",
+          default: "240",
         },
         {
-          params: "ligatureType",
-          desc: "节点之间的连线类型",
-          type: "String",
-          optional: "straight/curve/fold",
-          default: "fold",
-        },
-        {
-          params: "verticalGap",
-          desc: "节点之间的竖直间距",
+          params: "height",
+          desc: "选择器的高度",
           type: "Number",
           optional: "",
-          default: "30",
+          default: "35",
         },
         {
-          params: "horizonGap",
-          desc: "节点之间的水平间距",
-          type: "Number",
-          optional: "",
-          default: "150",
+          params: "size",
+          desc: "选择器的尺寸",
+          type: "String",
+          optional: "large/medium/mini",
+          default: "medium",
         },
         {
-          params: "horizonPadding",
-          desc: "水平内边距",
-          type: "Number",
-          optional: "",
-          default: "15",
-        },
-        {
-          params: "defaultStrokeStyle",
-          desc: "默认边框颜色",
+          params: "placeholder",
+          desc: "同原生input的placeholder",
           type: "String",
           optional: "",
-          default: "#FFE384",
-        },
-        {
-          params: "hoverStrokeStyle",
-          desc: "悬浮时边框颜色",
-          type: "String",
-          optional: "",
-          default: "#FF0000",
-        },
-        {
-          params: "lineWidth",
-          desc: "边框粗细",
-          type: "Number",
-          optional: "",
-          default: "2",
-        },
-        {
-          params: "fillStyle",
-          desc: "字体颜色",
-          type: "String",
-          optional: "",
-          default: "black",
-        },
-        {
-          params: "fontStyle",
-          desc: "字体样式",
-          type: "String",
-          optional: "",
-          default: "normal 24px 微软雅黑",
-        },
-        {
-          params: "ligatureLineWidth",
-          desc: "连线粗细",
-          type: "Number",
-          optional: "",
-          default: "1",
-        },
-        {
-          params: "ligatureStrokeStyle",
-          desc: "连线颜色",
-          type: "String",
-          optional: "",
-          default: "lightblue",
-        },
-        {
-          params: "buttonRadius",
-          desc: "按钮的半径",
-          type: "Number",
-          optional: "",
-          default: "12",
-        },
-        {
-          params: "buttonBackgroundColor",
-          desc: "按钮的填充色",
-          type: "String",
-          optional: "",
-          default: "purple",
-        },
-        {
-          params: "nodeInDragStrokeStyle",
-          desc: "节点被拖动时的边框色",
-          type: "String",
-          optional: "",
-          default: "gray",
-        },
-        {
-          params: "nodeInDragFillStyle",
-          desc: "节点被拖动时的填充色",
-          type: "String",
-          optional: "",
-          default: "gray",
-        },
-        {
-          params: "foldLineLength",
-          desc: "折线延长线的长度",
-          type: "Number",
-          optional: "",
-          default: "50",
+          default: "请选择",
         },
       ],
     },
@@ -141,39 +71,34 @@ export default {
       type: "events",
       listData: [
         {
-          method: "treeChange",
-          desc: "数据发生变化(重命名、移动子树、添加删除节点)",
-          params: "变化后的新树的根节点",
+          method: "select",
+          desc: "点击下拉框选项后的回调",
+          params: "点击的配置项",
         },
         {
-          method: "nodeClick",
-          desc: "节点被单击后",
-          params: "被单击的节点",
+          method: "change",
+          desc: "与select的区别是只有在选项发生变化时会触发",
+          params: "点击的配置项",
         },
         {
-          method: "nodeEdit",
-          desc: "节点进入编辑状态",
-          params: "被编辑的节点",
+          method: "visibleChange",
+          desc: "下拉菜单显示或隐藏时的回调",
+          params: "下拉菜单的显隐状态",
         },
         {
-          method: "addNode",
-          desc: "在一个节点的子节点末位添加一个新节点",
-          params: "被添加的节点",
+          method: "clear",
+          desc: "状态被清理时的回调",
+          params: "",
         },
         {
-          method: "deleteNode",
-          desc: "删除一个节点和他的子树",
-          params: "被删除的节点",
+          method: "focus",
+          desc: "输入框聚焦时的回调",
+          params: "",
         },
         {
-          method: "dragNodeStart",
-          desc: "拖拽开始时",
-          params: "被拖拽的节点",
-        },
-        {
-          method: "dragNodeEnd",
-          desc: "拖拽结束时",
-          params: "被拖拽的节点",
+          method: "blur",
+          desc: "输入框失去焦点时的回调",
+          params: "",
         },
       ],
     },
@@ -269,7 +194,7 @@ export default {
       id: "use-i-select-2",
       title: {
         text: "size 定制尺寸",
-        desc: "可以用size指定通用的尺寸(large:360,50 medium:240,35 mini:120,25) 也可以使用width和height定制大小",
+        desc: "可以用size指定通用的尺寸 也可以使用width和height定制大小 同时指定时后者权重较大",
       },
       code: `
           <template>
@@ -355,6 +280,92 @@ export default {
       id: "use-i-select-3",
       title: {
         text: "disabled 禁用状态和禁用选项",
+        desc: "通过disabled字段使select不可用或者使选项不可用",
+      },
+      code: `
+          <template>
+            <mind
+              :tree="tree"
+              @treeChange="handleTreeChange"
+              :maxWidth="1014"
+              @nodeClick="handleNodeClick"
+              @nodeEdit="handleNodeEdit"
+              @addNode="handleAddNode"
+              @deleteNode="handleDeleteNode"
+              @dragNodeStart="handleDragStart"
+              @dragNodeEnd="handleDragEnd"
+            />
+          </template>
+
+          <script setup>
+          let tree = {
+            label: "植物",
+            id: "植物",
+            children: [
+              {
+                label: "水果",
+                id: "水果",
+                children: [
+                  {
+                    label: "苹果 🍎",
+                    id: "苹果",
+                  },
+                  {
+                    label: "香蕉 🍌",
+                    id: "香蕉",
+                  },
+                  {
+                    label: "橙子 🍊",
+                    id: "橙子",
+                  },
+                ],
+              },
+              {
+                label: "蔬菜",
+                id: "蔬菜",
+                children: [
+                  {
+                    label: "茄子 🍆",
+                    id: "茄子",
+                  },
+                  {
+                    label: "南瓜",
+                    id: "南瓜",
+                  },
+                ],
+              },
+            ],
+          };
+          const handleTreeChange = (newTree) => {
+            tree = newTree;
+            console.log("treeChange", tree);
+          };
+          const handleNodeClick = (node) => {
+            console.log("click", node);
+          };
+          const handleNodeEdit = (node) => {
+            console.log("edit", node);
+          };
+          const handleAddNode = (node) => {
+            console.log("add", node);
+          };
+          const handleDeleteNode = (node) => {
+            console.log("delete", node);
+          };
+          const handleDragStart = (node) => {
+            console.log("drag-start", node);
+          };
+          const handleDragEnd = (node) => {
+            console.log("drag-end", node);
+          };
+          </script>
+
+      `,
+    },
+    {
+      id: "use-i-select-4",
+      title: {
+        text: "clearable 清除当前的选中值",
         desc: "通过disabled字段使select不可用或者使选项不可用",
       },
       code: `

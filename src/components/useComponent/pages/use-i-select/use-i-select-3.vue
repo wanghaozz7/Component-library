@@ -8,8 +8,13 @@
       padding: 20px;
     "
   >
-    <i-select v-model="value" :option="option" disabled />
-    <i-select v-model="value" :option="option" />
+    <i-select
+      v-model="value"
+      :option="option"
+      disabled
+      placeholder="禁用状态"
+    />
+    <i-select v-model="value" :option="option" placeholder="有禁用选项" />
   </div>
 </template>
 
@@ -37,6 +42,7 @@ const option = [
   {
     label: "葡萄",
     value: "葡萄",
+    disabled: true,
   },
 ];
 </script>

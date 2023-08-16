@@ -2,7 +2,11 @@
   <div>
     <div class="title">{{ title.text }}</div>
     <div class="desc">{{ title.desc }}</div>
-    <i-card class="card-container" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
+    <i-card
+      class="card-container"
+      @mouseenter="handleMouseEnter"
+      @mouseleave="handleMouseLeave"
+    >
       <template v-slot:header>
         <div class="header">
           <slot />
@@ -10,12 +14,28 @@
       </template>
       <div class="code-area">
         <div class="code" :style="codeStyle" ref="code">
-          <i-tooltip content="收起代码" placement="bottom" :refreshTooltip="refresh" :openDelay="500" :closeDelay="0">
-            <div class="unfold button" @click="handleClick" :style="getButtonStyle">
+          <i-tooltip
+            content="收起代码"
+            placement="bottom"
+            :refreshTooltip="refresh"
+            :openDelay="500"
+            :closeDelay="0"
+          >
+            <div
+              class="unfold button"
+              @click="handleClick"
+              :style="getButtonStyle"
+            >
               <div class="icon" />
             </div>
           </i-tooltip>
-          <i-tooltip content="复制代码" placement="bottom" :refreshTooltip="refresh" :openDelay="500" :closeDelay="0">
+          <i-tooltip
+            content="复制代码"
+            placement="bottom"
+            :refreshTooltip="refresh"
+            :openDelay="500"
+            :closeDelay="0"
+          >
             <div class="copy button" @click="copyCode" :style="getButtonStyle">
               <div class="icon" />
             </div>
@@ -26,11 +46,11 @@
             <div class="button" v-show="isHover">
               <div class="icon" :style="iconStyle"></div>
               <div class="text">
-                <span v-show="!showCode">看看</span><span v-show="showCode">收起</span>代码~
+                <span v-show="!showCode">看看</span
+                ><span v-show="showCode">收起</span>代码~
               </div>
             </div>
           </transition>
-
         </div>
       </div>
     </i-card>
@@ -283,13 +303,13 @@ onMounted(() => {
           height: 0;
           margin: 8px 8px 0 auto;
           border: 6px solid transparent;
-          border-top-color: #ebebeb;
+          border-top-color: #d3d3d3;
         }
 
         .text {
           transition: all 0.3s;
           overflow: hidden;
-          color: #ebebeb;
+          color: #d3d3d3;
           font-size: 14px;
           user-select: none;
         }
