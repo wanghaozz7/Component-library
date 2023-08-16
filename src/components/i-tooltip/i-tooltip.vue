@@ -10,7 +10,7 @@
   </div>
 </template>
 
-<script setup name="tooltip">
+<script setup name="i-tooltip">
 import {
   computed,
   getCurrentInstance,
@@ -101,15 +101,15 @@ const getTooltipAttr = () => {
       tooltipStyleArr.push([
         "left",
         pos.left +
-        (styleFilter(slotWidth) - styleFilter(tooltipWidth)) / 2 +
-        "px",
+          (styleFilter(slotWidth) - styleFilter(tooltipWidth)) / 2 +
+          "px",
       ]);
       tooltipStyleArr.push([
         "top",
         winHeight +
-        pos.top -
-        (styleFilter(tooltipHeight) + props.offset) +
-        "px",
+          pos.top -
+          (styleFilter(tooltipHeight) + props.offset) +
+          "px",
       ]);
 
       iconStyleArr.push(["left", "50%"]);
@@ -127,8 +127,8 @@ const getTooltipAttr = () => {
       tooltipStyleArr.push([
         "left",
         pos.left +
-        (styleFilter(slotWidth) - styleFilter(tooltipWidth)) / 2 +
-        "px",
+          (styleFilter(slotWidth) - styleFilter(tooltipWidth)) / 2 +
+          "px",
       ]);
       tooltipStyleArr.push([
         "top",
@@ -154,9 +154,9 @@ const getTooltipAttr = () => {
       tooltipStyleArr.push([
         "top",
         winHeight +
-        pos.top +
-        (styleFilter(slotHeight) - styleFilter(tooltipHeight)) / 2 +
-        "px",
+          pos.top +
+          (styleFilter(slotHeight) - styleFilter(tooltipHeight)) / 2 +
+          "px",
       ]);
 
       iconStyleArr.push(["right", "-15px"]);
@@ -179,9 +179,9 @@ const getTooltipAttr = () => {
       tooltipStyleArr.push([
         "top",
         winHeight +
-        pos.top +
-        (styleFilter(slotHeight) - styleFilter(tooltipHeight)) / 2 +
-        "px",
+          pos.top +
+          (styleFilter(slotHeight) - styleFilter(tooltipHeight)) / 2 +
+          "px",
       ]);
 
       iconStyleArr.push(["left", "-15px"]);
@@ -199,15 +199,15 @@ const getTooltipAttr = () => {
       tooltipStyleArr.push([
         "left",
         pos.left +
-        (styleFilter(slotWidth) - styleFilter(tooltipWidth)) / 2 +
-        "px",
+          (styleFilter(slotWidth) - styleFilter(tooltipWidth)) / 2 +
+          "px",
       ]);
       tooltipStyleArr.push([
         "top",
         winHeight +
-        pos.top -
-        (styleFilter(tooltipHeight) + props.offset) +
-        "px",
+          pos.top -
+          (styleFilter(tooltipHeight) + props.offset) +
+          "px",
       ]);
 
       iconStyleArr.push(["left", "50%"]);
@@ -316,7 +316,7 @@ watch(
     z-index: 9999;
 
     .inner {
-      position: absolute; 
+      position: absolute;
       width: 0;
       height: 0;
       border: 7.5px solid transparent;

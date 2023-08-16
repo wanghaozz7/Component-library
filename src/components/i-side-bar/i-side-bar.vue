@@ -22,7 +22,7 @@
   </div>
 </template>
 
-<script setup name="side-bar">
+<script setup name="i-side-bar">
 import { reactive, ref } from "vue";
 
 const props = defineProps({

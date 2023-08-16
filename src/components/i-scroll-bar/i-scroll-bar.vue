@@ -19,7 +19,7 @@
   </div>
 </template>
 
-<script setup name="scroll-bar">
+<script setup name="i-scroll-bar">
 import { getCurrentInstance, ref, computed, onMounted } from "vue";
 
 const props = defineProps({

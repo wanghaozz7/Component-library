@@ -1,12 +1,21 @@
 <template>
-  <div class="table-container" :style="tableStyle" ref="table" v-resize:20="onResize">
+  <div
+    class="table-container"
+    :style="tableStyle"
+    ref="table"
+    v-resize:20="onResize"
+  >
     <div v-if="showHeader" ref="tableHeader">
       <table cellspacing="0">
         <colgroup ref="headerColgroup">
           <slot />
         </colgroup>
         <tr :class="headerRowClass">
-          <th v-for="(prop, idx) in columnsProps" :key="prop.label" :style="headerCellStyle(prop.prop, idx)">
+          <th
+            v-for="(prop, idx) in columnsProps"
+            :key="prop.label"
+            :style="headerCellStyle(prop.prop, idx)"
+          >
             {{ prop.label }}
           </th>
         </tr>
@@ -17,9 +26,16 @@
         <colgroup ref="bodyColgroup">
           <slot />
         </colgroup>
-        <tr v-for="(row, rowIndex) in data" :key="row" :class="tableRowClass(row, rowIndex)">
-          <td v-for="(colValue, colKey, colIndex) in row" :key="colValue"
-            :style="tableCellStyle(row, colValue, rowIndex, colIndex)">
+        <tr
+          v-for="(row, rowIndex) in data"
+          :key="row"
+          :class="tableRowClass(row, rowIndex)"
+        >
+          <td
+            v-for="(colValue, colKey, colIndex) in row"
+            :key="colValue"
+            :style="tableCellStyle(row, colValue, rowIndex, colIndex)"
+          >
             {{ getLabel(row, colIndex) }}
           </td>
         </tr>
@@ -29,7 +45,7 @@
   </div>
 </template>
 
-<script setup name="table-list">
+<script setup name="i-table">
 import {
   onMounted,
   getCurrentInstance,
@@ -93,13 +109,13 @@ const props = defineProps({
   rowClassName: {
     type: [Function, String],
     default() {
-      return '';
+      return "";
     },
   },
   headerRowClassName: {
     type: [Function, String],
     default() {
-      return '';
+      return "";
     },
   },
   emptyText: {
@@ -146,20 +162,24 @@ const tableBodyStyle = computed(() => {
 const tableRowClass = computed(() => {
   return (row, rowIndex) => {
     const getCallBackClassName = () => {
-      return typeof props.rowClassName === 'function' ? props.rowClassName(row, rowIndex) : props.rowClassName;
-    }
+      return typeof props.rowClassName === "function"
+        ? props.rowClassName(row, rowIndex)
+        : props.rowClassName;
+    };
     const getDefaultClassName = () => {
       return {
-        "highlightCurrentRow": props.highlightCurrentRow,
-        'stripe': rowIndex % 2 !== 0 && props.stripe
+        highlightCurrentRow: props.highlightCurrentRow,
+        stripe: rowIndex % 2 !== 0 && props.stripe,
       };
-    }
+    };
     return Object.assign(getDefaultClassName(), getCallBackClassName());
-  }
+  };
 });
 const headerRowClass = computed(() => {
-  return typeof props.headerRowClassName === 'function' ? props.headerRowClassName() : props.headerRowClassName;
-})
+  return typeof props.headerRowClassName === "function"
+    ? props.headerRowClassName()
+    : props.headerRowClassName;
+});
 const headerCellStyle = computed(() => {
   return (prop, idx) => {
     // 默认样式
@@ -398,8 +418,15 @@ const getColWidth = () => {
     const bodyColgroup = ctx.$refs.bodyColgroup.children;
     const headerColgroup = ctx.$refs.headerColgroup?.children;
 
-    bodyColgroup[idx].__vueParentComponent.devtoolsRawSetupState.colWidth.value = colWidthArr[idx];
-    if (headerColgroup) headerColgroup[idx].__vueParentComponent.devtoolsRawSetupState.colWidth.value = colWidthArr[idx];
+    bodyColgroup[
+      idx
+    ].__vueParentComponent.devtoolsRawSetupState.colWidth.value =
+      colWidthArr[idx];
+    if (headerColgroup)
+      headerColgroup[
+        idx
+      ].__vueParentComponent.devtoolsRawSetupState.colWidth.value =
+        colWidthArr[idx];
   }
 };
 

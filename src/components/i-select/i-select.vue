@@ -1,9 +1,13 @@
 <template>
-  <div class="select-container" :style="getVariable">
-    <div class="select-input" :style="getInputStyle" @click="handleClickInput" v-click-outside="handleClickOutside">
+  <div
+    class="select-container"
+    :style="getVariable"
+    v-click-outside="handleClickOutside"
+  >
+    <div class="select-input" :style="getInputStyle" @click="handleClickInput">
       <input type="text" readonly :placeholder="placeholder" ref="input" />
       <div class="arrow">
-        <arrow :isFold="visible" />
+        <arrow :isFold="visible" arrow-color="gray" />
       </div>
     </div>
     <transition name="shrink-in-top">
@@ -11,17 +15,24 @@
         <div class="dropdown-triangle">
           <div class="inner-triangle"></div>
         </div>
-        <div class="dropdown-body">
-          <div class="row" v-for="(obj, idx) in selectOption" :key="obj" @click="rowClick(obj, idx)">
+        <div class="dropdown-body" v-if="option.length !== 0">
+          <div
+            v-for="(obj, idx) in option"
+            :key="obj"
+            class="row"
+            :class="getRowClass(obj, idx)"
+            @click="rowClick(obj, idx)"
+          >
             {{ obj.label }}
           </div>
         </div>
+        <div class="empty-body" v-else>暂无内容</div>
       </div>
     </transition>
   </div>
 </template>
 
-<script setup name="">
+<script setup name="i-select">
 import { ref, computed, getCurrentInstance } from "vue";
 
 const emits = defineEmits([
@@ -55,15 +66,15 @@ const props = defineProps({
   },
   width: {
     type: Number,
-    default: 240,
+    default: 0,
   },
   height: {
     type: Number,
-    default: 35,
+    default: 0,
   },
   size: {
     type: String,
-    default: 'medium'
+    default: "medium",
   },
   placeholder: {
     type: String,
@@ -77,35 +88,59 @@ let focus = ref(false);
 let visible = ref(false);
 const { ctx } = getCurrentInstance();
 
-const getEmptyOption = () => {
-  return [
-    {
-      label: "",
-      value: "",
-    },
-    {
-      label: "",
-      value: "",
-    },
-    {
-      label: "",
-      value: "",
-    },
-    {
-      label: "",
-      value: "",
-    },
-    {
-      label: "",
-      value: "",
-    },
-  ];
-};
+const getVariable = computed(() => {
+  let width, height;
 
-const selectOption =
-  props.option && props.option.length !== 0
-    ? props.option.slice()
-    : getEmptyOption();
+  if (props.width === 0) {
+    switch (props.size) {
+      case "large":
+        width = 360;
+        break;
+      case "medium":
+        width = 240;
+        break;
+      case "mini":
+        width = 120;
+        break;
+      default:
+        width = 240;
+    }
+  } else width = props.width;
+
+  if (props.height === 0) {
+    switch (props.size) {
+      case "large":
+        height = 50;
+        break;
+      case "medium":
+        height = 35;
+        break;
+      case "mini":
+        height = 25;
+        break;
+      default:
+        height = 35;
+    }
+  } else height = props.height;
+
+  const inputWidth = width - 30;
+  const bottom =
+    props.option.length !== 0 ? -1 * (15 + props.option.length * height) : -165;
+  const backgroundColor = props.disabled ? "#eee" : "white";
+  const cursor = props.disabled ? "not-allowed" : "pointer";
+  const userSelect = props.disabled ? "none" : "";
+  const hoverBorderColor = props.disabled ? "#eee" : "#d3d3d3";
+  return {
+    "--height": height + "px",
+    "--width": width + "px",
+    "--input-width": inputWidth + "px",
+    "--input-bgc": backgroundColor,
+    "--input-cursor": cursor,
+    "--input-user-select": userSelect,
+    "--dropdown-bottom": bottom + "px",
+    "--hover-border-color": hoverBorderColor,
+  };
+});
 
 const getInputStyle = computed(() => {
   const borderColor = focus.value ? "#43CD80" : "";
@@ -114,20 +149,14 @@ const getInputStyle = computed(() => {
   };
 });
 
-const getVariable = computed(() => {
-  const height = props.height + "px";
-  const width = props.width + "px";
-  const inputWidth = props.width - 30 + "px";
-  const bottom = -1 * (15 + selectOption.length * props.height) + "px";
-  return {
-    "--height": height,
-    "--width": width,
-    "--input-width": inputWidth,
-    "--bottom": bottom,
+const getRowClass = computed(() => {
+  return (obj, idx) => {
+    return obj.disabled ? "disabled-row" : "";
   };
 });
 
 const handleClickInput = (e) => {
+  if (props.disabled) return;
   focus.value = true;
   visible.value = !visible.value;
   const input = ctx.$refs.input;
@@ -135,11 +164,13 @@ const handleClickInput = (e) => {
 };
 
 const handleClickOutside = (e) => {
+  if (props.disabled) return;
   focus.value = false;
   visible.value = false;
 };
 
 const rowClick = (obj, idx) => {
+  if (obj.disabled) return;
   const input = ctx.$refs.input;
   if (input.value !== obj.value) emits("change", obj);
   input.value = obj.value ? obj.value : "";
@@ -172,17 +203,21 @@ const vClickOutside = {
 .select-container {
   position: relative;
   font-size: 14px;
-
+  width: var(--width);
   .select-input {
+    display: flex;
     width: var(--width);
     height: var(--height);
+    background-color: var(--input-bgc);
     border: 1px solid #eee;
     border-radius: 4px;
-    display: flex;
-    cursor: pointer;
-
+    user-select: var(--input-user-select);
+    box-sizing: border-box;
+    cursor: var(--input-cursor);
     input[type="text"] {
       width: var(--input-width);
+      background-color: var(--input-bgc);
+      cursor: var(--input-cursor);
       height: 100%;
       padding-left: 15px;
       border: 0;
@@ -190,7 +225,6 @@ const vClickOutside = {
       outline: none;
       box-sizing: border-box;
       color: #281f1d;
-      cursor: pointer;
     }
 
     .arrow {
@@ -202,14 +236,14 @@ const vClickOutside = {
     }
 
     &:hover {
-      border-color: #d3d3d3;
+      border-color: var(--hover-border-color);
     }
   }
 
   .select-dropdown {
     position: absolute;
     left: -1px;
-    bottom: var(--bottom);
+    bottom: var(--dropdown-bottom);
     width: var(--width);
     background-color: #fff;
     color: #281f1d;
@@ -261,6 +295,19 @@ const vClickOutside = {
           background-color: #f0ffff;
         }
       }
+      .disabled-row {
+        background-color: #eee !important;
+        cursor: not-allowed;
+      }
+    }
+    .empty-body {
+      height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: bold;
+      color: gray;
     }
   }
 }

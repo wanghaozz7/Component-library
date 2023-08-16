@@ -12,7 +12,7 @@
   </div>
 </template>
 
-<script setup name="mind">
+<script setup name="i-mind">
 import {
   computed,
   getCurrentInstance,

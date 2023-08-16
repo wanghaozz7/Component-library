@@ -1,37 +1,41 @@
 <template>
-  <component :is="'switch-' + type" @change="handleChange" :defaulfValue="defaultValue" :width="width" :height="height" />
+  <component
+    :is="'switch-' + type"
+    @change="handleChange"
+    :defaulfValue="defaultValue"
+    :width="width"
+    :height="height"
+  />
 </template>
 
-<script setup name="Switch">
-const emits = defineEmits(['update:modelValue', 'change'])
+<script setup name="i-switch">
+const emits = defineEmits(["update:modelValue", "change"]);
 
 const props = defineProps({
   type: {
     type: String,
-    default: 'normal'
+    default: "normal",
   },
   modelValue: {
     type: Boolean,
-    default: false
+    default: false,
   },
   defaultValue: {
     type: Boolean,
-    default: true
+    default: true,
   },
   width: {
     type: Number,
-    default: 60
+    default: 60,
   },
   height: {
     type: Number,
-    default: 30
-  }
-})
+    default: 30,
+  },
+});
 
-const handleChange = e => {
-  emits('update:modelValue', e)
-  emits('change', e)
-}
-
+const handleChange = (e) => {
+  emits("update:modelValue", e);
+  emits("change", e);
+};
 </script>
-

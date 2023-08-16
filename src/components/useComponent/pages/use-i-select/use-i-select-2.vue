@@ -1,16 +1,22 @@
 <template>
-  <div style="padding: 20px">
-    <div style="display: flex;align-items: center;">
-      <div style="margin-right: 20px;font-size: 18px;color: gray;">较大尺寸(width:360,height:50) : </div>
-      <i-select v-model="value" :option="option" :height="50" :width="360" />
+  <div class="wrapper">
+    <div class="row">
+      <div class="text" style="font-size: 18px">较大尺寸(size:large) :</div>
+      <i-select v-model="value" :option="option" size="large" />
     </div>
-    <div style="display: flex;align-items: center;">
-      <div style="margin-right: 20px;font-size: 16px;color: gray;">较大尺寸(width:360,height:50) : </div>
-      <i-select v-model="value" :option="option" :height="50" :width="360" />
+    <div class="row">
+      <div class="text">中等尺寸(size:medium) :</div>
+      <i-select v-model="value" :option="option" size="medium" />
     </div>
-    <div style="display: flex;align-items: center;">
-      <div style="margin-right: 20px;font-size: 14px;color: gray;">较大尺寸(width:360,height:50) : </div>
-      <i-select v-model="value" :option="option" :height="50" :width="360" />
+    <div class="row">
+      <div class="text" style="font-size: 14px">较小尺寸(size:mini) :</div>
+      <i-select v-model="value" :option="option" size="mini" />
+    </div>
+    <div class="row">
+      <div class="text" style="font-weight: bold">
+        自定义尺寸(width:180,height:30) :
+      </div>
+      <i-select v-model="value" :option="option" :width="180" :height="30" />
     </div>
   </div>
 </template>
@@ -40,7 +46,19 @@ const option = [
     value: "葡萄",
   },
 ];
-
 </script>
 
-<style scoped lang="less"></style>
+<style scoped lang="less">
+.wrapper {
+  padding: 20px;
+  .row {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    .text {
+      margin-right: 20px;
+      color: gray;
+    }
+  }
+}
+</style>
