@@ -8,8 +8,10 @@ import sidebarConfig from "./i-side-bar";
 import transitionConfig from "./i-transition";
 import buttonConfig from "./i-button";
 import selectConfig from "./i-select";
+import colorConfig from "./i-color";
 
 const arr = [
+  colorConfig,
   selectConfig,
   buttonConfig,
   transitionConfig,

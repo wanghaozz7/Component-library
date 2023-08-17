@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-let val;
+let val = false;
 
 const handleChange = (value) => {
   console.log("val", val, value);

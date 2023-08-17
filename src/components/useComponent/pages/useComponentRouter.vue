@@ -27,6 +27,7 @@ import sideBarConfig from "../config/i-side-bar";
 import transitionConfig from "../config/i-transition";
 import buttonConfig from "../config/i-button";
 import selectConfig from "../config/i-select";
+import colorConfig from "../config/i-color";
 
 const props = defineProps({
   selectedArr: {
@@ -67,6 +68,8 @@ const getConfig = () => {
       return buttonConfig;
     case "use-i-select":
       return selectConfig;
+    case "use-i-color":
+      return colorConfig;
   }
 };
 

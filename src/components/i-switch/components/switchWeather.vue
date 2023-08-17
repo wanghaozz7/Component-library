@@ -1,28 +1,29 @@
 <template>
   <div class="toggle checkbox-weather">
     <label class="switch">
-      <input type="checkbox" v-model="inputValue" @change="handleChange">
+      <input type="checkbox" v-model="inputValue" @change="handleChange" />
       <span class="slider" />
     </label>
   </div>
 </template>
 
-
 <script setup name="switch-weather">
-const emits = defineEmits(['change'])
+const emits = defineEmits(["change"]);
 
 const props = defineProps({
   defaultValue: {
     type: Boolean,
-    default: true
-  }
-})
+    default: true,
+  },
+});
 
 let inputValue = props.defaultValue;
 
-const handleChange = e => {
-  emits('change', inputValue)
-}
+const handleChange = (e) => {
+  emits("change", inputValue);
+};
+
+
 </script>
 
 <style scoped lang="less">
@@ -31,7 +32,7 @@ const handleChange = e => {
 
   &::before,
   &::after {
-    content: '';
+    content: "";
     position: absolute;
   }
 }
@@ -43,28 +44,26 @@ body {
   background-color: #bcdd96;
 
   @media (max-width: 600px) {
-
     .toggle {
       border-right: none !important;
       border-bottom: 1px solid #f5f5f5;
     }
 
-    >div>div {
+    > div > div {
       &:nth-child(odd) {
         border-right: none !important;
       }
     }
-
   }
 
-  >div {
+  > div {
     width: 604px;
     border: 1px solid #f5f5f5;
     flex-wrap: wrap;
     text-align: center;
     font-size: 0;
 
-    >div {
+    > div {
       width: 300px;
       display: inline-block;
       padding: 20px 0;
@@ -99,7 +98,7 @@ label.toggle-item {
   display: inline-block;
   border-radius: 50px;
   position: relative;
-  transition: all .3s ease;
+  transition: all 0.3s ease;
   transform-origin: 20% center;
   cursor: pointer;
 
@@ -111,7 +110,7 @@ label.toggle-item {
     left: 4px;
     border-radius: 50%;
     border: 2px solid #88cf8f;
-    transition: .3s ease;
+    transition: 0.3s ease;
   }
 }
 
@@ -148,8 +147,8 @@ label.toggle-item {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #f4f4f5;
-  transition: .4s;
+  background-color: #eee;
+  transition: 0.4s;
   border-radius: 30px;
 }
 
@@ -163,14 +162,14 @@ label.toggle-item {
   top: 50%;
   transform: translateY(-50%);
   background: linear-gradient(40deg, #ff0080, #ff8c00 70%);
-  transition: .4s;
+  transition: 0.4s;
 }
 
-.checkbox-weather input:checked+.slider {
+.checkbox-weather input:checked + .slider {
   background-color: #303136;
 }
 
-.checkbox-weather input:checked+.slider:before {
+.checkbox-weather input:checked + .slider:before {
   left: calc(100% - (var(--size-of-icon, 1.4em) + var(--slider-offset, 0.3em)));
   background: #303136;
   /* change the value of second inset in box-shadow to change the angle and direction of the moon  */

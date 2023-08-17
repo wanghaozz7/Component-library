@@ -1,5 +1,11 @@
 <template>
-  <component :is="'switch-' + type" :defaulfValue="defaultValue" :width="width" :height="height" @change="handleChange" />
+  <component
+    :is="'switch-' + type"
+    :defaultValue="modelValue"
+    :width="width"
+    :height="height"
+    @change="handleChange"
+  />
 </template>
 
 <script setup name="i-switch">
@@ -11,10 +17,6 @@ const props = defineProps({
     default: "normal",
   },
   modelValue: {
-    type: Boolean,
-    default: false,
-  },
-  defaultValue: {
     type: Boolean,
     default: true,
   },

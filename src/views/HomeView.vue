@@ -1,7 +1,7 @@
 <template>
-  <div class="homeViewContainer">
-    <i-scroll-bar showScrollBar="hover">
-      <div class="sideBar">
+  <div class="homeViewContainer" :style="getContainerStyle">
+    <div class="sideBar">
+      <i-scroll-bar showScrollBar="hover">
         <i-side-bar
           :sideBarData="sideBarData"
           :defaultCheckedAll="false"
@@ -10,11 +10,11 @@
           showCheckBox
           @nodeCheckedChange="handleNodeCheckedChange"
         />
-      </div>
-    </i-scroll-bar>
+      </i-scroll-bar>
+    </div>
     <div class="mainContent">
       <i-scroll-bar showScrollBar="hover" @offsetChange="handleOffsetChange">
-        <div class="block">
+        <div class="views">
           <transition-group name="translate-right-down" appear>
             <use-component-router
               v-for="component in componentStack"
@@ -28,16 +28,19 @@
       </i-scroll-bar>
     </div>
   </div>
+  <div class="mode">
+    <i-switch type="weather" v-model="mode" />
+  </div>
 </template>
 
 <script setup name="HomeView">
-import { reactive, ref } from "vue";
+import { reactive, ref, computed } from "vue";
 
 import sideBarConfig from "@/components/useComponent/config/index.js";
 
 const componentStack = reactive([]);
 let scrollOffset = ref(0);
-
+let mode = ref(false);
 const sideBarData = sideBarConfig.slice();
 
 const handleOffsetChange = (offset) => (scrollOffset.value = offset);
@@ -71,6 +74,13 @@ const handleNodeCheckedChange = (node, type) => {
     if (arr.length === 0) componentStack.splice(idx, 1);
   }
 };
+
+const getContainerStyle = computed(() => {
+  const backgroundColor = mode.value ? "#f5f5f5" : "#eee";
+  return {
+    // backgroundColor,
+  };
+});
 </script>
 
 <style scoped lang="less">
@@ -78,7 +88,6 @@ const handleNodeCheckedChange = (node, type) => {
   width: 1426px;
   margin: auto;
   display: flex;
-
   .sideBar {
     width: 290px;
     height: auto;
@@ -86,13 +95,17 @@ const handleNodeCheckedChange = (node, type) => {
 
   .mainContent {
     flex: 1;
-
-    .block {
+    .views {
       display: flex;
       justify-content: center;
       align-items: center;
       flex-wrap: wrap;
     }
   }
+}
+.mode {
+  position: fixed;
+  right: 20px;
+  top: 20px;
 }
 </style>

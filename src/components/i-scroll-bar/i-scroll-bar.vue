@@ -1,10 +1,21 @@
 <template>
-  <div class="scroll-bar-wrapper" :style="getScrollBarWrapperStyle" @mouseenter="handleMouseEnter"
-    @mouseleave="handleMouseLeave" @mousewheel.passive="handleScroll" ref="scroll">
+  <div
+    class="scroll-bar-wrapper"
+    :style="getScrollBarWrapperStyle"
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave"
+    @mousewheel.passive="handleScroll"
+    ref="scroll"
+  >
     <div ref="slot" :style="getSlotStyle" v-resize:20="onResize">
       <slot />
     </div>
-    <div class="scroll-bar" :style="getScrollBarStyle" ref="scrollBar" v-if="showScrollBarWhen !== 'none'"></div>
+    <div
+      class="scroll-bar"
+      :style="getScrollBarStyle"
+      ref="scrollBar"
+      v-if="showScrollBarWhen !== 'none'"
+    ></div>
   </div>
 </template>
 
@@ -81,7 +92,7 @@ const getScrollBarStyle = computed(() => {
   const top = scrollBarOffset.value + "px";
   const transition = isDrag.value ? "" : "all 0.2s";
   let opacity;
-  const display = showScrollBar.value ? 'block' : 'none';
+  const display = showScrollBar.value ? "block" : "none";
   switch (props.showScrollBarWhen) {
     case "always":
       opacity = "1";
