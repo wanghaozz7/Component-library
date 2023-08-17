@@ -3,7 +3,7 @@
     <div class="color-tabs">
       <div
         class="color-circle"
-        v-for="color in colorList"
+        v-for="color in tabs"
         :key="color"
         :style="getVariable(color)"
         @click="activeColor = color"
@@ -13,13 +13,31 @@
         </transition>
       </div>
     </div>
-    <div class="content"></div>
+    <div class="content">
+      <div
+        style="
+          width: 100px;
+          height: 50px;
+          transform: skew(45deg) translateX(45px);
+          background: linear-gradient(to left, #40e0d0, #ff8c00, #ff0080);
+        "
+      ></div>
+      <div
+        style="
+          width: 100px;
+          height: 50px;
+          transform: skew(45deg);
+          margin-left: 50px;
+          background: linear-gradient(to left, #40e0d0, #ff8c00, #ff0080);
+        "
+      ></div>
+    </div>
   </div>
 </template>
 <script setup>
 import { ref, computed } from "vue";
 
-const colorList = [
+const tabs = [
   "black",
   "blue",
   "brown",
@@ -31,6 +49,7 @@ const colorList = [
   "yellow",
   "linear-gradient(to left, #40e0d0, #ff8c00, #ff0080)",
 ];
+
 let activeColor = ref("black");
 
 const getVariable = computed(() => {
@@ -77,5 +96,9 @@ const getVariable = computed(() => {
       height: 15px;
     }
   }
+}
+.content {
+  overflow: hidden;
+  display: flex;
 }
 </style>
