@@ -15,22 +15,15 @@
     </div>
     <div class="content">
       <div
-        style="
-          width: 100px;
-          height: 50px;
-          transform: skew(45deg) translateX(45px);
-          background: linear-gradient(to left, #40e0d0, #ff8c00, #ff0080);
-        "
-      ></div>
-      <div
-        style="
-          width: 100px;
-          height: 50px;
-          transform: skew(45deg);
-          margin-left: 50px;
-          background: linear-gradient(to left, #40e0d0, #ff8c00, #ff0080);
-        "
-      ></div>
+        class="parallelogram"
+        v-for="color in tabs"
+        :key="color"
+        :style="{ background: color }"
+      >
+        <div class="text">
+          {{ color }}
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -48,6 +41,13 @@ const tabs = [
   "white",
   "yellow",
   "linear-gradient(to left, #40e0d0, #ff8c00, #ff0080)",
+];
+
+const colorList = [
+  {
+    label: "",
+    color: "",
+  },
 ];
 
 let activeColor = ref("black");
@@ -98,7 +98,29 @@ const getVariable = computed(() => {
   }
 }
 .content {
-  overflow: hidden;
   display: flex;
+  overflow: hidden;
+  .parallelogram {
+    flex: 1;
+    height: 50px;
+    transform: skew(45deg);
+    cursor: pointer;
+    &:first-child {
+      margin-left: 30px;
+    }
+    &:last-child {
+      margin-right: 30px;
+    }
+    .text {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      transform: skew(-45deg);
+      color: white;
+      font-size: large;
+      font-weight: bold;
+    }
+  }
 }
 </style>
