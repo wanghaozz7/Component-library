@@ -9,7 +9,7 @@ const $paintingStyle = (el, arrays, callback = () => {}) => {
 
 let id = 1;
 const $message = (arg) => {
-  const { type, info, delay = 3000, showClose = false } = arg;
+  const { type, info, delay = 3000, showClose = false, color } = arg;
 
   // 计算排在前面的(id小于参数id)的message个数
   const getCurMessageCount = (id) => {
@@ -32,11 +32,11 @@ const $message = (arg) => {
       ["display", "flex"],
       ["align-items", "center"],
       ["position", "fixed"],
-      ["top", `${(getCurMessageCount(messageId)) * 50}px`],
+      ["top", `${getCurMessageCount(messageId) * 50}px`],
       ["left", "50%"],
       ["transform", "translateX(-50%)"],
       ["transition", "all 0.3s ease"],
-      ["opacity",0]
+      ["opacity", 0],
     ];
     $paintingStyle(el, styleArray);
     el.id = `message-${messageId}`;
@@ -157,6 +157,16 @@ const $message = (arg) => {
     $paintingStyle(message, messageStyle);
     $paintingStyle(text, textStyle);
   };
+  const getCustomStyle = () => {
+    const messageStyle = [
+      ["background-color", "#edf2fc"],
+      ["border-color", color],
+    ];
+    const textStyle = [["color", color]];
+    icon.children[0].src = require("../assets/icons/checked.svg");
+    $paintingStyle(message, messageStyle);
+    $paintingStyle(text, textStyle);
+  };
 
   const body = document.getElementsByTagName("body")[0];
   const messageId = id++;
@@ -177,6 +187,9 @@ const $message = (arg) => {
     case "error":
       getErrorStyle();
       break;
+    case "custom":
+      getCustomStyle();
+      break;
     default:
       getInfoStyle();
   }
@@ -193,10 +206,10 @@ const $message = (arg) => {
 
   setTimeout(() => {
     for (let child of body.children) {
-        if (child.id.slice(8) == messageId) {
-          child.style.top = getCurMessageCount(messageId) * 50 + 'px';
-          child.style.opacity = 1;
-        }
+      if (child.id.slice(8) == messageId) {
+        child.style.top = getCurMessageCount(messageId) * 50 + "px";
+        child.style.opacity = 1;
+      }
     }
   }, 50);
 

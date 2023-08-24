@@ -20,6 +20,29 @@
   transform: translate(30px, 10px);
 }
 
+.kunai-enter-from {
+  opacity: 0;
+  /* transform: rotate3d(45deg); */
+}
+
+.kunai-enter-active {
+  transition: all 0.3s ease;
+}
+
+.kunai-enter-to {
+  opacity: 1;
+}
+
+.kunai-leave-active {
+  transition: all 0.3s ease;
+}
+
+.kunai-leave-to {
+  opacity: 0;
+  /* transform: rotate3d(45deg); */
+}
+
+
 
 /* 加速后减速 */
 .ease-in-out-enter-from {

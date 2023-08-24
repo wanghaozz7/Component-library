@@ -1,5 +1,5 @@
 <template>
-  <div style="padding: 20px">
+  <div style="padding: 20px;">
     <div class="color-tabs">
       <div
         class="color-circle"
@@ -13,7 +13,7 @@
         </transition>
       </div>
     </div>
-    <div class="content">
+    <!-- <div class="content">
       <div
         class="parallelogram"
         v-for="color in tabs"
@@ -24,25 +24,17 @@
           {{ color }}
         </div>
       </div>
-      <!-- <div
-        class="parallelogram"
-        v-for="color in tabs"
-        :key="color"
-        :style="{ background: color }"
-      >
-        <div class="text">
-          {{ color }}
-        </div>
-      </div> -->
-    </div>
-    <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 40px">
+    </div> -->
+    <div class="blocks">
       <i-color-box
         v-for="(,idx) in colorList"
         :key="idx"
         :color="colorList[idx].color"
         :label="colorList[idx].label"
+        showOpacity
       />
     </div>
+    <i-kunai></i-kunai>
   </div>
 </template>
 
@@ -558,7 +550,6 @@ watch(
     for (let i = 0; i < 10; i++) {
       colorList[i] = colorTable[newVal].colors[i];
     }
-    console.log(colorList);
   },
   {
     immediate: true,
@@ -620,5 +611,12 @@ watch(
       font-weight: bold;
     }
   }
+}
+.blocks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 40px;
+  border-radius: 4px 0 0 4px;
 }
 </style>
