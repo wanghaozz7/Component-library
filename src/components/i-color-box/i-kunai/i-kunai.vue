@@ -36,7 +36,7 @@ const getVariable = computed(() => {
   align-items: center;
   transition: all 0.3s;
   cursor: pointer;
-  transform: rotate(90deg);
+  transform: rotate(90deg) scale(0.7);
   .circle {
     width: 20px;
     height: 20px;
@@ -79,7 +79,7 @@ const getVariable = computed(() => {
       position: absolute;
       width: 100%;
       height: 100%;
-      background-color: snow;
+      background-color: #f5f5f5;
       -webkit-clip-path: polygon(50% 0, 0 25%, 55% 30%, 100% 25%, 50% 100%);
     }
   }

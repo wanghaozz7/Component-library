@@ -6,12 +6,12 @@
     <div class="opacity-box-container" v-if="showOpacity">
       <div class="opacity-box" v-for="(opacity, idx) in opacitys" :key="idx">
         <i-color-box
-          :size="40"
+          :size="35"
           :color="color.colorRgb(opacity)"
           :show-opacity="false"
           @click="activeOpacity = opacity"
         />
-        <transition name="kunai" appear>
+        <transition name="ease-in-out" appear>
           <div v-show="opacity === activeOpacity">
             <div class="opcaty-kunai">
               <i-kunai :color="color.colorRgb(opacity)" />
@@ -37,7 +37,7 @@ const props = defineProps({
   },
   size: {
     type: Number,
-    default: 200,
+    default: 175,
   },
   showOpacity: {
     type: Boolean,
@@ -55,33 +55,37 @@ let activeOpacity = ref(1);
 
 const getVariable = computed(() => {
   return {
-    "--background": props.color.colorRgb(),
+    "--background": getColor(),
     "--box-size": props.size + "px",
     "--slide-size": props.size * 2 + "px",
     "--label-size": props.size - 40 + "px",
     "--box-shadow": props.showOpacity
-      ? "0 0 8px 0 var(--background), 0 2px 4px 0 var(--background)"
+      ? `0 0 8px 0 ${getColor()}, 0 2px 4px 0 ${getColor()}`
       : "0 0 0 0 transparent, 0 0 0 0 transparent",
-    "--margin-right": props.showOpacity ? "130px" : "0",
+    "--margin-right": props.showOpacity ? "100px" : "0",
   };
 });
 
+const getColor = () => {
+  return props.showOpacity
+    ? props.color.colorRgb(activeOpacity.value)
+    : props.color;
+};
 const handleClick = (e) => {
   if (props.showOpacity) {
     // 复制颜色
     const input = document.createElement("input");
-    input.value = props.color;
+    input.value = getColor();
     document.body.appendChild(input);
     input.select();
     document.execCommand("copy");
     proxy.$message({
       type: "custom",
-      info: `${props.color} —— copied!`,
+      info: `${getColor()} —— copied!`,
       delay: 1000,
-      color: props.color,
+      color: getColor(),
     });
     document.body.removeChild(input);
-  } else {
   }
 };
 
@@ -160,6 +164,7 @@ export default { name: "i-color-box" };
     padding: 15px;
     background: var(--background);
     box-sizing: border-box;
+    transition: all 0.3s ease-in-out;
     div {
       color: white;
       font-weight: 800;
@@ -182,9 +187,9 @@ export default { name: "i-color-box" };
     }
     .opcaty-kunai {
       position: absolute;
-      right: -100px;
+      right: -90px;
       top: 50%;
-      transform: translateY(-50%) rotate3d(360deg);
+      transform: translateY(-50%);
     }
   }
 }
