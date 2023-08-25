@@ -135,7 +135,7 @@ String.prototype.colorRgb = function (opacity = 1) {
     for (var i = 1; i < 7; i += 2) {
       colorChange.push(parseInt("0x" + color.slice(i, i + 2)));
     }
-    return "RGB(" + colorChange.join(",") + `,${opacity}` + ")";
+    return "rgba(" + colorChange.join(",") + `,${opacity}` + ")";
   } else {
     return color;
   }
